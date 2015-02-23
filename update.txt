@@ -35,7 +35,8 @@ We have implemented Phase 1 of our plan, which includes basic player input
 in addition to updating and rendering the game state based on the input. 
 Using the Signal and Time library, we implemented controls for the player
 to change the game state and so that the game state could update over time.
-The game state includes if the game is paused as well as the score. The game state also includes the player state and laser state's position, 
+The game state includes if the game is paused as well as the score. The 
+game state also includes the player state and laser state's position, 
 velocity, and descriptive state title. Further, rendering the images made
 heavy use of the Text, Color, Graphics.Collage, and Graphics.Element 
 libraries.
