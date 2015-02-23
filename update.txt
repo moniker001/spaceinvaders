@@ -1,0 +1,78 @@
+CS223: Functional Programming
+Group: Tejong Lim, David Huang
+
+Space Invaders (in Elm!)
+
+OVERVIEW:
+Space Invaders is a web application programmed in Elm of the classic arcade
+game. The objective of the game is to destroy all enemies before they 
+reach your spaceship.
+
+INSTRUCTIONS:
+
+Our source code can be found in SpaceInvaders.elm and we have a 
+precompiled html version in SpaceInvaders.html.
+
+To play the game, one can use elm-reactor, by moving to the 
+same directory as SpaceInvaders.elm and running the following comamand:
+  elm-reactor
+The game should be available to play at the following url: 
+  http://localhost:8000/SpaceInvaders.elm
+
+One could instead run the following command, generate the html file,
+and then open in a browser:
+  elm-make SpaceInvaders.elm --output=SpaceInvaders.html
+
+Here are the instructions for playing the game:
+  Move Left/Right --------- Arrow Keys/WASD
+  Fire/Shoot -------------- Space
+  Start game -------------- Enter
+
+
+PROGRESS:
+
+We have implemented Phase 1 of our plan, which includes basic player input
+in addition to updating and rendering the game state based on the input. 
+Using the Signal and Time library, we implemented controls for the player
+to change the game state and so that the game state could update over time.
+The game state includes if the game is paused as well as the score. The game state also includes the player state and laser state's position, 
+velocity, and descriptive state title. Further, rendering the images made
+heavy use of the Text, Color, Graphics.Collage, and Graphics.Element 
+libraries.
+
+Current player controls can be found above and are explained here in 
+further detail. The player must start the game by pressing Enter, after 
+which the game begins. The player can use the arrow keys or wasd to move 
+left and right and can fire a laser with the space bar. Future controls
+will include buttons for pause/unpause and using special weapons/powerups.
+
+We have also begun to implement Phase 4, which is the user interface that 
+displays the player's score and statistics. At the moment, the UI displays
+the player's game states for debugging purposes. Future implementation will
+add the player's current level, number of lives, available powerups, and
+and so on.
+
+Phases we have yet to implement include enemy movement and attack for 
+Phase 2, collision detection and interaction for Phase 3, multiple levels 
+and increasing difficulty for Phase 5, and additional gameplay features 
+for Phase 6. We will prioritize finishing Phases 2 and 3, which are 
+necessary for a basic playable game, and will proceed as planned.
+
+Phase 3 will require the a method of detecting when objects collide, such
+as when the player's laser hits an enemy, the enemy's laser hits the
+player, or the enemy collides with the player. When a collision occurs,
+the game state must be updated, including the score, number of lives, etc.
+
+Phase 5 will require the difficulty of the gameplay to increase, which
+will involve faster movement and firing rate of the enemies. Special
+enemies could also be implemented at higher levels.
+
+Phase 6 will involve power-ups, enemy AI, boss enemies, better aesthetics,
+and so on as time allows.
+
+1) Player input and game state ------------------------------ MOSTLY DONE
+2) Enemy movement/attack ------------------------------------ IN PROGRESS
+3) Collision detection -------------------------------------- TODO
+4) User interface ------------------------------------------- MOSTLY DONE
+5) Multiple levels ------------------------------------------ TODO
+6) Additional features -------------------------------------- TODO

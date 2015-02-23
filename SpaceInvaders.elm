@@ -252,7 +252,7 @@ renderHowTo game =
           |> T.centered
           |> C.toForm
           |> C.moveY (size * 0)
-      , "Enter - Start Game"
+      , "Start - Enter"
           |> T.fromString
           |> T.color white
           |> T.height size
