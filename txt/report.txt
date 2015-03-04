@@ -56,8 +56,9 @@ The game should be available to play at:
 
 * OR *
 
-One could instead run the following command, generate the html file,
-and then open in a browser:
+Compile and generate an html file with the following command and then open
+in your favorite browser:
+
   elm-make SpaceInvaders.elm --output=SpaceInvaders.html
 
 =========================================================================
