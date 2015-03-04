@@ -26,19 +26,6 @@ update_pos_enemy dt enemy =
       y <- (y + dt * vy)
   }
 
-check_collision : Laser -> Enemy -> LaserStatus
-check_collision laser enemy =
-  let
-    {x_laser, y_laser, status} = laser
-    {x, y} = enemy
-  in
-  case status of
-    Ready -> Ready
-    Shooting -> if
-      | (abs (x_laser - x)) < 10 && (abs (y_laser - y)) < 10 -> Collision
-      | otherwise -> Shooting
-    Collision -> Collision
-
 update_status_enemy : Laser -> Enemy -> Enemy
 update_status_enemy laser enemy =
   case (check_collision laser enemy) of
