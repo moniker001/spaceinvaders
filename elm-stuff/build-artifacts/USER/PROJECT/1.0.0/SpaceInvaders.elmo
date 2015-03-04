@@ -1,0 +1,604 @@
+Elm.SpaceInvaders = Elm.SpaceInvaders || {};
+Elm.SpaceInvaders.make = function (_elm) {
+   "use strict";
+   _elm.SpaceInvaders = _elm.SpaceInvaders || {};
+   if (_elm.SpaceInvaders.values)
+   return _elm.SpaceInvaders.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "SpaceInvaders",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Keyboard = Elm.Keyboard.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Text = Elm.Text.make(_elm),
+   $Time = Elm.Time.make(_elm),
+   $Window = Elm.Window.make(_elm);
+   var delta = A2($Signal.map,
+   function (t) {
+      return t / 20;
+   },
+   $Time.fps(30));
+   var userInterface = function (game) {
+      return function () {
+         var borderStyle = function () {
+            var ls = $Graphics$Collage.defaultLine;
+            return _U.replace([["color"
+                               ,$Color.darkGray]
+                              ,["width",5]],
+            ls);
+         }();
+         var size = 20;
+         var $ = game,
+         state = $.state,
+         player = $.player,
+         laser = $.laser,
+         score = $.score;
+         var $ = player,
+         x = $.x,
+         y = $.y,
+         vx = $.vx,
+         move = $.move;
+         var $ = laser,
+         x_laser = $.x_laser,
+         y_laser = $.y_laser,
+         status = $.status;
+         return $Graphics$Collage.move({ctor: "_Tuple2"
+                                       ,_0: 150
+                                       ,_1: 140})($Graphics$Collage.group(_L.fromArray([$Graphics$Collage.moveY(15)($Graphics$Collage.outlined(borderStyle)(A2($Graphics$Collage.rect,
+                                                                                       150,
+                                                                                       75)))
+                                                                                       ,$Graphics$Collage.moveY(size * 2)($Graphics$Collage.toForm($Text.centered($Text.height(size)($Text.color($Color.green)($Text.append($Text.fromString("Score : "))($Text.fromString($Basics.toString(score))))))))
+                                                                                       ,$Graphics$Collage.moveY(size * 1)($Graphics$Collage.toForm($Text.centered($Text.height(size)($Text.color($Color.green)($Text.append($Text.fromString("Move : "))($Text.fromString($Basics.toString(move))))))))
+                                                                                       ,$Graphics$Collage.moveY(size * 0)($Graphics$Collage.toForm($Text.centered($Text.height(size)($Text.color($Color.green)($Text.append($Text.fromString("Fire : "))($Text.fromString($Basics.toString(status))))))))])));
+      }();
+   };
+   var renderEnemy = function (enemy) {
+      return function () {
+         var _v0 = enemy.status;
+         switch (_v0.ctor)
+         {case "Dead":
+            return $Graphics$Collage.move({ctor: "_Tuple2"
+                                          ,_0: enemy.x
+                                          ,_1: enemy.y})($Graphics$Collage.toForm($Graphics$Element.empty));
+            case "Hostile":
+            return $Graphics$Collage.move({ctor: "_Tuple2"
+                                          ,_0: enemy.x
+                                          ,_1: enemy.y})($Graphics$Collage.filled($Color.blue)(A2($Graphics$Collage.rect,
+              20,
+              20)));}
+         _U.badCase($moduleName,
+         "between lines 357 and 365");
+      }();
+   };
+   var renderLaser = function (laser) {
+      return function () {
+         var _v1 = laser.status;
+         switch (_v1.ctor)
+         {case "Ready":
+            return $Graphics$Collage.move({ctor: "_Tuple2"
+                                          ,_0: laser.x_laser
+                                          ,_1: laser.y_laser})($Graphics$Collage.filled($Color.black)(A2($Graphics$Collage.rect,
+              1,
+              15)));}
+         return $Graphics$Collage.move({ctor: "_Tuple2"
+                                       ,_0: laser.x_laser
+                                       ,_1: laser.y_laser})($Graphics$Collage.filled($Color.white)(A2($Graphics$Collage.rect,
+         1,
+         15)));
+      }();
+   };
+   var renderPlayer = function (player) {
+      return $Graphics$Collage.move({ctor: "_Tuple2"
+                                    ,_0: player.x
+                                    ,_1: player.y})($Graphics$Collage.group(_L.fromArray([$Graphics$Collage.filled($Color.red)(A2($Graphics$Collage.rect,
+                                                                                         40,
+                                                                                         10))
+                                                                                         ,$Graphics$Collage.moveY(5)($Graphics$Collage.filled($Color.red)(A2($Graphics$Collage.oval,
+                                                                                         7,
+                                                                                         15)))])));
+   };
+   var renderHowTo = function (game) {
+      return function () {
+         var size = 30;
+         var $ = game,state = $.state;
+         return function () {
+            switch (state.ctor)
+            {case "Pause":
+               return $Graphics$Collage.group(_L.fromArray([$Graphics$Collage.moveY(size * 2)($Graphics$Collage.toForm($Text.centered($Text.height(size + 10)($Text.color($Color.white)($Text.fromString("How to Play"))))))
+                                                           ,$Graphics$Collage.moveY(size * 1)($Graphics$Collage.toForm($Text.centered($Text.height(size)($Text.color($Color.white)($Text.fromString("Move - Arrow Keys or WASD"))))))
+                                                           ,$Graphics$Collage.moveY(size * 0)($Graphics$Collage.toForm($Text.centered($Text.height(size)($Text.color($Color.white)($Text.fromString("Shoot - Space"))))))
+                                                           ,$Graphics$Collage.moveY(size * -1)($Graphics$Collage.toForm($Text.centered($Text.height(size)($Text.color($Color.white)($Text.fromString("Start - Enter"))))))]));
+               case "Play":
+               return $Graphics$Collage.group(_L.fromArray([]));}
+            _U.badCase($moduleName,
+            "between lines 298 and 330");
+         }();
+      }();
+   };
+   var update_pos_enemy = F2(function (dt,
+   enemy) {
+      return function () {
+         var $ = enemy,
+         x = $.x,
+         y = $.y,
+         vx = $.vx,
+         vy = $.vy;
+         return _U.replace([["x"
+                            ,x + dt * vx]
+                           ,["y",y + dt * vy]],
+         enemy);
+      }();
+   });
+   var update_vel_player = F2(function (x,
+   player) {
+      return function () {
+         var newVel = function (n) {
+            return _U.eq(x,
+            0) ? $Basics.toFloat(n) : $Basics.toFloat(n) * 2;
+         };
+         return _U.replace([["vx"
+                            ,newVel(x)]],
+         player);
+      }();
+   });
+   var Input = F5(function (a,
+   b,
+   c,
+   d,
+   e) {
+      return {_: {}
+             ,delta: e
+             ,pause: b
+             ,playerDir: c
+             ,shoot: d
+             ,start: a};
+   });
+   var playerInput = A6($Signal.map5,
+   Input,
+   $Keyboard.enter,
+   $Keyboard.isDown(80),
+   A2($Signal._op["<~"],
+   function (_) {
+      return _.x;
+   },
+   A2($Signal.merge,
+   $Keyboard.arrows,
+   $Keyboard.wasd)),
+   $Keyboard.space,
+   delta);
+   var input = A2($Signal.sampleOn,
+   delta,
+   playerInput);
+   var Game = F5(function (a,
+   b,
+   c,
+   d,
+   e) {
+      return {_: {}
+             ,enemies: e
+             ,laser: d
+             ,player: c
+             ,score: b
+             ,state: a};
+   });
+   var Enemy = F5(function (a,
+   b,
+   c,
+   d,
+   e) {
+      return {_: {}
+             ,status: e
+             ,vx: c
+             ,vy: d
+             ,x: a
+             ,y: b};
+   });
+   var Laser = F6(function (a,
+   b,
+   c,
+   d,
+   e,
+   f) {
+      return {_: {}
+             ,fired: f
+             ,status: e
+             ,vx: c
+             ,vy: d
+             ,x_laser: a
+             ,y_laser: b};
+   });
+   var Player = F5(function (a,
+   b,
+   c,
+   d,
+   e) {
+      return {_: {}
+             ,move: e
+             ,vx: c
+             ,vy: d
+             ,x: a
+             ,y: b};
+   });
+   var Pause = {ctor: "Pause"};
+   var Play = {ctor: "Play"};
+   var start_game = F2(function (start,
+   state) {
+      return function () {
+         switch (state.ctor)
+         {case "Pause":
+            return start ? Play : state;
+            case "Play": return state;}
+         _U.badCase($moduleName,
+         "between lines 135 and 139");
+      }();
+   });
+   var pause_game = F2(function (pause,
+   state) {
+      return function () {
+         switch (state.ctor)
+         {case "Pause":
+            return pause ? Play : state;
+            case "Play":
+            return pause ? Pause : state;}
+         _U.badCase($moduleName,
+         "between lines 143 and 149");
+      }();
+   });
+   var Dead = {ctor: "Dead"};
+   var Hostile = {ctor: "Hostile"};
+   var Collision = {ctor: "Collision"};
+   var Shooting = {ctor: "Shooting"};
+   var Ready = {ctor: "Ready"};
+   var update_pos_laser = F3(function (dt,
+   player,
+   laser) {
+      return function () {
+         var $ = player,
+         x = $.x,
+         y = $.y;
+         var $ = laser,
+         x_laser = $.x_laser,
+         y_laser = $.y_laser,
+         status = $.status,
+         fired = $.fired;
+         return function () {
+            switch (status.ctor)
+            {case "Collision":
+               return _U.replace([["y_laser"
+                                  ,-215]],
+                 laser);
+               case "Ready":
+               return _U.replace([["x_laser",x]
+                                 ,["y_laser",-215]],
+                 laser);
+               case "Shooting":
+               return _U.cmp(y_laser,
+                 250) > 0 ? _U.replace([["x_laser"
+                                        ,x]
+                                       ,["y_laser",-215]
+                                       ,["status",Ready]],
+                 laser) : _U.replace([["y_laser"
+                                      ,y_laser + dt * 5]],
+                 laser);}
+            _U.badCase($moduleName,
+            "between lines 159 and 174");
+         }();
+      }();
+   });
+   var check_collision = F2(function (laser,
+   enemy) {
+      return function () {
+         var $ = enemy,
+         x = $.x,
+         y = $.y;
+         var $ = laser,
+         x_laser = $.x_laser,
+         y_laser = $.y_laser,
+         status = $.status;
+         return function () {
+            switch (status.ctor)
+            {case "Collision":
+               return Collision;
+               case "Ready": return Ready;
+               case "Shooting":
+               return _U.cmp($Basics.abs(x_laser - x),
+                 10) < 0 && _U.cmp($Basics.abs(y_laser - y),
+                 10) < 0 ? Collision : Shooting;}
+            _U.badCase($moduleName,
+            "between lines 241 and 246");
+         }();
+      }();
+   });
+   var update_status_laser = F3(function (shoot,
+   enemy,
+   laser) {
+      return function () {
+         var $ = laser,
+         x_laser = $.x_laser,
+         y_laser = $.y_laser,
+         vx = $.vx,
+         vy = $.vy,
+         status = $.status,
+         fired = $.fired;
+         return function () {
+            switch (status.ctor)
+            {case "Collision":
+               return _U.replace([["status"
+                                  ,Ready]],
+                 laser);
+               case "Ready":
+               return shoot ? _U.replace([["status"
+                                          ,Shooting]],
+                 laser) : laser;
+               case "Shooting":
+               return _U.replace([["status"
+                                  ,A2(check_collision,
+                                  laser,
+                                  enemy)]],
+                 laser);}
+            _U.badCase($moduleName,
+            "between lines 179 and 184");
+         }();
+      }();
+   });
+   var update_status_enemy = F2(function (laser,
+   enemy) {
+      return function () {
+         var _v8 = A2(check_collision,
+         laser,
+         enemy);
+         switch (_v8.ctor)
+         {case "Collision":
+            return _U.replace([["status"
+                               ,Dead]],
+              enemy);}
+         return enemy;
+      }();
+   });
+   var Idle = {ctor: "Idle"};
+   var initGame = function () {
+      var enemy = {_: {}
+                  ,status: Hostile
+                  ,vx: 2
+                  ,vy: 0
+                  ,x: 0
+                  ,y: 0};
+      return {_: {}
+             ,enemies: _L.fromArray([enemy])
+             ,laser: {_: {}
+                     ,fired: 0
+                     ,status: Ready
+                     ,vx: 0
+                     ,vy: 0
+                     ,x_laser: 0
+                     ,y_laser: -215}
+             ,player: {_: {}
+                      ,move: Idle
+                      ,vx: 0
+                      ,vy: 0
+                      ,x: 0
+                      ,y: -220}
+             ,score: 0
+             ,state: Pause};
+   }();
+   var MoveR = {ctor: "MoveR"};
+   var MoveL = {ctor: "MoveL"};
+   var update_move_player = F2(function (x,
+   player) {
+      return _U.replace([["move"
+                         ,_U.cmp(x,
+                         0) > 0 ? MoveR : _U.cmp(x,
+                         0) < 0 ? MoveL : player.move]],
+      player);
+   });
+   var areaH = 500;
+   var areaW = 500;
+   var update_pos_player = F2(function (dt,
+   player) {
+      return function () {
+         var $ = player,
+         x = $.x,
+         y = $.y,
+         vx = $.vx,
+         vy = $.vy,
+         move = $.move;
+         return _U.replace([["x"
+                            ,A3($Basics.clamp,
+                            (0 - areaW) / 2,
+                            areaW / 2,
+                            x + dt * vx)]],
+         player);
+      }();
+   });
+   var update_vel_enemy = F2(function (vx,
+   enemy) {
+      return function () {
+         var $ = enemy,
+         x = $.x,
+         y = $.y,
+         vx = $.vx,
+         vy = $.vy,
+         status = $.status;
+         return _U.cmp(x,
+         (0 - areaW) / 2) < 1 ? _U.replace([["vx"
+                                            ,0 - vx]],
+         enemy) : _U.cmp(x,
+         areaW / 2) > -1 ? _U.replace([["vx"
+                                       ,0 - vx]],
+         enemy) : _U.replace([["vx",vx]],
+         enemy);
+      }();
+   });
+   var update_enemy = F3(function (enemy,
+   game,
+   dt) {
+      return function () {
+         var $ = game,
+         state = $.state,
+         player = $.player,
+         laser = $.laser,
+         score = $.score,
+         enemies = $.enemies;
+         var $ = laser,
+         x_laser = $.x_laser,
+         y_laser = $.y_laser,
+         status = $.status;
+         var collision = A2(check_collision,
+         laser,
+         enemy);
+         return update_status_enemy(laser)(update_vel_enemy(20)(update_pos_enemy(dt)(enemy)));
+      }();
+   });
+   var update_game = F2(function (input,
+   game) {
+      return function () {
+         var $ = game,
+         state = $.state,
+         player = $.player,
+         laser = $.laser,
+         score = $.score,
+         enemies = $.enemies;
+         var $ = input,
+         start = $.start,
+         pause = $.pause,
+         playerDir = $.playerDir,
+         shoot = $.shoot,
+         delta = $.delta;
+         var newState = pause_game(pause)(start_game(start)(state));
+         var newPlayer = function () {
+            switch (state.ctor)
+            {case "Pause": return player;
+               case "Play":
+               return update_pos_player(delta)(update_move_player(playerDir)(update_vel_player(playerDir)(player)));}
+            _U.badCase($moduleName,
+            "between lines 108 and 115");
+         }();
+         var newLaser = function () {
+            switch (state.ctor)
+            {case "Pause": return laser;
+               case "Play":
+               return A2(update_status_laser,
+                 shoot,
+                 $List.head(enemies))(A2(update_pos_laser,
+                 delta,
+                 player)(laser));}
+            _U.badCase($moduleName,
+            "between lines 115 and 121");
+         }();
+         var newEnemies = function () {
+            switch (state.ctor)
+            {case "Pause": return enemies;
+               case "Play":
+               return A2($List.map,
+                 function (x) {
+                    return A3(update_enemy,
+                    x,
+                    game,
+                    delta);
+                 },
+                 enemies);}
+            _U.badCase($moduleName,
+            "between lines 121 and 125");
+         }();
+         return _U.replace([["state"
+                            ,newState]
+                           ,["player",newPlayer]
+                           ,["laser",newLaser]
+                           ,["enemies",newEnemies]],
+         game);
+      }();
+   });
+   var gameState = A3($Signal.foldp,
+   update_game,
+   initGame,
+   input);
+   var view = F2(function (_v12,
+   game) {
+      return function () {
+         switch (_v12.ctor)
+         {case "_Tuple2":
+            return function () {
+                 var h$ = $Basics.toFloat(_v12._1 - 1);
+                 var w$ = $Basics.toFloat(_v12._0 - 1);
+                 var $ = game,
+                 state = $.state,
+                 player = $.player,
+                 laser = $.laser,
+                 score = $.score,
+                 enemies = $.enemies;
+                 return A3($Graphics$Element.container,
+                 _v12._0,
+                 _v12._1,
+                 $Graphics$Element.middle)(A3($Graphics$Collage.collage,
+                 areaW,
+                 areaH,
+                 _L.fromArray([$Graphics$Collage.filled($Color.black)(A2($Graphics$Collage.rect,
+                              w$,
+                              h$))
+                              ,renderLaser(laser)
+                              ,renderPlayer(player)
+                              ,renderEnemy($List.head(enemies))
+                              ,renderHowTo(game)
+                              ,$Graphics$Collage.moveY(220)($Graphics$Collage.toForm($Text.centered($Text.height(40)($Text.color($Color.white)($Text.fromString("Space Invaders"))))))
+                              ,userInterface(game)])));
+              }();}
+         _U.badCase($moduleName,
+         "between lines 269 and 290");
+      }();
+   });
+   var main = A3($Signal.map2,
+   view,
+   $Window.dimensions,
+   gameState);
+   _elm.SpaceInvaders.values = {_op: _op
+                               ,areaW: areaW
+                               ,areaH: areaH
+                               ,MoveL: MoveL
+                               ,MoveR: MoveR
+                               ,Idle: Idle
+                               ,Ready: Ready
+                               ,Shooting: Shooting
+                               ,Collision: Collision
+                               ,Hostile: Hostile
+                               ,Dead: Dead
+                               ,Play: Play
+                               ,Pause: Pause
+                               ,Player: Player
+                               ,Laser: Laser
+                               ,Enemy: Enemy
+                               ,Game: Game
+                               ,initGame: initGame
+                               ,Input: Input
+                               ,update_game: update_game
+                               ,start_game: start_game
+                               ,pause_game: pause_game
+                               ,update_pos_laser: update_pos_laser
+                               ,update_status_laser: update_status_laser
+                               ,update_vel_player: update_vel_player
+                               ,update_move_player: update_move_player
+                               ,update_pos_player: update_pos_player
+                               ,update_vel_enemy: update_vel_enemy
+                               ,update_pos_enemy: update_pos_enemy
+                               ,check_collision: check_collision
+                               ,update_status_enemy: update_status_enemy
+                               ,update_enemy: update_enemy
+                               ,view: view
+                               ,renderHowTo: renderHowTo
+                               ,renderPlayer: renderPlayer
+                               ,renderLaser: renderLaser
+                               ,renderEnemy: renderEnemy
+                               ,userInterface: userInterface
+                               ,main: main
+                               ,gameState: gameState
+                               ,input: input
+                               ,playerInput: playerInput
+                               ,delta: delta};
+   return _elm.SpaceInvaders.values;
+};
