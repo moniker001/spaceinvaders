@@ -2,23 +2,35 @@ module Vector where
 
 type alias Vector = (Float, Float)
 
-vector : Float -> Float -> Vector
-vector x y = (x, y)
+vec : Float -> Float -> Vector
+vec x y = (x, y)
 
-vadd : Vector -> Vector -> Vector
-vadd (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)
+getX : Vector -> Float
+getX (x, y) = x
 
-vsub : Vector -> Vector -> Vector
-vsub (x1, y1) (x2, y2) = (x1 - x2, y1 - y2)
+getY : Vector -> Float
+getY (x, y) = y
 
-vcross : Vector -> Vector -> Vector
-vcross (x1, y1) (x2, y2) = (x1 * x2, y1 * y2)
+setX : Float -> Vector -> Vector
+setX f (x, y) = (f, y)
 
-vdot : Vector -> Vector -> Float
-vdot (x1, y1) (x2, y2) = x1 * x2 + y1 * y2
+setY : Float -> Vector -> Vector
+setY f (x, y) = (x, f)
 
-vclamp : Vector -> Vector -> Vector -> Vector
-vclamp (ax, ay) (bx, by) (x, y) = (clamp ax bx x, clamp ay by y)
+add : Vector -> Vector -> Vector
+add (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)
 
-vscale : Float -> Vector -> Vector
-vscale f (x, y) = (f * x, f * y)
+sub : Vector -> Vector -> Vector
+sub (x1, y1) (x2, y2) = (x1 - x2, y1 - y2)
+
+cross : Vector -> Vector -> Vector
+cross (x1, y1) (x2, y2) = (x1 * x2, y1 * y2)
+
+dot : Vector -> Vector -> Float
+dot (x1, y1) (x2, y2) = x1 * x2 + y1 * y2
+
+bound : Vector -> Vector -> Vector -> Vector
+bound (ax, ay) (bx, by) (x, y) = (clamp ax bx x, clamp ay by y)
+
+scale : Float -> Vector -> Vector
+scale f (x, y) = (f * x, f * y)

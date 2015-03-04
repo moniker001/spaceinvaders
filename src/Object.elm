@@ -1,24 +1,28 @@
 module Object where
 
-import Vector (..)
-import Vector
+import Vector (Vector, vec)
+import Vector as V
 import Graphics.Collage (Form)
 import Graphics.Collage as Form
 
-type alias Object ext = {
-  ext | 
-    dim : Vector,
-    pos : Vector,
-    vel : Vector,
-    gfx : Form
-}
-
-update_pos : Time -> Object a -> Object a
-update_pos dt object =
-  let
-    x = (fst object.dim) / 2
-    y = (snd object.dim) / 2
-  in
-  { object |
-      pos <- vclamp (-areaW/2+x,-areaH/2+y) (areaW/2-x,areaH/2-y) (vadd object.pos (vscale dt object.vel))
+type alias Object ext =
+  { ext
+  | liftime : Float
+  , dim : Vector
+  , pos : Vector
+  , vel : Vector
+  , acc : Vector
+  , gfx : Form
   }
+
+render : Object a -> Form
+render object = Form.move object.pos object.gfx
+
+stepPosition : Float -> Vector -> Object a -> Vector
+stepPosition delta gameDimensions object =
+  let (hx, hy) = V.scale (0.5) object.dim
+      (hw, hh) = V.scale (0.5) gameDimensions
+  in
+      V.bound (vec (-hw + hx) (-hh + hy))
+              (vec ( hw - hx) ( hh - hy))
+              (V.add object.pos (V.scale delta object.vel))
