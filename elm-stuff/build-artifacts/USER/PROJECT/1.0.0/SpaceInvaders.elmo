@@ -74,7 +74,7 @@ Elm.SpaceInvaders.make = function (_elm) {
               20,
               20)));}
          _U.badCase($moduleName,
-         "between lines 357 and 365");
+         "between lines 359 and 367");
       }();
    };
    var renderLaser = function (laser) {
@@ -118,7 +118,7 @@ Elm.SpaceInvaders.make = function (_elm) {
                case "Play":
                return $Graphics$Collage.group(_L.fromArray([]));}
             _U.badCase($moduleName,
-            "between lines 298 and 330");
+            "between lines 300 and 332");
          }();
       }();
    };
@@ -236,7 +236,7 @@ Elm.SpaceInvaders.make = function (_elm) {
             return start ? Play : state;
             case "Play": return state;}
          _U.badCase($moduleName,
-         "between lines 135 and 139");
+         "between lines 137 and 141");
       }();
    });
    var pause_game = F2(function (pause,
@@ -248,7 +248,7 @@ Elm.SpaceInvaders.make = function (_elm) {
             case "Play":
             return pause ? Pause : state;}
          _U.badCase($moduleName,
-         "between lines 143 and 149");
+         "between lines 145 and 151");
       }();
    });
    var Dead = {ctor: "Dead"};
@@ -288,7 +288,7 @@ Elm.SpaceInvaders.make = function (_elm) {
                                       ,y_laser + dt * 5]],
                  laser);}
             _U.badCase($moduleName,
-            "between lines 159 and 174");
+            "between lines 161 and 176");
          }();
       }();
    });
@@ -312,7 +312,7 @@ Elm.SpaceInvaders.make = function (_elm) {
                  10) < 0 && _U.cmp($Basics.abs(y_laser - y),
                  10) < 0 ? Collision : Shooting;}
             _U.badCase($moduleName,
-            "between lines 241 and 246");
+            "between lines 243 and 248");
          }();
       }();
    });
@@ -344,7 +344,7 @@ Elm.SpaceInvaders.make = function (_elm) {
                                   enemy)]],
                  laser);}
             _U.badCase($moduleName,
-            "between lines 179 and 184");
+            "between lines 181 and 186");
          }();
       }();
    });
@@ -364,6 +364,12 @@ Elm.SpaceInvaders.make = function (_elm) {
    });
    var Idle = {ctor: "Idle"};
    var initGame = function () {
+      var enemy2 = {_: {}
+                   ,status: Hostile
+                   ,vx: 3
+                   ,vy: 0
+                   ,x: 0
+                   ,y: 20};
       var enemy = {_: {}
                   ,status: Hostile
                   ,vx: 2
@@ -371,7 +377,8 @@ Elm.SpaceInvaders.make = function (_elm) {
                   ,x: 0
                   ,y: 0};
       return {_: {}
-             ,enemies: _L.fromArray([enemy])
+             ,enemies: _L.fromArray([enemy2
+                                    ,enemy])
              ,laser: {_: {}
                      ,fired: 0
                      ,status: Ready
@@ -478,7 +485,7 @@ Elm.SpaceInvaders.make = function (_elm) {
                case "Play":
                return update_pos_player(delta)(update_move_player(playerDir)(update_vel_player(playerDir)(player)));}
             _U.badCase($moduleName,
-            "between lines 108 and 115");
+            "between lines 110 and 117");
          }();
          var newLaser = function () {
             switch (state.ctor)
@@ -490,7 +497,7 @@ Elm.SpaceInvaders.make = function (_elm) {
                  delta,
                  player)(laser));}
             _U.badCase($moduleName,
-            "between lines 115 and 121");
+            "between lines 117 and 123");
          }();
          var newEnemies = function () {
             switch (state.ctor)
@@ -505,7 +512,7 @@ Elm.SpaceInvaders.make = function (_elm) {
                  },
                  enemies);}
             _U.badCase($moduleName,
-            "between lines 121 and 125");
+            "between lines 123 and 127");
          }();
          return _U.replace([["state"
                             ,newState]
@@ -550,7 +557,7 @@ Elm.SpaceInvaders.make = function (_elm) {
                               ,userInterface(game)])));
               }();}
          _U.badCase($moduleName,
-         "between lines 269 and 290");
+         "between lines 271 and 292");
       }();
    });
    var main = A3($Signal.map2,

@@ -64,7 +64,9 @@ type alias Game =
 
 initGame : Game
 initGame =
-  let enemy = { x=0, y=0, vx=2, vy=0, status=Hostile } in
+  let enemy = { x=0, y=0, vx=2, vy=0, status=Hostile }
+      enemy2 = { x=0, y=20, vx=3, vy=0, status=Hostile } 
+  in
   { state  = Pause
   , score  = 0
   , player = 
@@ -83,7 +85,7 @@ initGame =
     , fired   = 0
     }
   , enemies = 
-    [ enemy
+    [ enemy2, enemy
     ]
   }
 
