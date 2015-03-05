@@ -86,11 +86,6 @@ initGame =
 delta : Signal Time
 delta = inSeconds <~ fps 60
 
-type alias Event = (Float, List KeyCode, { x : Int, y : Int })
-
-getDelta : Event -> Float
-getDelta (delta, keysDown, arrows) = delta
-
 sigEvent : Signal Event
 sigEvent = ((\t l a -> (t, l, a))
            <~ delta ~ Keyboard.keysDown ~ Keyboard.arrows)
