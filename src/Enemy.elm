@@ -1,6 +1,7 @@
 module Enemy where
 
-import Event
+import Event (Event)
+import Event (..)
 import Physics
 import Object (Object)
 

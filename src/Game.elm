@@ -2,7 +2,8 @@ module Game where
 
 import Color (..)
 import Enemy
-import Event
+import Event (Event)
+import Event (..)
 import Graphics.Element (Element)
 import Graphics.Element as E
 import Graphics.Collage (Form)
@@ -34,14 +35,12 @@ type alias Game =
   , enemies : List Enemy
   }
 
--- UPDATE
-
 upGame : Event -> Game -> Game
 upGame (delta, ks, {x , y} as event) game =
   let state’   = pauseGame (member 80 ks) game.state
-      player’  = upPlayer event game.player
-      lasers’  = map (upLaser event) game.lasers
-      enemies’ = map (upEnemy event) game.enemies
+      player’  = Player.update event game.player
+      lasers’  = map (Laser.update event) game.lasers
+      enemies’ = map (Enemy.update event) game.enemies
   in
   { game | state = state’
          , player = player’
@@ -82,6 +81,11 @@ initGame =
 delta : Signal Time
 delta = inSeconds <~ fps 60
 
+type alias Event = (Float, List KeyCode, { x : Int, y : Int })
+
+getDelta : Event -> Float
+getDelta (delta, keysDown, arrows) = delta
+
 sigEvent : Signal Event
 sigEvent = ((\t l a -> (t, l, a))
            <~ delta ~ Keyboard.keysDown ~ Keyboard.arrows)
@@ -89,7 +93,7 @@ sigEvent = ((\t l a -> (t, l, a))
 sigState : Signal State
 sigState = Signal.foldp upState initState sigEvent
 
--- RENDERING
+-- Rendering
 
 renderGame : Game -> Form
 renderGame game =
@@ -103,18 +107,17 @@ view : (Int, Int) -> Game -> Element
 view (w, h) game =
   let
     w' = toFloat (w - 1)
-    h' = toFloat (h - 1)
-    bg = C.filled black (C.rect w’ h’)
-    title = "Space Invaders"
-              |> T.fromString
-              |> T.color white
-              |> T.height 40
-              |> T.centered
-              |> F.toForm
-              |> F.moveY 220
+h' = toFloat (h - 1)
+bg = C.filled black (C.rect w’ h’)
+title = "Space Invaders"
+            |> T.fromString
+            |> T.color white
+            |> T.height 40
+            |> T.centered
+            |> F.toForm
+            |> F.moveY 220
   in
   Form.collage w h [bg, title, renderGame game]
 
 main : Signal Element
 main = view <~ Window.dimensions ~ sigState
-
