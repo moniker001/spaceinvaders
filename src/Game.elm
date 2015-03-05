@@ -42,7 +42,7 @@ type alias Game =
 initGame : Game
 initGame =
   { runtime = 0
-  , state   = Play
+  , state   = Pause
   , score   = 0
   , player  = Player.initPlayer
   , lasers  = [basicLaser]
@@ -105,7 +105,7 @@ renderGame game =
       fUI = userInterface game
       pauseScreen = case game.state of
         Play -> E.empty |> F.toForm
-        Pause -> "Paused" 
+        Pause -> "Paused - Press P to resume" 
           |> T.fromString 
           |> T.color white 
           |> T.height 30 
