@@ -2,6 +2,7 @@ module Game where
 
 import Color (..)
 import Enemy
+import Event
 import Graphics.Element (Element)
 import Graphics.Element as E
 import Graphics.Collage (Form)
@@ -81,11 +82,6 @@ initGame =
 delta : Signal Time
 delta = inSeconds <~ fps 60
 
-type alias Event = (Float, List KeyCode, { x : Int, y : Int })
-
-getDelta : Event -> Float
-getDelta (delta, keysDown, arrows) = delta
-
 sigEvent : Signal Event
 sigEvent = ((\t l a -> (t, l, a))
            <~ delta ~ Keyboard.keysDown ~ Keyboard.arrows)
@@ -98,8 +94,8 @@ sigState = Signal.foldp upState initState sigEvent
 renderGame : Game -> Form
 renderGame game =
   let fPlayer = render game.player
-      fLasers = Fo.collage (map render game.lasers)
-      fEnemies = Form.collage (map render game.enemies)
+      fLasers = F.collage (map render game.lasers)
+      fEnemies = F.collage (map render game.enemies)
   in
   Form.group [fPlayer, fLasers, fEnemies]
 
@@ -114,8 +110,8 @@ view (w, h) game =
               |> T.color white
               |> T.height 40
               |> T.centered
-              |> C.toForm
-              |> C.moveY 220
+              |> F.toForm
+              |> F.moveY 220
   in
   Form.collage w h [bg, title, renderGame game]
 
