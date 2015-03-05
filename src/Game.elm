@@ -99,8 +99,53 @@ renderGame game =
   let fPlayer = render game.player
       fLasers = F.group (map render game.lasers)
       fEnemies = F.group (map render game.enemies)
+      fUI = userInterface game
   in
-  F.group [fLasers, fPlayer, fEnemies]
+  F.group [fUI, fLasers, fPlayer, fEnemies]
+
+userInterface : Game -> Form
+userInterface game =
+  let
+    { runtime, state, score, player, lasers, enemies } = game
+    size = 20
+    borderStyle = 
+      let ls = F.defaultLine in
+        { ls | color <- darkGray, width <- 5 }
+  in
+  [ F.rect 120 80
+    |> F.outlined borderStyle
+    |> F.moveY 17
+  , score
+    |> toString
+    |> T.fromString
+    |> T.append (T.fromString "Score : ")
+    |> T.color green
+    |> T.height size
+    |> T.centered
+    |> F.toForm
+    |> F.moveY (size * 2)
+  , player.lives
+    |> toString
+    |> T.fromString
+    |> T.append (T.fromString "Lives : ")
+    |> T.color green
+    |> T.height size
+    |> T.centered
+    |> F.toForm
+    |> F.moveY (size * 1)
+  , player.hp
+    |> toString
+    |> T.fromString
+    |> T.append (T.fromString "Health : ")
+    |> T.color green
+    |> T.height size
+    |> T.centered
+    |> F.toForm
+    |> F.moveY (size * 0)
+  ]
+    |> F.group
+    |> F.move (gWidth / 2 + 60, 140)
+
 
 view : (Int, Int) -> Game -> Element
 view (w, h) game =

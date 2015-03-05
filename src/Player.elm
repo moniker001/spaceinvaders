@@ -10,7 +10,8 @@ import Object (Object, stepPosition)
 import Vector (..)
 
 type alias Player = Object
-  { hp : Float
+  { lives  : Float
+  , hp     : Float
   , energy : Float
   }
 
@@ -22,7 +23,8 @@ update ((delta, ks, { x, y }) as event) player =
            }
 
 initPlayer =
-  { hp = 10
+  { lives = 3
+  , hp = 10
   , energy = 10
   , lifetime = 0
   , dim = vec 15 15
