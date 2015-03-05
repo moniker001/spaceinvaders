@@ -1,5 +1,6 @@
 module Global where
 
-gWidth  = 800
-gHeight = 600
+gWidth  = 500
+gHeight = 500
 
+startPos = (0, -220)

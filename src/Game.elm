@@ -3,7 +3,6 @@ module Game where
 import Color (..)
 import Enemy (Enemy)
 import Enemy
-import Event (Event)
 import Event (..)
 import Global (..)
 import Graphics.Element (Element)
@@ -12,7 +11,7 @@ import Graphics.Collage (Form)
 import Graphics.Collage as F
 import Keyboard (KeyCode)
 import Keyboard
-import Laser (Laser)
+import Laser (Laser, basicLaser)
 import Laser
 import List (member, (::), map)
 import List
@@ -44,7 +43,7 @@ upGame : Event -> Game -> Game
 upGame ((delta, ks, {x , y}) as event) game =
   let state'   = pauseGame (member 80 ks) game.state
       player'  = Player.update event game.player
-      lasers'  = map (Laser.update event) game.lasers
+      lasers'  = map (Laser.update event game.player.pos) game.lasers
       enemies' = map (Enemy.update event) game.enemies
   in
   { game | state   <- state'
@@ -77,7 +76,7 @@ initGame =
   , state   = Play
   , score   = 0
   , player  = Player.initPlayer
-  , lasers  = []
+  , lasers  = [basicLaser]
   , enemies = []
   }
 
@@ -101,7 +100,7 @@ renderGame game =
       fLasers = F.group (map render game.lasers)
       fEnemies = F.group (map render game.enemies)
   in
-  F.group [fPlayer, fLasers, fEnemies]
+  F.group [fLasers, fPlayer, fEnemies]
 
 view : (Int, Int) -> Game -> Element
 view (w, h) game =
