@@ -6,7 +6,7 @@ import Event (..)
 import Global (..)
 import Graphics.Collage as F
 import Physics
-import Object (Object)
+import Object (Object, stepPosition)
 import Vector (..)
 
 type alias Player = Object
@@ -15,7 +15,10 @@ type alias Player = Object
   }
 
 update : Event -> Player -> Player
-update event player = player
+update ((delta, ks, { x, y }) as event) player =
+  let pos' = stepPosition event player in
+  { player | pos <- pos'
+           }
 
 initPlayer =
   { hp = 10
