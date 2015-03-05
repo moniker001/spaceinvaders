@@ -1,7 +1,7 @@
 module Game where
 
 import Color (..)
-import Enemy (Enemy)
+import Enemy (Enemy, basicEnemy)
 import Enemy
 import Event (..)
 import Global (..)
@@ -39,18 +39,31 @@ type alias Game =
   , enemies : List Enemy
   }
 
+initGame : Game
+initGame =
+  { runtime = 0
+  , state   = Play
+  , score   = 0
+  , player  = Player.initPlayer
+  , lasers  = [basicLaser]
+  , enemies = [basicEnemy]
+  }
+
+-- UPDATE
+
 upGame : Event -> Game -> Game
 upGame ((delta, ks, {x , y}) as event) game =
   let state'   = pauseGame (member 80 ks) game.state
       player'  = Player.update event game.player
       lasers'  = map (Laser.update event game.player.pos) game.lasers
       enemies' = map (Enemy.update event) game.enemies
-  in
-  { game | state   <- state'
-         , player  <- player'
-         , lasers  <- lasers'
-         , enemies <- enemies'
-         }
+  in case game.state of
+    Pause -> { game | state <- state' }
+    Play ->  { game | state   <- state'
+                    , player  <- player'
+                    , lasers  <- lasers'
+                    , enemies <- enemies'
+                    }
 
 startGame : Bool -> State -> State
 startGame start state =
@@ -70,16 +83,6 @@ pauseGame pause state =
       | pause     -> Pause
       | otherwise -> state
 
-initGame : Game
-initGame =
-  { runtime = 0
-  , state   = Play
-  , score   = 0
-  , player  = Player.initPlayer
-  , lasers  = [basicLaser]
-  , enemies = []
-  }
-
 -- SIGNALS
 
 delta : Signal Time
@@ -92,7 +95,7 @@ sigEvent = ((\t l a -> (t, l, a))
 sigGame : Signal Game
 sigGame = Signal.foldp upGame initGame sigEvent
 
--- Rendering
+-- RENDERING
 
 renderGame : Game -> Form
 renderGame game =
@@ -100,15 +103,23 @@ renderGame game =
       fLasers = F.group (map render game.lasers)
       fEnemies = F.group (map render game.enemies)
       fUI = userInterface game
+      pauseScreen = case game.state of
+        Play -> E.empty |> F.toForm
+        Pause -> "Paused" 
+          |> T.fromString 
+          |> T.color white 
+          |> T.height 30 
+          |> T.centered 
+          |> F.toForm
   in
-  F.group [fUI, fLasers, fPlayer, fEnemies]
+  F.group [fUI, fLasers, fPlayer, fEnemies, pauseScreen]
 
 userInterface : Game -> Form
 userInterface game =
   let
     { runtime, state, score, player, lasers, enemies } = game
     size = 20
-    borderStyle = 
+    borderStyle =
       let ls = F.defaultLine in
         { ls | color <- darkGray, width <- 5 }
   in
@@ -145,7 +156,6 @@ userInterface game =
   ]
     |> F.group
     |> F.move (gWidth / 2 + 60, 140)
-
 
 view : (Int, Int) -> Game -> Element
 view (w, h) game =

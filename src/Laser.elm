@@ -65,8 +65,8 @@ updateLaserStatus ((delta, ks, { x, y }) as event) playerPos laser =
     Collision -> Ready
 
 refreshLaser : Event -> Vector -> Laser -> (Bool, Vector)
-refreshLaser ((d, ks, { x, y }) as event) playerPos laser =
+refreshLaser ((delta, ks, { x, y }) as event) playerPos laser =
   let
-    pos = laser.vel |> V.scale d |> V.add laser.pos
+    pos = laser.vel |> V.scale delta |> V.add laser.pos
     refresh = (V.getY pos) > (gHeight / 2)
   in (refresh, pos)
