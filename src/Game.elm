@@ -1,6 +1,7 @@
 module Game where
 
 import Color (..)
+import Enemy (Enemy)
 import Enemy
 import Event (Event)
 import Event (..)
@@ -10,8 +11,11 @@ import Graphics.Collage (Form)
 import Graphics.Collage as F
 import Keyboard (KeyCode)
 import Keyboard
+import Laser (Laser)
 import Laser
+import List (member, (::), map)
 import List
+import Object (render)
 import Object
 import Player (Player)
 import Player
@@ -36,16 +40,16 @@ type alias Game =
   }
 
 upGame : Event -> Game -> Game
-upGame (delta, ks, {x , y} as event) game =
-  let state’   = pauseGame (member 80 ks) game.state
-      player’  = Player.update event game.player
-      lasers’  = map (Laser.update event) game.lasers
-      enemies’ = map (Enemy.update event) game.enemies
+upGame ((delta, ks, {x , y}) as event) game =
+  let state'   = pauseGame (member 80 ks) game.state
+      player'  = Player.update event game.player
+      lasers'  = map (Laser.update event) game.lasers
+      enemies' = map (Enemy.update event) game.enemies
   in
-  { game | state = state’
-         , player = player’
-         , lasers = lasers’
-         , enemies = enemies’
+  { game | state   <- state'
+         , player  <- player'
+         , lasers  <- lasers'
+         , enemies <- enemies'
          }
 
 startGame : Bool -> State -> State
@@ -72,7 +76,7 @@ initGame =
   , state   = Pause
   , score   = 0
   , player  = Player.initPlayer
-  , laser   = []
+  , lasers  = []
   , enemies = []
   }
 
@@ -90,34 +94,34 @@ sigEvent : Signal Event
 sigEvent = ((\t l a -> (t, l, a))
            <~ delta ~ Keyboard.keysDown ~ Keyboard.arrows)
 
-sigState : Signal State
-sigState = Signal.foldp upState initState sigEvent
+sigGame : Signal Game
+sigGame = Signal.foldp upGame initGame sigEvent
 
 -- Rendering
 
 renderGame : Game -> Form
 renderGame game =
   let fPlayer = render game.player
-      fLasers = F.collage (map render game.lasers)
-      fEnemies = F.collage (map render game.enemies)
+      fLasers = F.group (map render game.lasers)
+      fEnemies = F.group (map render game.enemies)
   in
-  Form.group [fPlayer, fLasers, fEnemies]
+  F.group [fPlayer, fLasers, fEnemies]
 
 view : (Int, Int) -> Game -> Element
 view (w, h) game =
   let
     w' = toFloat (w - 1)
-h' = toFloat (h - 1)
-bg = C.filled black (C.rect w’ h’)
-title = "Space Invaders"
-            |> T.fromString
-            |> T.color white
-            |> T.height 40
-            |> T.centered
-            |> F.toForm
-            |> F.moveY 220
+    h' = toFloat (h - 1)
+    bg = F.filled black (F.rect w' h')
+    title = "Space Invaders"
+              |> T.fromString
+              |> T.color white
+              |> T.height 40
+              |> T.centered
+              |> F.toForm
+              |> F.moveY 220
   in
-  Form.collage w h [bg, title, renderGame game]
+  F.collage w h [bg, title, renderGame game]
 
 main : Signal Element
-main = view <~ Window.dimensions ~ sigState
+main = view <~ Window.dimensions ~ sigGame

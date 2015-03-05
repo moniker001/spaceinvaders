@@ -7,7 +7,7 @@ import Graphics.Collage as Form
 
 type alias Object ext =
   { ext
-  | liftime : Float
+  | lifetime : Float
   , dim : Vector
   , pos : Vector
   , vel : Vector
