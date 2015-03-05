@@ -25,7 +25,10 @@ stepPosition : Event -> Object a -> Vector
 stepPosition ((d, ks, { x, y }) as event) object =
   let (hx, hy) = V.scale (0.5) object.dim
       (hw, hh) = V.scale (0.5) (vec gWidth gHeight)
-      effectiveVel = object.vel |> V.cross (vecI x y) |> V.scale d
+      effectiveVel =
+        if (x == 0 || y == 0)
+        then object.vel |> V.cross (vecI x y) |> V.scale d
+        else object.vel |> V.cross (vecI x y) |> V.scale (d / sqrt 2)
   in
       V.bound (vec (-hw + hx) (-hh + hy))
               (vec ( hw - hx) ( hh - hy))
