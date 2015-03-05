@@ -3,6 +3,7 @@ module Player where
 import Color (..)
 import Event (Event)
 import Event (..)
+import Global (..)
 import Graphics.Collage as F
 import Physics
 import Object (Object)

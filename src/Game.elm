@@ -5,6 +5,7 @@ import Enemy (Enemy)
 import Enemy
 import Event (Event)
 import Event (..)
+import Global (..)
 import Graphics.Element (Element)
 import Graphics.Element as E
 import Graphics.Collage (Form)
@@ -73,7 +74,7 @@ pauseGame pause state =
 initGame : Game
 initGame =
   { runtime = 0
-  , state   = Pause
+  , state   = Play
   , score   = 0
   , player  = Player.initPlayer
   , lasers  = []
