@@ -1,275 +1,124 @@
 module Game where
 
-import Vector (Vector, vec)
-import Vector
+import Color (..)
+import Enemy
+import Graphics.Element (Element)
+import Graphics.Element as E
+import Graphics.Collage (Form)
+import Graphics.Collage as F
+import Keyboard (KeyCode)
+import Keyboard
+import Laser
+import List
 import Object
 import Player (Player)
 import Player
-import Enemy
-import Laser
+import Signal (Signal, (<~), (~))
+import Signal
+import Text (plainText)
+import Text as T
+import Time (..)
+import Vector (Vector, vec)
+import Vector
+import Window
 
-valueneededtocompile = 7
+type State = Play | Pause
 
---import Player
---import Enemy
---import Laser
+type alias Game =
+  { runtime : Float
+  , state   : State
+  , score   : Float
+  , player  : Player
+  , lasers  : List Laser
+  , enemies : List Enemy
+  }
 
---import List ((::))
---import List
---import Color (..)
---import Signal ((<~),(~),Signal)
---import Signal
---import Window
---import Mouse
---import Keyboard
---import Text (plainText)
---import Text as T
---import Graphics.Element (Element)
---import Graphics.Element as E
---import Graphics.Collage as C
---import Graphics.Input (button, customButton)
---import Time (Time)
---import Time
+-- UPDATE
 
----- GLOBALS
+upGame : Event -> Game -> Game
+upGame (delta, ks, {x , y} as event) game =
+  let state’   = pauseGame (member 80 ks) game.state
+      player’  = upPlayer event game.player
+      lasers’  = map (upLaser event) game.lasers
+      enemies’ = map (upEnemy event) game.enemies
+  in
+  { game | state = state’
+         , player = player’
+         , lasers = lasers’
+         , enemies = enemies’
+         }
 
---areaW = 500
---areaH = 500
+startGame : Bool -> State -> State
+startGame start state =
+  case state of
+    Pause -> if
+      | start     -> Play
+      | otherwise -> state
+    Play  -> state
 
---type State = Play | Pause
+pauseGame : Bool -> State -> State
+pauseGame pause state =
+  case state of
+    Pause -> if
+      | pause     -> Play
+      | otherwise -> state
+    Play  -> if
+      | pause     -> Pause
+      | otherwise -> state
 
---type alias Game =
---  { state   : State
---  , score   : Float
---  , player  : Player
---  , laser   : Laser
---  , enemies : List Enemy
---  }
+initGame : Game
+initGame =
+  { runtime = 0
+  , state   = Pause
+  , score   = 0
+  , player  = Player.initPlayer
+  , laser   = []
+  , enemies = []
+  }
 
---initGame : Game
---initGame =
---  let enemy = { x=0, y=0, vx=2, vy=0, status=Hostile } in
---  { state  = Pause
---  , score  = 0
---  , player = 
---    { x    = 0
---    , y    = -220
---    , vx   = 0
---    , vy   = 0
---    , move = Idle
---    }
---  , laser  = 
---    { x_laser = 0
---    , y_laser = -215
---    , vx      = 0
---    , vy      = 0
---    , status  = Ready
---    , fired   = 0
---    }
---  , enemies = 
---    [ enemy
---    ]
---  }
+-- SIGNALS
 
---type alias Input =
---  { start     : Bool
---  , pause     : Bool
---  , playerDir : Int
---  , shoot     : Bool
---  , delta     : Time
---  }
+delta : Signal Time
+delta = inSeconds <~ fps 60
 
----- UPDATE
+type alias Event = (Float, List KeyCode, { x : Int, y : Int })
 
---update_game : Input -> Game -> Game
---update_game input game =
---  let
---    {start, pause, playerDir, shoot, delta} = input
---    {state, player, laser, score, enemies} = game
---    newState = state
---      |> start_game start
---      |> pause_game pause
---    newPlayer = case state of
---      Pause -> player
---      Play  -> 
---        player
---          |> update_vel_player   playerDir
---          |> update_move_player  playerDir
---          |> update_pos_player   delta
---    newLaser = case state of
---      Pause -> laser
---      Play  -> 
---        laser
---          |> update_pos_laser    delta player
---          |> update_status_laser shoot (List.head enemies)
---    newEnemies = case state of
---      Pause -> enemies
---      Play  ->
---        List.map (\x -> update_enemy x game delta) enemies
---  in
---    { game  |
---        state  <- newState,
---        player <- newPlayer,
---        laser  <- newLaser,
---        enemies  <- newEnemies
---    }
+getDelta : Event -> Float
+getDelta (delta, keysDown, arrows) = delta
 
---start_game : Bool -> State -> State
---start_game start state =
---  case state of
---    Pause -> if
---      | start     -> Play
---      | otherwise -> state
---    Play  -> state
+sigEvent : Signal Event
+sigEvent = ((\t l a -> (t, l, a))
+           <~ delta ~ Keyboard.keysDown ~ Keyboard.arrows)
 
---pause_game : Bool -> State -> State
---pause_game pause state =
---  case state of
---    Pause -> if
---      | pause     -> Play
---      | otherwise -> state
---    Play  -> if
---      | pause     -> Pause
---      | otherwise -> state
+sigState : Signal State
+sigState = Signal.foldp upState initState sigEvent
 
-----
+-- RENDERING
 
---view : (Int,Int) -> Game -> Element
---view (w,h) game =
---  let
---    { state, player, laser, score, enemies } = game
---    w' = toFloat (w - 1)
---    h' = toFloat (h - 1)
---  in
---  E.container w h E.middle
---    <| C.collage areaW areaH
---        [ C.rect w' h'
---          |> C.filled black
---        , renderLaser laser
---        , renderPlayer player
---        , renderEnemy (List.head enemies)
---        , renderHowTo game
---        , "Space Invaders"
---            |> T.fromString
---            |> T.color white
---            |> T.height 40
---            |> T.centered
---            |> C.toForm
---            |> C.moveY 220
---        , userInterface game
---        ]
+renderGame : Game -> Form
+renderGame game =
+  let fPlayer = render game.player
+      fLasers = Fo.collage (map render game.lasers)
+      fEnemies = Form.collage (map render game.enemies)
+  in
+  Form.group [fPlayer, fLasers, fEnemies]
 
+view : (Int, Int) -> Game -> Element
+view (w, h) game =
+  let
+    w' = toFloat (w - 1)
+    h' = toFloat (h - 1)
+    bg = C.filled black (C.rect w’ h’)
+    title = "Space Invaders"
+              |> T.fromString
+              |> T.color white
+              |> T.height 40
+              |> T.centered
+              |> C.toForm
+              |> C.moveY 220
+  in
+  Form.collage w h [bg, title, renderGame game]
 
---renderHowTo : Game -> C.Form
---renderHowTo game =
---  let
---    { state } = game
---    size = 30
---  in
---  case state of
---    Pause ->
---      [ "How to Play"
---          |> T.fromString
---          |> T.color white
---          |> T.height (size + 10)
---          |> T.centered
---          |> C.toForm
---          |> C.moveY (size * 2)
---      , "Move - Arrow Keys or WASD"
---          |> T.fromString
---          |> T.color white
---          |> T.height size
---          |> T.centered
---          |> C.toForm
---          |> C.moveY (size * 1)
---      , "Shoot - Space"
---          |> T.fromString
---          |> T.color white
---          |> T.height size
---          |> T.centered
---          |> C.toForm
---          |> C.moveY (size * 0)
---      , "Start - Enter"
---          |> T.fromString
---          |> T.color white
---          |> T.height size
---          |> T.centered
---          |> C.toForm
---          |> C.moveY (size * -1)
---      ]
---        |> C.group
---    Play -> [] |> C.group
+main : Signal Element
+main = view <~ Window.dimensions ~ sigState
 
-
-
---userInterface : Game -> C.Form
---userInterface game =
---  let
---    { state, player, laser, score } = game
---    { x, y, vx, move } = player
---    { x_laser, y_laser, status } = laser
---    size = 20
---    borderStyle = 
---      let ls = C.defaultLine in
---        { ls | color <- darkGray, width <- 5 }
---  in
---  [ C.rect 150 75
---    |> C.outlined borderStyle
---    |> C.moveY 15
---  , score
---    |> toString
---    |> T.fromString
---    |> T.append (T.fromString "Score : ")
---    |> T.color green
---    |> T.height size
---    |> T.centered
---    |> C.toForm
---    |> C.moveY (size * 2)
---  , move
---    |> toString
---    |> T.fromString
---    |> T.append (T.fromString "Move : ")
---    |> T.color green
---    |> T.height size
---    |> T.centered
---    |> C.toForm
---    |> C.moveY (size * 1)
---  , status
---    |> toString
---    |> T.fromString
---    |> T.append (T.fromString "Fire : ")
---    |> T.color green
---    |> T.height size
---    |> T.centered
---    |> C.toForm
---    |> C.moveY (size * 0)
---  ]
---    |> C.group
---    |> C.move (150, 140)
-
----- SIGNALS
-
---main : Signal Element
---main =
---  Signal.map2 view Window.dimensions gameState
-
---gameState : Signal Game
---gameState =
---  Signal.foldp update_game initGame input
-
---input : Signal Input
---input =
---  Signal.sampleOn delta playerInput
-
---playerInput : Signal Input
---playerInput =
---  Signal.map5 Input
---    Keyboard.enter
---    (Keyboard.isDown 80)
---    (.x <~ (Signal.merge Keyboard.arrows Keyboard.wasd))
---    Keyboard.space
---    delta
-
---delta : Signal Time
---delta =
---  Signal.map (\t -> t / 20) (Time.fps 30)
