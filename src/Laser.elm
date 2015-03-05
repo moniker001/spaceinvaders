@@ -23,7 +23,7 @@ basicLaser : Laser
 basicLaser =
   { dmg = 2
   , lifetime = 0
-  , dim = vec 15 15
+  , dim = vec 5 120
   , pos = startPos
   , vel = vec 0 200
   , acc = vec 0 0 

@@ -90,7 +90,7 @@ delta = inSeconds <~ fps 60
 
 sigEvent : Signal Event
 sigEvent = ((\t l a -> (t, l, a))
-           <~ delta ~ Keyboard.keysDown ~ Keyboard.arrows)
+           <~ delta ~ Keyboard.keysDown ~ Keyboard.wasd)
 
 sigGame : Signal Game
 sigGame = Signal.foldp upGame initGame sigEvent
