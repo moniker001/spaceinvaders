@@ -25,9 +25,9 @@ basicLaser =
   , lifetime = 0
   , dim = vec 5 20
   , pos = startPos
-  , vel = vec 0 200
+  , vel = vec 0 500
   , acc = vec 0 0 
-  , gfx = F.rect 5 20 |> F.filled blue |> F.moveY 10
+  , gfx = F.rect 5 15 |> F.filled blue
   , status = Ready
   }
 
@@ -48,25 +48,23 @@ updateLaserPos ((delta, ks, { x, y }) as event) playerPos laser =
   case laser.status of
     Ready -> playerPos
     Shooting -> 
-      let (refresh, pos) = refreshLaser event playerPos laser in if
-        | refresh -> playerPos
-        | otherwise -> pos
+      let (refresh, pos) = refreshLaser event playerPos laser
+      in
+      if | refresh -> playerPos
+         | otherwise -> pos
     Collision -> playerPos
 
 updateLaserStatus : Event -> Vector -> Laser -> LaserStatus
 updateLaserStatus ((delta, ks, { x, y }) as event) playerPos laser =
   case laser.status of
-    Ready -> if
-      | (member 32 ks) -> Shooting
-      | otherwise -> Ready
-    Shooting -> if
-        | fst (refreshLaser event playerPos laser) -> Ready
-        | otherwise -> Shooting
+    Ready -> if | (member 32 ks) -> Shooting
+                | otherwise -> Ready
+    Shooting -> if | fst (refreshLaser event playerPos laser) -> Ready
+                   | otherwise -> Shooting
     Collision -> Ready
 
 refreshLaser : Event -> Vector -> Laser -> (Bool, Vector)
 refreshLaser ((delta, ks, { x, y }) as event) playerPos laser =
-  let
-    pos = laser.vel |> V.scale delta |> V.add laser.pos
-    refresh = (V.getY pos) > (gHeight / 2)
+  let pos = laser.vel |> V.scale delta |> V.add laser.pos
+      refresh = (V.getY pos) > (gHeight / 2)
   in (refresh, pos)
