@@ -16,6 +16,7 @@ type alias Object ext =
   , vel : Vector
   , acc : Vector
   , gfx : Form
+  , rem : Bool
   }
 
 render : Object a -> Form

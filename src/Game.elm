@@ -15,8 +15,9 @@ import Laser (Laser, basicLaser)
 import Laser
 import List (member, (::), map)
 import List
-import Object (render)
+import Object (Object, render)
 import Object
+import Physics
 import Player (Player)
 import Player
 import Signal (Signal, (<~), (~))
@@ -51,11 +52,19 @@ initGame =
 
 -- UPDATE
 
+garbageCollect : List (Object a) -> List (Object a)
+garbageCollect objects =
+  List.filter (\o -> o.rem == False) objects
+
 upGame : Event -> Game -> Game
 upGame ((delta, ks, {x , y}) as event) game =
   let player'  = Player.update event game.player
       lasers'  = map (Laser.update event player'.pos) game.lasers
+                 |> garbageCollect
       enemies' = map (Enemy.update event) game.enemies
+                 |> garbageCollect
+      (l', e') = handleCollisions lasers' enemies'
+      l        = basicLaser
   in
   case game.state of
     -- if the game is paused
@@ -67,14 +76,48 @@ upGame ((delta, ks, {x , y}) as event) game =
     if | (member 80 ks) -> { game
                            | state   <- Paused
                            , player  <- player'
-                           , lasers  <- lasers'
-                           , enemies <- enemies'
+                           , lasers  <- l'
+                           , enemies <- e'
+                           }
+       | (member 32 ks) ->
+         { game
+         | player  <- player'
+         , lasers  <- if | allShooting l' ->
+                           { l | pos <- game.player.pos }::l'
+                         |  otherwise   -> l'
+         , enemies <- enemies'
                            }
        | otherwise      -> { game
                            | player  <- player'
-                           , lasers  <- lasers'
-                           , enemies <- enemies'
+                           , lasers  <- l'
+                           , enemies <- e'
                            }
+
+handleCollisions : List Laser -> List Enemy -> (List Laser, List Enemy)
+handleCollisions lasers enemies =
+  (map (\l -> handleCollisionsL l enemies) lasers,
+   map (\e -> handleCollisionsE e lasers) enemies)
+
+handleCollisionsL : Laser -> List Enemy -> Laser
+handleCollisionsL laser enemies = case enemies of
+  [] -> laser
+  h::t -> if Physics.isColliding laser.pos laser.dim h.pos h.dim
+          then { laser | rem <- True }
+          else handleCollisionsL laser t
+
+handleCollisionsE : Enemy -> List Laser -> Enemy
+handleCollisionsE enemy lasers = case lasers of
+  [] -> enemy
+  h::t -> if Physics.isColliding enemy.pos enemy.dim h.pos h.dim
+          then { enemy | rem <- True }
+          else handleCollisionsE enemy t
+
+
+
+
+allShooting lasers = case lasers of
+  []   -> True
+  h::t -> if h.state /= Laser.Shooting then False else allShooting t 
 
 -- SIGNALS
 

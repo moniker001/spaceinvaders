@@ -27,6 +27,7 @@ basicEnemy =
   , vel = vec 100 0
   , acc = vec 0 0 
   , gfx = F.rect 20 20 |> F.filled purple
+  , rem = False
   }
 
 -- UPDATE
@@ -55,7 +56,7 @@ updateEnemyVel ((delta, ks, { x, y }) as event) enemy =
   let ex = V.getX enemy.pos
       (hx, hy) = V.scale (0.5) enemy.dim
       (hw, hh) = V.scale (0.5) (vec gWidth gHeight)
-      eps = 25
+      eps = 10
       pastLBound = (ex >= hw - hx - eps)
       pastRBound = (ex <= -hw + hx + eps)
   in

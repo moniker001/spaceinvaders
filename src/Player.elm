@@ -45,4 +45,5 @@ initPlayer =
   , vel = vec 300 300
   , acc = vec 0 0
   , gfx = F.filled white (F.rect 20 20)
+  , rem = False
   }
