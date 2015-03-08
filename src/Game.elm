@@ -1,32 +1,36 @@
 module Game where
 
 import Color (..)
-import Enemy (Enemy, basicEnemy, generateEnemies)
-import Enemy
-import Event (..)
-import Global (..)
 import Graphics.Element (Element)
 import Graphics.Element as E
 import Graphics.Collage (Form)
 import Graphics.Collage as F
 import Keyboard (KeyCode)
-import Keyboard
-import Laser (Laser, basicLaser)
-import Laser
+import Keyboard as K
 import List (member, (::), map)
 import List
-import Object (..)
-import Physics
-import Player (Player)
-import Player
 import Signal (Signal, (<~), (~))
 import Signal
 import Text (plainText)
 import Text as T
 import Time (..)
+import Window
+
+import Enemy (Enemy)
+import Enemy
+import Event (..)
+import Global (..)
+import Laser (Laser)
+import Laser
+import Object (..)
+import Physics
+import Player (Player)
+import Player
 import Vector (Vector, vec)
 import Vector
-import Window
+
+
+{- TYPE DEFINITION -----------------------------------------------------------}
 
 type GameState = Playing | Paused
 
@@ -39,20 +43,68 @@ type alias Game =
   , enemies : List Enemy
   }
 
+{- INSTANCES -----------------------------------------------------------------}
+
+initPlayer : Player
+initPlayer =
+  { lives    = 3
+  , hp       = 10
+  , energy   = 10
+  , lifetime = 0
+  , dim      = vec 75 66
+  , pos      = startPos
+  , vel      = vec 300 300
+  , acc      = vec 0 0
+  , gfx      = F.toForm (E.image 75 66 "assets/ship-regular.png")
+  , rem      = False
+  , wpn      = Player.Regular
+  }
+
+initEnemy : Enemy
+initEnemy =
+  { hp = 10
+  , moving = Enemy.Left
+  , lifetime = 0
+  , dim = vec 20 20
+  , pos = vec -200 100
+  , vel = vec 100 -5
+  , acc = vec 0 0 
+  , gfx = F.rect 20 20 |> F.filled purple
+  , rem = False
+  }
+
+basicLaser : Laser
+basicLaser =
+  { dmg      = 2
+  , cd       = 0.25
+  , state    = Laser.Ready
+  , lifetime = 0
+  , dim      = vec 5 30
+  , pos      = startPos
+  , vel      = vec 0 300
+  , acc      = vec 0 0 
+  , gfx      = F.rect 5 30 |> F.filled blue
+  , rem      = False
+  }
+
 initGame : Game
 initGame =
   { runtime = 0
   , state   = Playing
   , score   = 0
-  , player  = Player.initPlayer
+  , player  = initPlayer
   , lasers  = [basicLaser]
-  , enemies = generateEnemies basicEnemy 10
+  , enemies = [initEnemy]
   }
 
--- UPDATE
+generateEnemies : Enemy -> Float -> List Enemy
+generateEnemies enemy num =
+  let list = [1..num] in
+  map (\x -> { initEnemy | pos <- vec (-200 + 50 * x) 100 }) list
 
-upGame : Event -> Game -> Game
-upGame ((delta, ks, {x , y}) as event) game =
+{- UPDATE --------------------------------------------------------------------}
+
+update ((delta, ks, {x , y}) as event) game =
   let 
     newPlayer = 
       Player.update event game.player
@@ -129,19 +181,18 @@ allShooting lasers = case lasers of
   []   -> True
   h::t -> if h.state /= Laser.Shooting then False else allShooting t 
 
--- SIGNALS
+{- SIGNALS -------------------------------------------------------------------}
 
-delta : Signal Time
-delta = inSeconds <~ fps 60
+sDelta : Signal Time
+sDelta = inSeconds <~ fps 30
 
-sigEvent : Signal Event
-sigEvent = ((\t l a -> (t, l, a))
-           <~ delta ~ Keyboard.keysDown ~ Keyboard.arrows)
+sEvent : Signal Event
+sEvent = ((\t l a -> (t, l, a)) <~ sDelta ~ K.keysDown ~ K.arrows)
 
-sigGame : Signal Game
-sigGame = Signal.foldp upGame initGame sigEvent
+sGame : Signal Game
+sGame = Signal.foldp update initGame sEvent
 
--- RENDERING
+{- RENDER --------------------------------------------------------------------}
 
 renderString : Color -> Float -> (Float, Float) -> String -> Form
 renderString color height (x, y) string =
@@ -224,6 +275,8 @@ debugInterface game =
     |> F.group
     |> F.move (gWidth / 2 + 100, 0)
 
+{- MAIN ----------------------------------------------------------------------}
+
 view : (Int, Int) -> Game -> Element
 view (w, h) game =
   let
@@ -234,4 +287,4 @@ view (w, h) game =
   F.collage w h [bg, renderGame game, title]
 
 main : Signal Element
-main = view <~ Window.dimensions ~ sigGame
+main = view <~ Window.dimensions ~ sGame

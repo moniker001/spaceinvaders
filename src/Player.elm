@@ -1,51 +1,77 @@
 module Player where
 
+import List (member)
+
 import Color (..)
 import Event (Event)
 import Event (..)
 import Global (..)
+import Graphics.Element (Element)
+import Graphics.Element as E
+import Graphics.Collage (Form)
 import Graphics.Collage as F
 import Physics
 import Object (Object)
-import Vector (Vector, vec, vecI)
+import Vector (Vector, vec, veci)
 import Vector as V
+
+{- TYPE DEFINITION -----------------------------------------------------------}
+
+type WeaponType = Regular | Red | Blue | Green
 
 type alias Player = Object
   { lives  : Float
   , hp     : Float
   , energy : Float
+  , wpn    : WeaponType
   }
+
+regShip = F.toForm (E.image 75 66 "assets/ship-regular.png")
+redShip = F.toForm (E.image 75 66 "assets/ship-red.png")
+bluShip = F.toForm (E.image 75 66 "assets/ship-blue.png")
+greShip = F.toForm (E.image 75 66 "assets/ship-green.png")
+
+{- UPDATE --------------------------------------------------------------------}
 
 update : Event -> Player -> Player
-update ((delta, ks, { x, y }) as event) player =
-  let pos' = updatePlayerPos event player
-  in
-  { player | pos <- pos'
-           }
+update ((delta, ks, { x, y }) as ev) player =
+  player |> updateLifetime ev
+         |> updatePos ev
+         |> updateWpn ev
 
-updatePlayerPos : Event -> Object a -> Vector
-updatePlayerPos ((d, ks, { x, y }) as event) object =
-  let (hx, hy) = V.scale (0.5) object.dim
-      (hw, hh) = V.scale (0.5) (vec gWidth gHeight)
+updateLifetime : Event -> Player -> Player
+updateLifetime ((dt, ks, { x, y }) as ev) player =
+  { player | lifetime <- player.lifetime + dt }
+
+updatePos : Event -> Player -> Player
+updatePos ((dt, ks, { x, y }) as ev) player =
+  let (hpw, hph) = V.scale (0.5) player.dim
+      (hgw, hgh) = V.scale (0.5) (vec gWidth gHeight)
       effVel = if (x == 0 || y == 0)
-               then object.vel |> V.cross (vecI x y) |> V.scale d
-               else object.vel |> V.cross (vecI x y) |> V.scale (d / sqrt 2)
+               then player.vel |> V.cross (veci x y) |> V.scale dt
+               else player.vel |> V.cross (veci x y) |> V.scale (dt / sqrt 2)
+      pos' = V.bound (vec (-hgw + hpw) (-hgh + hph))
+                     (vec ( hgw - hpw) ( hgh - hph))
+                     (V.add player.pos effVel)
   in
-      V.bound (vec (-hw + hx) (-hh + hy))
-              (vec ( hw - hx) ( hh - hy))
-              (V.add object.pos effVel)
+  { player | pos <- pos' }
 
-initPlayer =
-  { lives = 3
-  , hp = 10
-  , energy = 10
-  , lifetime = 0
-  , dim = vec 40 10
-  , pos = startPos
-  , vel = vec 300 300
-  , acc = vec 0 0
-  , gfx = [ F.rect 40 10 |> F.filled red
-          , F.oval 7  15 |> F.filled red |> F.moveY 5
-          ] |> F.group
-  , rem = False
-  }
+updateWpn : Event -> Player -> Player
+updateWpn ((dt, ks, { x, y }) as ev) player =
+  if | member 49 ks -> { player
+                       | wpn <- Regular
+                       , gfx <- regShip
+                       }
+     | member 50 ks -> { player
+                       | wpn <- Red
+                       , gfx <- redShip
+                       }
+     | member 51 ks -> { player
+                       | wpn <- Blue
+                       , gfx <- bluShip
+                       }
+     | member 52 ks -> { player
+                       | wpn <- Green
+                       , gfx <- greShip
+                       }
+     | otherwise    -> player

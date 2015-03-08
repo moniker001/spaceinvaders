@@ -5,8 +5,8 @@ type alias Vector = (Float, Float)
 vec : Float -> Float -> Vector
 vec x y = (x, y)
 
-vecI : Int -> Int -> Vector
-vecI x y = (toFloat x, toFloat y)
+veci : Int -> Int -> Vector
+veci x y = (toFloat x, toFloat y)
 
 getX : Vector -> Float
 getX (x, y) = x

@@ -13,6 +13,8 @@ import Object
 import Vector (Vector, vec)
 import Vector as V
 
+{- TYPE DEFINITION -----------------------------------------------------------}
+
 type alias Enemy = Object
   { hp     : Float
   , moving : Direction
@@ -20,24 +22,7 @@ type alias Enemy = Object
 
 type Direction = Left | Right
 
-basicEnemy =
-  { hp = 10
-  , moving = Left
-  , lifetime = 0
-  , dim = vec 20 20
-  , pos = vec -200 100
-  , vel = vec 100 0
-  , acc = vec 0 0 
-  , gfx = F.rect 20 20 |> F.filled purple
-  , rem = False
-  }
-
-generateEnemies : Enemy -> Float -> List Enemy
-generateEnemies enemy num =
-  let list = [1..num] in
-  map (\x -> { basicEnemy | pos <- vec (-200 + 50 * x) 100 }) list
-
--- UPDATE
+{- UPDATE --------------------------------------------------------------------}
 
 update : Event -> Enemy -> Enemy
 update ((delta, ks, { x, y }) as event) enemy =
@@ -69,8 +54,8 @@ updateEnemyVel ((delta, ks, { x, y }) as event) enemy =
   in
   case (enemy.moving) of
     Left  -> if pastLBound
-             then (V.scale (-1.0) enemy.vel, Right)
+             then (V.cross (-1, 1) enemy.vel, Right)
              else (enemy.vel, Left)
     Right -> if pastRBound
-             then (V.scale (-1.0) enemy.vel, Left)
+             then (V.cross (-1, 1) enemy.vel, Left)
              else (enemy.vel, Right)

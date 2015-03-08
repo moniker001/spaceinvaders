@@ -6,7 +6,7 @@ import Global (..)
 import Graphics.Collage (Form)
 import Graphics.Collage as Form
 import List (filter)
-import Vector (Vector, vec, vecI)
+import Vector (Vector, vec)
 import Vector as V
 
 type alias Object ext =

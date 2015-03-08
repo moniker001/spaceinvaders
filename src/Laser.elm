@@ -11,8 +11,10 @@ import List (member)
 import Object (Object)
 import Physics
 import Time (Time)
-import Vector (Vector, vec, vecI)
+import Vector (Vector, vec)
 import Vector as V
+
+{- TYPE DEFINITION -----------------------------------------------------------}
 
 type LaserState = Ready | Shooting
 
@@ -22,22 +24,13 @@ type alias Laser = Object
   , state : LaserState
   }
 
-type LaserEvent = OffScreen | Collision
-
-handleLaserEvent : LaserEvent -> Laser -> Laser
-handleLaserEvent event laser =
-  case (event, laser.state) of
-    (OffScreen, _) -> { laser | rem <- True }
-    (Collision, _) -> { laser | rem <- True }
-    _              -> laser
-
 checkOffScreen : Laser -> Bool
 checkOffScreen laser = 
   let eps = 20
   in
   (V.getY laser.pos) >= (gHeight / 2) - eps
 
--- UPDATE
+{- UPDATE --------------------------------------------------------------------}
 
 update : Event -> Vector -> List Enemy -> Laser -> Laser
 update ((delta, ks, { x, y }) as event) playerPos enemies laser = 
@@ -82,19 +75,3 @@ updateLaserState ((delta, ks, { x, y }) as event) playerPos laser =
     Ready -> if | (member 32 ks && laser.lifetime > laser.cd) -> Shooting
                 | otherwise -> Ready
     Shooting -> Shooting
-
--- INSTANCES
-
-basicLaser : Laser
-basicLaser =
-  { dmg = 2
-  , cd = 0.5
-  , state = Ready
-  , lifetime = 0
-  , dim = vec 5 20
-  , pos = startPos
-  , vel = vec 0 300
-  , acc = vec 0 0 
-  , gfx = F.rect 5 20 |> F.filled blue
-  , rem = False
-  }
