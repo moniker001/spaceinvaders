@@ -73,25 +73,22 @@ upGame ((delta, ks, {x , y}) as event) game =
        | otherwise      -> game
     -- if the game is playing
     Playing  -> 
-    if | (member 80 ks) -> { game
-                           | state   <- Paused
-                           , player  <- player'
-                           , lasers  <- l'
-                           , enemies <- e'
-                           }
+    if | (member 80 ks) -> { game | state <- Paused }
        | (member 32 ks) ->
          { game
          | player  <- player'
-         , lasers  <- if | allShooting l' ->
-                           { l | pos <- game.player.pos }::l'
-                         |  otherwise   -> l'
-         , enemies <- enemies'
-                           }
-       | otherwise      -> { game
-                           | player  <- player'
-                           , lasers  <- l'
-                           , enemies <- e'
-                           }
+         , lasers  <- if
+           | allShooting l' ->
+               l'++[{ l | pos <- game.player.pos }]
+           | otherwise -> l'
+         , enemies <- e'
+         }
+       | otherwise ->
+         { game
+         | player  <- player'
+         , lasers  <- l'
+         , enemies <- e'
+         }
 
 handleCollisions : List Laser -> List Enemy -> (List Laser, List Enemy)
 handleCollisions lasers enemies =
@@ -112,9 +109,7 @@ handleCollisionsE enemy lasers = case lasers of
           then { enemy | rem <- True }
           else handleCollisionsE enemy t
 
-
-
-
+allShooting : List Laser -> Bool
 allShooting lasers = case lasers of
   []   -> True
   h::t -> if h.state /= Laser.Shooting then False else allShooting t 
@@ -133,6 +128,15 @@ sigGame = Signal.foldp upGame initGame sigEvent
 
 -- RENDERING
 
+renderString : Color -> Float -> (Float, Float) -> String -> Form
+renderString color height (x, y) string =
+  string |> T.fromString
+         |> T.color color
+         |> T.height height
+         |> T.centered
+         |> F.toForm
+         |> F.move (x,y)
+
 renderGame : Game -> Form
 renderGame game =
   let fPlayer = render game.player
@@ -141,64 +145,57 @@ renderGame game =
       fUserInterface = userInterface game
       pauseScreen = case game.state of
         Playing -> E.empty |> F.toForm
-        Paused  -> "Paused - Press P to resume" 
-                   |> T.fromString 
-                   |> T.color white 
-                   |> T.height 30 
-                   |> T.centered 
-                   |> F.toForm
+        Paused  -> "Paused - Press P to resume"
+                    |> renderString white 30 (0,0) 
   in
   F.group [ fLasers
           , fPlayer
           , fEnemies
-          , pauseScreen]
+          , pauseScreen
+          ]
 
 userInterface : Game -> Form
 userInterface game =
-  let size         = 20
+  let size = 20
+      enemyPos = case game.enemies of
+        [] -> (0,0)
+        h::_ -> (floor (fst h.pos), floor (snd h.pos))
+      laserPos = case game.lasers of
+        [] -> (0,0)
+        h::_ -> (floor (fst h.pos), floor (snd h.pos))
+      laserrem = case game.lasers of
+        [] -> Nothing
+        h::_ -> Just h.rem
+      textstyle prefix index = 
+        (\x -> toString x
+          |> T.fromString
+          |> T.append (T.fromString prefix)
+          |> T.color red
+          |> T.height size
+          |> T.centered
+          |> F.toForm
+          |> F.moveY (size * index))
   in
-  [ game.score |> toString
-    |> T.fromString
-    |> T.append (T.fromString "SCORE: ")
-    |> T.color green
-    |> T.height size
-    |> T.centered
-    |> F.toForm
-    |> F.moveY (size * 2)
-  , game.player.lives
-    |> toString
-    |> T.fromString
-    |> T.append (T.fromString "LIVES : ")
-    |> T.color green
-    |> T.height size
-    |> T.centered
-    |> F.toForm
-    |> F.moveY (size * 1)
-  , game.player.hp
-    |> toString
-    |> T.fromString
-    |> T.append (T.fromString "HEALTH : ")
-    |> T.color green
-    |> T.height size
-    |> T.centered
-    |> F.toForm
-    |> F.moveY (size * 0)
-  , "Space Invaders"
-    |> T.fromString
-    |> T.color white
-    |> T.height 40
-    |> T.centered
-    |> F.toForm
-    |> F.moveY 220
+  [ game.runtime             |> textstyle "RUNTIME: "     8
+  , laserrem                 |> textstyle "LASER REM: "   7
+  , List.length game.enemies |> textstyle "NUM ENEMIES: " 6
+  , List.length game.lasers  |> textstyle "NUM LASERS: "  5
+  , enemyPos                 |> textstyle "ENEMY: "       4
+  , laserPos                 |> textstyle "LASER: "       3
+  , game.score               |> textstyle "SCORE: "       2
+  , game.player.lives        |> textstyle "LIVES: "       1
+  , game.player.hp           |> textstyle "HEALTH: "      0
   ]
     |> F.group
-    |> F.move (gWidth / 2 + 60, 140)
+    |> F.move (gWidth / 2 + 60, 0)
 
 view : (Int, Int) -> Game -> Element
 view (w, h) game =
-  let bg = F.filled black (F.rect gWidth gHeight)
+  let
+    bg = F.filled black (F.rect gWidth gHeight)
+    title = "Space Invaders" |> renderString white 40 (0,220)
   in
-  F.collage w h [bg, renderGame game]
+  F.collage w h [bg, renderGame game, title]
 
 main : Signal Element
 main = view <~ Window.dimensions ~ sigGame
