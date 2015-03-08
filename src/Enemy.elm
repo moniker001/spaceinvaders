@@ -5,6 +5,8 @@ import Event (Event)
 import Event (..)
 import Global (..)
 import Graphics.Collage as F
+import List (map)
+import List
 import Physics
 import Object (Object)
 import Object
@@ -23,14 +25,17 @@ basicEnemy =
   , moving = Left
   , lifetime = 0
   , dim = vec 20 20
-  , pos = vec 0 50
+  , pos = vec -200 100
   , vel = vec 100 0
   , acc = vec 0 0 
   , gfx = F.rect 20 20 |> F.filled purple
   , rem = False
   }
 
---generateEnemies : Enemy -> Float -> List Enemy
+generateEnemies : Enemy -> Float -> List Enemy
+generateEnemies enemy num =
+  let list = [1..num] in
+  map (\x -> { basicEnemy | pos <- vec (-200 + 50 * x) 100 }) list
 
 -- UPDATE
 

@@ -1,7 +1,7 @@
 module Game where
 
 import Color (..)
-import Enemy (Enemy, basicEnemy)
+import Enemy (Enemy, basicEnemy, generateEnemies)
 import Enemy
 import Event (..)
 import Global (..)
@@ -46,7 +46,7 @@ initGame =
   , score   = 0
   , player  = Player.initPlayer
   , lasers  = [basicLaser]
-  , enemies = [basicEnemy]
+  , enemies = generateEnemies basicEnemy 10
   }
 
 -- UPDATE
@@ -66,6 +66,8 @@ upGame ((delta, ks, {x , y}) as event) game =
       garbageCollect (handleCollisions game.lasers game.enemies)
     newEnemies = 
       map (Enemy.update event) enemies'
+    newScore =
+      game.score + (updateScore game.enemies newEnemies)
     l = basicLaser
   in
   case game.state of
@@ -79,6 +81,7 @@ upGame ((delta, ks, {x , y}) as event) game =
        | (member 32 ks) ->
          { game
          | player  <- newPlayer
+         , score   <- newScore
          , lasers  <- if
            | allShooting newLasers ->
                newLasers++[{ l | pos <- game.player.pos }]
@@ -88,9 +91,20 @@ upGame ((delta, ks, {x , y}) as event) game =
        | otherwise ->
          { game
          | player  <- newPlayer
+         , score   <- newScore
          , lasers  <- newLasers
          , enemies <- newEnemies
          }
+
+updateScore : List Enemy -> List Enemy -> Float
+updateScore oldEnemies newEnemies =
+  let
+    numOld = toFloat (List.length oldEnemies)
+    numNew = toFloat (List.length newEnemies)
+    kills  = numOld - numNew
+    points = 10
+  in
+  if (kills >= 0) then kills * points else 0
 
 handleCollisions : List Laser -> List Enemy -> List Enemy
 handleCollisions lasers enemies =
@@ -118,7 +132,7 @@ allShooting lasers = case lasers of
 -- SIGNALS
 
 delta : Signal Time
-delta = inSeconds <~ fps 30
+delta = inSeconds <~ fps 60
 
 sigEvent : Signal Event
 sigEvent = ((\t l a -> (t, l, a))
@@ -144,6 +158,7 @@ renderGame game =
       fLasers = F.group (map render game.lasers)
       fEnemies = F.group (map render game.enemies)
       fUserInterface = userInterface game
+      fDebugInterface = debugInterface game
       pauseScreen = case game.state of
         Playing -> E.empty |> F.toForm
         Paused  -> "Paused - Press P to resume"
@@ -153,11 +168,32 @@ renderGame game =
           , fPlayer
           , fEnemies
           , fUserInterface
+          , fDebugInterface
           , pauseScreen
           ]
 
 userInterface : Game -> Form
 userInterface game =
+  let size = 20
+      textstyle prefix index = 
+        (\x -> toString x
+          |> T.fromString
+          |> T.append (T.fromString prefix)
+          |> T.color green
+          |> T.height size
+          |> T.centered
+          |> F.toForm
+          |> F.moveY (size * index))
+  in
+  [ game.score               |> textstyle "SCORE: "       2
+  , game.player.lives        |> textstyle "LIVES: "       1
+  , game.player.hp           |> textstyle "HEALTH: "      0
+  ]
+    |> F.group
+    |> F.move (-gWidth / 2 - 100, 0)
+
+debugInterface : Game -> Form
+debugInterface game =
   let size = 20
       enemyPos = case game.enemies of
         [] -> (0,0)
@@ -178,15 +214,12 @@ userInterface game =
           |> F.toForm
           |> F.moveY (size * index))
   in
-  [ game.runtime             |> textstyle "RUNTIME: "     8
-  , laserrem                 |> textstyle "LASER REM: "   7
-  , List.length game.enemies |> textstyle "NUM ENEMIES: " 6
-  , List.length game.lasers  |> textstyle "NUM LASERS: "  5
-  , enemyPos                 |> textstyle "ENEMY: "       4
-  , laserPos                 |> textstyle "LASER: "       3
-  , game.score               |> textstyle "SCORE: "       2
-  , game.player.lives        |> textstyle "LIVES: "       1
-  , game.player.hp           |> textstyle "HEALTH: "      0
+  [ game.runtime             |> textstyle "RUNTIME: "     5
+  , laserrem                 |> textstyle "LASER REM: "   4
+  , List.length game.enemies |> textstyle "NUM ENEMIES: " 3
+  , List.length game.lasers  |> textstyle "NUM LASERS: "  2
+  , enemyPos                 |> textstyle "ENEMY: "       1
+  , laserPos                 |> textstyle "LASER: "       0
   ]
     |> F.group
     |> F.move (gWidth / 2 + 100, 0)
@@ -195,7 +228,8 @@ view : (Int, Int) -> Game -> Element
 view (w, h) game =
   let
     bg = F.filled black (F.rect gWidth gHeight)
-    title = "Space Invaders" |> renderString white 40 (0,220)
+    title = "Space Invaders"
+      |> renderString white 40 (0, gHHeight - 25)
   in
   F.collage w h [bg, renderGame game, title]
 
