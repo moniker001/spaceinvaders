@@ -1,6 +1,8 @@
 module Laser where
 
 import Color (..)
+import Enemy (Enemy)
+import Enemy
 import Event (Event)
 import Event (..)
 import Global (..)
@@ -37,18 +39,30 @@ checkOffScreen laser =
 
 -- UPDATE
 
-update : Event -> Vector -> Laser -> Laser
-update ((delta, ks, { x, y }) as event) playerPos laser = 
+update : Event -> Vector -> List Enemy -> Laser -> Laser
+update ((delta, ks, { x, y }) as event) playerPos enemies laser = 
   let lifetime' = laser.lifetime + delta
       state' = updateLaserState event playerPos laser
       pos'   = updateLaserPos event playerPos laser
-      rem'   = checkOffScreen laser
+      rem'   = updateLaserRem laser enemies
   in
   { laser | lifetime <- lifetime'
           , state    <- state'
           , pos      <- pos'
           , rem      <- rem'
           }
+
+checkLaserCollision : Laser -> List Enemy -> Bool
+checkLaserCollision laser enemies = case enemies of
+  [] -> False
+  h::t -> if 
+    | Physics.isColliding laser.pos laser.dim h.pos h.dim -> True
+    | otherwise -> checkLaserCollision laser t
+
+updateLaserRem : Laser -> List Enemy -> Bool
+updateLaserRem laser enemies =
+  let offscreen = checkOffScreen laser in
+  if offscreen then True else (checkLaserCollision laser enemies)
 
 updateLaserPos : Event -> Vector -> Laser -> Vector
 updateLaserPos ((delta, ks, { x, y }) as event) playerPos laser =
@@ -74,13 +88,13 @@ updateLaserState ((delta, ks, { x, y }) as event) playerPos laser =
 basicLaser : Laser
 basicLaser =
   { dmg = 2
-  , cd = 0.25
+  , cd = 0.5
   , state = Ready
   , lifetime = 0
-  , dim = vec 5 15
+  , dim = vec 5 20
   , pos = startPos
-  , vel = vec 0 500
+  , vel = vec 0 300
   , acc = vec 0 0 
-  , gfx = F.rect 5 15 |> F.filled blue
+  , gfx = F.rect 5 20 |> F.filled blue
   , rem = False
   }

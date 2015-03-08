@@ -30,6 +30,8 @@ basicEnemy =
   , rem = False
   }
 
+--generateEnemies : Enemy -> Float -> List Enemy
+
 -- UPDATE
 
 update : Event -> Enemy -> Enemy
@@ -37,8 +39,8 @@ update ((delta, ks, { x, y }) as event) enemy =
   let pos' = updateEnemyPos event enemy
       (vel', moving') = updateEnemyVel event enemy
   in
-  { enemy | pos    <- pos'
-          , vel    <- vel'
+  { enemy | vel    <- vel'
+          , pos    <- pos'
           , moving <- moving'
           }
 

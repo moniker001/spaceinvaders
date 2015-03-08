@@ -40,10 +40,12 @@ initPlayer =
   , hp = 10
   , energy = 10
   , lifetime = 0
-  , dim = vec 20 20
+  , dim = vec 40 10
   , pos = startPos
   , vel = vec 300 300
   , acc = vec 0 0
-  , gfx = F.filled white (F.rect 20 20)
+  , gfx = [ F.rect 40 10 |> F.filled red
+          , F.oval 7  15 |> F.filled red |> F.moveY 5
+          ] |> F.group
   , rem = False
   }
