@@ -24,6 +24,8 @@ type alias Player = Object
   , hp     : Float
   , energy : Float
   , wpn    : WeaponType
+  , wpncd  : Float
+  , cd     : Float
   }
 
 regShip = F.toForm (E.image 75 66 "assets/ship-regular.png")
@@ -36,12 +38,20 @@ greShip = F.toForm (E.image 75 66 "assets/ship-green.png")
 update : Event -> Player -> Player
 update ((delta, ks, { x, y }) as ev) player =
   player |> updateLifetime ev
+         |> updateCd ev
          |> updatePos ev
          |> updateWpn ev
 
 updateLifetime : Event -> Player -> Player
 updateLifetime ((dt, ks, { x, y }) as ev) player =
   { player | lifetime <- player.lifetime + dt }
+
+updateCd : Event -> Player -> Player
+updateCd ((dt, ks, { x, y }) as ev) player =
+  { player | cd <- if (player.cd - dt) >= 0 then (player.cd - dt) else 0 }
+
+resetCd : Player -> Player
+resetCd player = { player | cd <- player.wpncd }
 
 updatePos : Event -> Player -> Player
 updatePos ((dt, ks, { x, y }) as ev) player =
