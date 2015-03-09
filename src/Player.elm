@@ -10,8 +10,10 @@ import Graphics.Element (Element)
 import Graphics.Element as E
 import Graphics.Collage (Form)
 import Graphics.Collage as F
+import Keyboard as K
 import Physics
-import Object (Object)
+import Object (Object, CollisionType)
+import Object
 import Vector (Vector, vec, veci)
 import Vector as V
 
@@ -85,3 +87,9 @@ updateWpn ((dt, ks, { x, y }) as ev) player =
                        , gfx <- greShip
                        }
      | otherwise    -> player
+
+handleCollisions : CollisionType -> Player -> Player
+handleCollisions ct player =
+  case ct of
+    Object.EnemyCollision -> { player | rem <- True }
+    _                     -> player

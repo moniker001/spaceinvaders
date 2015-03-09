@@ -26,6 +26,9 @@ add (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)
 sub : Vector -> Vector -> Vector
 sub (x1, y1) (x2, y2) = (x1 - x2, y1 - y2)
 
+equal : Vector -> Vector -> Bool
+equal (x1, y1) (x2, y2) = (x1 == x2) && (y1 == y2)
+
 cross : Vector -> Vector -> Vector
 cross (x1, y1) (x2, y2) = (x1 * x2, y1 * y2)
 

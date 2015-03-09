@@ -18,40 +18,46 @@ import Vector as V
 
 {- TYPE DEFINITION -----------------------------------------------------------}
 
+type DmgType = DmgRegular
+             | DmgRed
+             | DmgBlue
+             | DmgGreen
+
 type alias Laser = Object
-  { dmg   : Float
+  { dmg     : Float
+  , dmgtype : DmgType
   }
 
 {- UPDATE --------------------------------------------------------------------}
 
 update : Event -> Vector -> Laser -> Laser
-update ((delta, ks, { x, y }) as event) playerPos laser = 
-  let lifetime' = laser.lifetime + delta
-      pos'      = updateLaserPos event playerPos laser
-      rem'      = updateRem laser
-  in
-  { laser | lifetime <- lifetime'
-          , pos      <- pos'
-          , rem      <- rem'
-          }
+update ((dt, ks, { x, y }) as ev) playerPos laser = 
+  laser |> updateLifetime ev
+        |> updatePos ev playerPos
+        |> updateRem
 
-updateLaserPos : Event -> Vector -> Laser -> Vector
-updateLaserPos ((delta, ks, { x, y }) as event) playerPos laser =
-  let (hx, hy) = V.scale (0.5) laser.dim
-      (hw, hh) = V.scale (0.5) (vec gWidth gHeight)
-  in
-  V.bound (vec (-hw + hx) (-hh + hy))
-          (vec ( hw - hx) ( hh - hy))
-          (V.add laser.pos (V.scale delta laser.vel))
+updateLifetime : Event -> Laser -> Laser
+updateLifetime ((dt, ks, { x, y }) as ev) laser =
+  { laser | lifetime <- laser.lifetime + dt }
 
-updateRem : Laser -> Bool
+updatePos : Event -> Vector -> Laser -> Laser
+updatePos ((dt, ks, { x, y }) as event) playerPos laser =
+  let (hlw, hlh) = V.scale (0.5) laser.dim
+      (hgw, hgh) = V.scale (0.5) (vec gWidth gHeight)
+      pos'       = V.bound (vec (-hgw + hlw) (-hgh + hlh))
+                           (vec ( hgw - hlw) ( hgh - hlh))
+                           (V.add laser.pos (V.scale dt laser.vel))
+  in
+  { laser | pos <- pos' }
+
+updateRem : Laser -> Laser
 updateRem laser =
   let eps = 20
-      isOffScreen l = (V.getY l.pos) >= (gHeight / 2) - eps
+      rem' = if (V.getY laser.pos) >= (gHeight / 2) - eps
+             then True
+             else laser.rem
   in
-  if isOffScreen laser
-  then True
-  else laser.rem
+  { laser | rem <- rem' }
 
 handleCollision : CollisionType -> Laser -> Laser
 handleCollision ct laser =

@@ -13,6 +13,7 @@ import Vector as V
 type ObjectType = Player
                 | Laser
                 | Enemy
+                | None
 
 type alias Object ext =
   { ext
