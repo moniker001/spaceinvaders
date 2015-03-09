@@ -11,8 +11,14 @@ import Vector (Vector, vec)
 import Vector as V
 
 type ObjectType = Player
-                | Laser
-                | Enemy
+                | NLaser
+                | RLaser
+                | BLaser
+                | GLaser
+                | NEnemy
+                | REnemy
+                | BEnemy
+                | GEnemy
                 | None
 
 type alias Object ext =
@@ -30,19 +36,10 @@ type alias Object ext =
 render : Object a -> Form
 render object = Form.move object.pos object.gfx
 
-type CollisionType = EnemyCollision
-                   | LaserCollision
-                   | PlayerCollision
-                   | NoCollision
-
-checkCollision : Object a -> List (Object b) -> CollisionType
+checkCollision : Object a -> List (Object b) -> ObjectType
 checkCollision src objects = case objects of
-  [] -> NoCollision
-  h::t -> if | Physics.isColliding src.pos src.dim h.pos h.dim ->
-                 case h.objtype of
-                   Enemy  -> EnemyCollision
-                   Player -> PlayerCollision
-                   Laser  -> LaserCollision
+  [] -> None
+  h::t -> if | Physics.isColliding src.pos src.dim h.pos h.dim -> h.objtype
              | otherwise -> checkCollision src t
 
 garbageCollect : List (Object a) -> List (Object a)

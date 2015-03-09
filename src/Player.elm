@@ -14,7 +14,7 @@ import Graphics.Collage (Form)
 import Graphics.Collage as F
 import Keyboard as K
 import Physics
-import Object (Object, CollisionType)
+import Object (Object, ObjectType)
 import Object
 import Vector (Vector, vec, veci)
 import Vector as V
@@ -92,8 +92,11 @@ updateWpn ((delta, ks, { x, y }) as ev) player =
                        }
      | otherwise    -> player
 
-handleCollisions : CollisionType -> Player -> Player
-handleCollisions ct player =
-  case ct of
-    Object.EnemyCollision -> { player | rem <- True }
-    _                     -> player
+handleCollisions : ObjectType -> Player -> Player
+handleCollisions ot player =
+  case ot of
+    Object.NEnemy -> { player | rem <- True }
+    Object.REnemy -> { player | rem <- True }
+    Object.GEnemy -> { player | rem <- True }
+    Object.BEnemy -> { player | rem <- True }
+    _                      -> player

@@ -73,7 +73,7 @@ initEnemy =
   , reach     = False
   , enemytype = Enemy.Regular
   , lifetime  = 0
-  , objtype   = Object.Enemy
+  , objtype   = Object.NEnemy
   , dim       = vec 39 39
   , pos       = vec -200 100
   , vel       = vec 150 150
@@ -86,18 +86,21 @@ redEnemy : Enemy
 redEnemy = { initEnemy
            | gfx <- F.toForm (E.image 39 39 "assets/enemy-red.png")
            , enemytype <- Enemy.Red
+           , objtype <- Object.REnemy
            }
 
 bluEnemy : Enemy
 bluEnemy = { initEnemy
            | gfx       <- F.toForm (E.image 39 39 "assets/enemy-blue.png")
            , enemytype <- Enemy.Blue
+           , objtype <- Object.BEnemy
            }
 
 greEnemy : Enemy
 greEnemy = { initEnemy
            | gfx       <- F.toForm (E.image 39 39 "assets/enemy-green.png")
            , enemytype <- Enemy.Green
+           , objtype <- Object.GEnemy
            }
 
 basLaser : Laser
@@ -106,7 +109,7 @@ basLaser =
   , dmgtype  = Laser.DmgRegular
   , source   = Laser.SourcePlayer
   , lifetime = 0
-  , objtype  = Object.Laser
+  , objtype  = Object.NLaser
   , dim      = vec 10 10
   , pos      = startPos
   , vel      = vec 0 400
@@ -118,16 +121,19 @@ basLaser =
 redLaser : Laser
 redLaser = { basLaser | gfx <- F.rect 10 10 |> F.filled red
                       , dmgtype <- Laser.DmgRed
+                      , objtype <- Object.RLaser
                       }
 
 bluLaser : Laser
 bluLaser = { basLaser | gfx <- F.rect 10 10 |> F.filled blue
                       , dmgtype <- Laser.DmgBlue
+                      , objtype <- Object.BLaser
                       }
 
 greLaser : Laser
 greLaser = { basLaser | gfx <- F.rect 10 10 |> F.filled green
                       , dmgtype <- Laser.DmgGreen
+                      , objtype <- Object.GLaser
                       }
 
 initGame : Game
@@ -177,7 +183,6 @@ generateEnemy pos enemytype =
     2 -> { bluEnemy  | pos <- pos }
     3 -> { greEnemy  | pos <- pos }
     _ -> { initEnemy | pos <- pos }
-
 
 {- UPDATE --------------------------------------------------------------------}
 

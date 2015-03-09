@@ -9,7 +9,7 @@ import Global (..)
 import Graphics.Collage as F
 import List ((::))
 import List
-import Object (Object, CollisionType)
+import Object (Object, ObjectType)
 import Object
 import Physics
 import Time (Time)
@@ -63,14 +63,20 @@ updateRem laser =
   in
   { laser | rem <- rem' }
 
-handleCollision : CollisionType -> Laser -> Laser
-handleCollision ct laser =
-  case ct of
-    Object.EnemyCollision -> { laser | rem <- True }
-    _                     -> laser
+handleCollision : ObjectType -> Laser -> Laser
+handleCollision ot laser =
+  case (ot, laser.objtype) of
+    (Object.NEnemy, Object.NLaser) -> { laser | rem <- True }
+    (Object.REnemy, Object.NLaser) -> { laser | rem <- True }
+    (Object.GEnemy, Object.NLaser) -> { laser | rem <- True }
+    (Object.BEnemy, Object.NLaser) -> { laser | rem <- True }
+    (Object.REnemy, Object.RLaser) -> { laser | rem <- True }
+    (Object.GEnemy, Object.GLaser) -> { laser | rem <- True }
+    (Object.BEnemy, Object.BLaser) -> { laser | rem <- True }
+    _                              -> laser
 
-handleCollisions : List CollisionType -> List Laser -> List Laser
-handleCollisions collisions lasers =
-  case (collisions, lasers) of
+handleCollisions : List ObjectType -> List Laser -> List Laser
+handleCollisions ots lasers =
+  case (ots, lasers) of
     ([], []) -> []
-    (c::cs, l::ls) -> (handleCollision c l)::(handleCollisions cs ls)
+    (o::os, l::ls) -> (handleCollision o l)::(handleCollisions os ls)

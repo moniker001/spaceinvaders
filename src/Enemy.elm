@@ -7,7 +7,7 @@ import Global (..)
 import Graphics.Collage as F
 import List ((::))
 import Physics
-import Object (Object, CollisionType)
+import Object (Object, ObjectType)
 import Object
 import Vector (Vector, vec)
 import Vector as V
@@ -81,14 +81,17 @@ updateReach enemy =
   in
   { enemy | reach <- (V.getY (enemy.pos)) <= lowerBound }
 
-handleCollision : CollisionType -> Enemy -> Enemy
-handleCollision ct enemy =
-  case ct of
-    Object.LaserCollision -> { enemy | rem <- True }
-    _                     -> enemy
+handleCollision : ObjectType -> Enemy -> Enemy
+handleCollision obj enemy =
+  case (obj, enemy.objtype) of
+    (Object.NLaser, Object.NEnemy) -> { enemy | rem <- True }
+    (Object.RLaser, Object.REnemy) -> { enemy | rem <- True }
+    (Object.GLaser, Object.GEnemy) -> { enemy | rem <- True }
+    (Object.BLaser, Object.BEnemy) -> { enemy | rem <- True }
+    _                              -> enemy
 
-handleCollisions : List CollisionType -> List Enemy -> List Enemy
-handleCollisions collisions enemies =
-  case (collisions, enemies) of
+handleCollisions : List ObjectType -> List Enemy -> List Enemy
+handleCollisions ots enemies =
+  case (ots, enemies) of
     ([], []) -> []
-    (c::cs, e::es) -> (handleCollision c e)::(handleCollisions cs es)
+    (o::os, e::es) -> (handleCollision o e)::(handleCollisions os es)
