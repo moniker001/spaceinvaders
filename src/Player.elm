@@ -3,6 +3,8 @@ module Player where
 import List (member)
 
 import Color (..)
+import Enemy (Enemy)
+import Enemy
 import Event (Event)
 import Event (..)
 import Global (..)
@@ -10,8 +12,10 @@ import Graphics.Element (Element)
 import Graphics.Element as E
 import Graphics.Collage (Form)
 import Graphics.Collage as F
+import Keyboard as K
 import Physics
-import Object (Object)
+import Object (Object, CollisionType)
+import Object
 import Vector (Vector, vec, veci)
 import Vector as V
 
@@ -43,23 +47,26 @@ update ((delta, ks, { x, y }) as ev) player =
          |> updateWpn ev
 
 updateLifetime : Event -> Player -> Player
-updateLifetime ((dt, ks, { x, y }) as ev) player =
-  { player | lifetime <- player.lifetime + dt }
+updateLifetime ((delta, ks, { x, y }) as ev) player =
+  { player | lifetime <- player.lifetime + delta }
 
 updateCd : Event -> Player -> Player
-updateCd ((dt, ks, { x, y }) as ev) player =
-  { player | cd <- if (player.cd - dt) >= 0 then (player.cd - dt) else 0 }
+updateCd ((delta, ks, { x, y }) as ev) player =
+  { player | cd <- if (player.cd - delta) >= 0 
+                   then (player.cd - delta)
+                   else 0 }
 
 resetCd : Player -> Player
 resetCd player = { player | cd <- player.wpncd }
 
 updatePos : Event -> Player -> Player
-updatePos ((dt, ks, { x, y }) as ev) player =
+updatePos ((delta, ks, { x, y }) as ev) player =
   let (hpw, hph) = V.scale (0.5) player.dim
       (hgw, hgh) = V.scale (0.5) (vec gWidth gHeight)
-      effVel = if (x == 0 || y == 0)
-               then player.vel |> V.cross (veci x y) |> V.scale dt
-               else player.vel |> V.cross (veci x y) |> V.scale (dt / sqrt 2)
+      effVel = 
+        if (x == 0 || y == 0)
+          then player.vel |> V.cross (veci x y) |> V.scale delta
+          else player.vel |> V.cross (veci x y) |> V.scale (delta / sqrt 2)
       pos' = V.bound (vec (-hgw + hpw) (-hgh + hph))
                      (vec ( hgw - hpw) ( hgh - hph))
                      (V.add player.pos effVel)
@@ -67,7 +74,7 @@ updatePos ((dt, ks, { x, y }) as ev) player =
   { player | pos <- pos' }
 
 updateWpn : Event -> Player -> Player
-updateWpn ((dt, ks, { x, y }) as ev) player =
+updateWpn ((delta, ks, { x, y }) as ev) player =
   if | member 49 ks -> { player
                        | wpn <- Regular
                        , gfx <- regShip
@@ -85,3 +92,9 @@ updateWpn ((dt, ks, { x, y }) as ev) player =
                        , gfx <- greShip
                        }
      | otherwise    -> player
+
+handleCollisions : CollisionType -> Player -> Player
+handleCollisions ct player =
+  case ct of
+    Object.EnemyCollision -> { player | rem <- True }
+    _                      -> player

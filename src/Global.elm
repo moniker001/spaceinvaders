@@ -5,4 +5,4 @@ gHWidth  = gWidth / 2
 gHeight  = 600
 gHHeight = gHeight / 2
 
-startPos = (0, -220)
+startPos = (0, -250)

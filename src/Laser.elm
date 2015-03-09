@@ -18,8 +18,13 @@ import Vector as V
 
 {- TYPE DEFINITION -----------------------------------------------------------}
 
+type WeaponType = Regular | Red | Blue | Green
+
+type ShooterType = Player | Enemy
+
 type alias Laser = Object
-  { dmg   : Float
+  { dmg     : Float
+  , wpnType : WeaponType
   }
 
 {- UPDATE --------------------------------------------------------------------}

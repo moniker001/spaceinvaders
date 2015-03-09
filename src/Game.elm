@@ -33,7 +33,7 @@ import Vector
 
 {- TYPE DEFINITION -----------------------------------------------------------}
 
-type GameState = Playing | Paused
+type GameState = Playing | Paused | GameOver
 
 type alias Game =
   { runtime : Float
@@ -55,7 +55,7 @@ initPlayer =
   , objtype  = Object.Player
   , dim      = vec 75 66
   , pos      = startPos
-  , vel      = vec 250 250
+  , vel      = vec 150 150
   , acc      = vec 0 0
   , gfx      = F.toForm (E.image 75 66 "assets/ship-regular.png")
   , rem      = False
@@ -72,7 +72,7 @@ initEnemy =
   , objtype  = Object.Enemy
   , dim      = vec 20 20
   , pos      = vec -200 100
-  , vel      = vec 100 -5
+  , vel      = vec 75 -3
   , acc      = vec 0 0 
   , gfx      = F.rect 20 20 |> F.filled purple
   , rem      = False
@@ -81,24 +81,34 @@ initEnemy =
 basicLaser : Laser
 basicLaser =
   { dmg      = 2
+  , wpnType  = Laser.Regular
   , lifetime = 0
   , objtype  = Object.Laser
-  , dim      = vec 5 30
+  , dim      = vec 3 20
   , pos      = startPos
-  , vel      = vec 0 300
+  , vel      = vec 0 400
   , acc      = vec 0 0 
-  , gfx      = F.rect 5 30 |> F.filled grey
+  , gfx      = F.rect 3 20 |> F.filled grey
   , rem      = False
   }
 
 redLaser : Laser
-redLaser = { basicLaser | gfx <- F.rect 5 30 |> F.filled red }
+redLaser = { basicLaser 
+           | wpnType <- Laser.Red
+           , gfx     <- F.rect 3 20 |> F.filled red 
+           }
 
 bluLaser : Laser
-bluLaser = { basicLaser | gfx <- F.rect 5 30 |> F.filled blue }
+bluLaser = { basicLaser 
+           | wpnType <- Laser.Blue
+           , gfx     <- F.rect 3 20 |> F.filled blue 
+           }
 
 greLaser : Laser
-greLaser = { basicLaser | gfx <- F.rect 5 30 |> F.filled green }
+greLaser = { basicLaser 
+           | wpnType <- Laser.Green
+           , gfx     <- F.rect 3 20 |> F.filled green 
+           }
 
 initGame : Game
 initGame =
@@ -107,7 +117,7 @@ initGame =
   , score   = 0
   , player  = initPlayer
   , lasers  = []
-  , enemies = generateEnemies initEnemy 3
+  , enemies = generateEnemies initEnemy 10
   }
 
 generateEnemies : Enemy -> Float -> List Enemy
@@ -117,124 +127,105 @@ generateEnemies enemy num =
 
 {- UPDATE --------------------------------------------------------------------}
 
-update ((dt, ks, { x, y }) as ev) game =
+update : Event -> Game -> Game
+update ((delta, ks, { x, y }) as ev) game =
   let game' = game |> updatePlayer ev
-                   |> updateEnemies ev
                    |> updateLasers ev
-                   |> garbageCollect
+                   |> removeEnemies
+                   |> updateEnemies ev
+                   |> removeLasers
+                   |> playerDeath
   in
   case game.state of
-
-    Paused  -> if | (member 79 ks) -> { game | state <- Playing }
-                  | otherwise      -> game
-
+    Paused -> 
+    if | (member 79 ks) -> { game | state <- Playing }
+       | otherwise      -> game
     Playing ->
     if | (member 80 ks) -> { game' | state  <- Paused }
        | (member 32 ks) && (game'.player.cd == 0) ->
-         let new = { basicLaser | pos <- game'.player.pos }
+         let
+          wpn = generateWpn game'.player.wpn
+          new = { wpn | pos <- game'.player.pos }
          in
          { game' | lasers <- new :: game'.lasers,
                    player <- Player.resetCd game'.player
                  }
-       | otherwise      -> game'
+       | otherwise -> game'
+    GameOver ->
+    if | (member 13 ks) -> initGame
+       | otherwise      -> game
+
+generateWpn : Player.WeaponType -> Laser
+generateWpn wpn = case wpn of
+  Player.Regular -> basicLaser
+  Player.Red     -> redLaser
+  Player.Blue    -> bluLaser
+  Player.Green   -> greLaser
 
 updatePlayer : Event -> Game -> Game
 updatePlayer ev game =
-  { game
-  | player <- Player.update ev game.player }
+  let playerCollisions = Object.checkCollision game.player game.enemies
+      player' = game.player
+        |> Player.update ev
+        |> Player.handleCollisions playerCollisions
+  in
+  { game | player <- player' }
 
 updateEnemies : Event -> Game -> Game
 updateEnemies ev game =
-  { game
-  | enemies <- map (Enemy.update ev) game.enemies }
+  let laserCollisions = map (\e -> Object.checkCollision e game.lasers)
+                            game.enemies
+      enemies' = game.enemies 
+        |> map (Enemy.update ev)
+        |> Enemy.handleCollisions laserCollisions
+  in
+  { game | enemies <- enemies' }
 
 updateLasers : Event -> Game -> Game
 updateLasers ev game =
   let enemyCollisions = map (\l -> Object.checkCollision l game.enemies)
                             game.lasers
-      lasers' = game.lasers |> map (Laser.update ev game.player.pos)
-                            |> Laser.handleCollisions enemyCollisions
+      lasers' = game.lasers
+        |> map (Laser.update ev game.player.pos)
+        |> Laser.handleCollisions enemyCollisions
   in
   { game | lasers <- lasers' }
 
 garbageCollect : Game -> Game
 garbageCollect game =
-  { game | enemies <- Object.garbageCollect game.enemies
-         , lasers  <- Object.garbageCollect game.lasers
+  { game | lasers  <- Object.garbageCollect game.lasers
+         , enemies <- Object.garbageCollect game.enemies 
          }
 
---update ((delta, ks, {x , y}) as event) game =
---  let 
---    newPlayer = 
---      Player.update event game.player
---    lasers = 
---      map (Laser.update event newPlayer.pos game.enemies) game.lasers
---    enemies = 
---      map (Enemy.update event) game.enemies
---    newLasers = 
---      garbageCollect lasers
---    enemies' = 
---      garbageCollect (handleCollisions game.lasers game.enemies)
---    newEnemies = 
---      map (Enemy.update event) enemies'
---    newScore =
---      game.score + (updateScore game.enemies newEnemies)
---    l = basicLaser
---  in
---  case game.state of
---    -- if the game is paused
---    Paused ->
---    if | (member 80 ks) -> { game | state <- Playing }
---       | otherwise      -> game
---    -- if the game is playing
---    Playing  -> 
---    if | (member 80 ks) -> { game | state <- Paused }
---       | (member 32 ks) ->
---         { game
---         | player  <- newPlayer
---         , score   <- newScore
---         , lasers  <- if
---           | allShooting newLasers ->
---               newLasers++[{ l | pos <- game.player.pos }]
---           | otherwise -> newLasers
---         , enemies <- newEnemies
---         }
---       | otherwise ->
---         { game
---         | player  <- newPlayer
---         , score   <- newScore
---         , lasers  <- newLasers
---         , enemies <- newEnemies
---         }
+removeLasers : Game -> Game
+removeLasers game =
+  { game | lasers <- Object.garbageCollect game.lasers }
 
---updateScore : List Enemy -> List Enemy -> Float
---updateScore oldEnemies newEnemies =
---  let
---    numOld = toFloat (List.length oldEnemies)
---    numNew = toFloat (List.length newEnemies)
---    kills  = numOld - numNew
---    points = 10
---  in
---  if (kills >= 0) then kills * points else 0
+-- removes destroyed enemies and updates score
+removeEnemies : Game -> Game
+removeEnemies game =
+  let 
+    enemies' = Object.garbageCollect game.enemies
+    score' = updateScore game.enemies enemies'
+  in
+  { game | score <- game.score + score'
+         , enemies <- enemies'}
 
---handleCollisionsL : Laser -> List Enemy -> Laser
---handleCollisionsL laser enemies = case enemies of
---  [] -> laser
---  h::t -> if Physics.isColliding laser.pos laser.dim h.pos h.dim
---          then { laser | rem <- True }
---          else handleCollisionsL laser t
+updateScore : List Enemy -> List Enemy -> Float
+updateScore oldEnemies newEnemies =
+  let
+    numOld = toFloat (List.length oldEnemies)
+    numNew = toFloat (List.length newEnemies)
+    kills  = numOld - numNew
+    points = 10
+  in
+  if (kills >= 0) then kills * points else 0
 
---handleCollisionsE : Enemy -> List Laser -> Enemy
---handleCollisionsE enemy lasers = case lasers of
---  [] -> enemy
---  h::t -> if Physics.isColliding enemy.pos enemy.dim h.pos h.dim
---          then { enemy | rem <- True }
---          else handleCollisionsE enemy t
-
---allShooting : List Laser -> Bool
---allShooting lasers = case lasers of
---  []   -> True
---  h::t -> if h.state /= Laser.Shooting then False else allShooting t 
+playerDeath : Game -> Game
+playerDeath game =
+  if (game.player.rem == False) 
+  then game 
+  else { game | state <- GameOver }
 
 {- SIGNALS -------------------------------------------------------------------}
 
@@ -268,7 +259,9 @@ renderGame game =
       pauseScreen = case game.state of
         Playing -> E.empty |> F.toForm
         Paused  -> "Paused - Press P to resume"
-                    |> renderString white 30 (0,0) 
+          |> renderString white 30 (0,0) 
+        GameOver -> "Game Over - Press Enter to play again!"
+          |> renderString white 30 (0,0)          
   in
   F.group [ fLasers
           , fPlayer
@@ -291,9 +284,9 @@ userInterface game =
           |> F.toForm
           |> F.moveY (size * index))
   in
-  [ game.score               |> textstyle "SCORE: "       2
-  , game.player.lives        |> textstyle "LIVES: "       1
-  , game.player.hp           |> textstyle "HEALTH: "      0
+  [ game.score        |> textstyle "SCORE: "       2
+  , game.player.lives |> textstyle "LIVES: "       1
+  , game.player.hp    |> textstyle "HEALTH: "      0
   ]
     |> F.group
     |> F.move (-gWidth / 2 - 100, 0)
@@ -307,7 +300,13 @@ debugInterface game =
       laserPos = case game.lasers of
         [] -> (0,0)
         h::_ -> (floor (fst h.pos), floor (snd h.pos))
-      laserrem = case game.lasers of
+      enemyVel = case game.enemies of
+        [] -> (0,0)
+        h::_ -> ((fst h.vel), (snd h.vel))
+      enemyRem = case game.enemies of
+        [] -> Nothing
+        h::_ -> Just h.rem
+      laserRem = case game.lasers of
         [] -> Nothing
         h::_ -> Just h.rem
       textstyle prefix index = 
@@ -320,8 +319,10 @@ debugInterface game =
           |> F.toForm
           |> F.moveY (size * index))
   in
-  [ game.runtime             |> textstyle "RUNTIME: "     5
-  , laserrem                 |> textstyle "LASER REM: "   4
+  [ game.runtime             |> textstyle "RUNTIME: "     7
+  , enemyRem                 |> textstyle "ENEMY REM: "   6
+  , laserRem                 |> textstyle "LASER REM: "   5
+  , enemyVel                 |> textstyle "ENEMY VEL: "   4
   , List.length game.enemies |> textstyle "NUM ENEMIES: " 3
   , List.length game.lasers  |> textstyle "NUM LASERS: "  2
   , enemyPos                 |> textstyle "ENEMY: "       1

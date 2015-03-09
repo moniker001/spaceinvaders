@@ -8,6 +8,10 @@ vec x y = (x, y)
 veci : Int -> Int -> Vector
 veci x y = (toFloat x, toFloat y)
 
+equal : Vector -> Vector -> Bool
+equal (x1, y1) (x2, y2) =
+  (x1 == x2) && (y1 == y2)
+
 getX : Vector -> Float
 getX (x, y) = x
 
