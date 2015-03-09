@@ -8,7 +8,7 @@ CNets : limt, davidhuang
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 =========================================================================
 
-Space Invaders, a recreation of the classic arcade game, is a web 
+Space Invaders, loosely based on the classic arcade game, is a web 
 application programmed completely in Elm. The objective of the game is to
 destroy all enemies before they reach your spaceship.
 
@@ -69,6 +69,30 @@ in your favorite browser:
 
 *** A summary of our accomplishments and what we learned (1-2 pages) ***
 
+Things we learned:
+- MVC pattern
+- Animation
+- Keyboard inputs
+- Rendering
+- Collision detection
+
+Game Features:
+- Player movement/attack
+- Enemy movment
+- Player/laser can change colors!
+- Destroy enemies with lasers
+- Collision with enemies or letting too many enemies pass means death
+- Basic UI
+
+Problems we encountered:
+- Collision detection/update not always in sync
+- Signaling (separating normal tick vs keyboard input)
+
+Future implementations:
+- Multiple levels
+- Different enemy types
+- Different weapon types
+- Enemy can shoot lasers
 
                               ##          ##
                                 ##      ##

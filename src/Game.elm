@@ -39,6 +39,7 @@ type alias Game =
   { runtime : Float
   , state   : GameState
   , score   : Float
+  , lives   : Float
   , player  : Player
   , lasers  : List Laser
   , enemies : List Enemy
@@ -48,14 +49,13 @@ type alias Game =
 
 initPlayer : Player
 initPlayer =
-  { lives    = 3
-  , hp       = 10
+  { hp       = 10
   , energy   = 10
   , lifetime = 0
   , objtype  = Object.Player
   , dim      = vec 75 66
   , pos      = startPos
-  , vel      = vec 250 250
+  , vel      = vec 150 150
   , acc      = vec 0 0
   , gfx      = F.toForm (E.image 75 66 "assets/ship-regular.png")
   , rem      = False
@@ -68,6 +68,7 @@ initEnemy : Enemy
 initEnemy =
   { hp       = 10
   , moving   = Enemy.Left
+  , reach    = False
   , lifetime = 0
   , objtype  = Object.Enemy
   , dim      = vec 39 39
@@ -93,6 +94,7 @@ basLaser =
   }
 
 redLaser : Laser
+
 redLaser = { basLaser | gfx <- F.rect 10 10 |> F.filled red
                       , dmgtype <- Laser.DmgRed
                       }
@@ -109,7 +111,8 @@ greLaser = { basLaser | gfx <- F.rect 10 10 |> F.filled green
 
 initGame : Game
 initGame =
-  { runtime = 0
+  { lives   = 3
+  , runtime = 0
   , state   = Playing
   , score   = 0
   , player  = initPlayer
@@ -138,7 +141,8 @@ generateEnemies enemy num y =
 
 {- UPDATE --------------------------------------------------------------------}
 
-update ((dt, ks, { x, y }) as ev) game =
+update : Event -> Game -> Game
+update ((delta, ks, { x, y }) as ev) game =
   let game' = game |> updatePlayer ev
                    |> updateLasers ev
                    |> remEnemies
@@ -159,7 +163,6 @@ update ((dt, ks, { x, y }) as ev) game =
                  , player <- Player.resetCd game'.player
                  }
        | otherwise -> game'
-
     GameOver ->
     if | (member 13 ks) -> initGame
        | otherwise -> game
@@ -210,8 +213,9 @@ updateLasers : Event -> Game -> Game
 updateLasers ev game =
   let enemyCollisions = map (\l -> Object.checkCollision l game.enemies)
                             game.lasers
-      lasers' = game.lasers |> map (Laser.update ev game.player.pos)
-                            |> Laser.handleCollisions enemyCollisions
+      lasers' = game.lasers
+        |> map (Laser.update ev game.player.pos)
+        |> Laser.handleCollisions enemyCollisions
   in
   { game | lasers <- lasers' }
 
@@ -282,9 +286,9 @@ userInterface game =
           |> F.toForm
           |> F.moveY (size * index))
   in
-  [ game.score               |> textstyle "SCORE: "       2
-  , game.player.lives        |> textstyle "LIVES: "       1
-  , game.player.hp           |> textstyle "HEALTH: "      0
+  [ game.score        |> textstyle "SCORE: "       2
+  , game.lives |> textstyle "LIVES: "       1
+  , game.player.hp    |> textstyle "HEALTH: "      0
   ]
     |> F.group
     |> F.move (-gWidth / 2 - 100, 0)
@@ -298,7 +302,13 @@ debugInterface game =
       laserPos = case game.lasers of
         [] -> (0,0)
         h::_ -> (floor (fst h.pos), floor (snd h.pos))
-      laserrem = case game.lasers of
+      enemyVel = case game.enemies of
+        [] -> (0,0)
+        h::_ -> ((fst h.vel), (snd h.vel))
+      enemyRem = case game.enemies of
+        [] -> Nothing
+        h::_ -> Just h.rem
+      laserRem = case game.lasers of
         [] -> Nothing
         h::_ -> Just h.rem
       textstyle prefix index = 
@@ -311,8 +321,10 @@ debugInterface game =
           |> F.toForm
           |> F.moveY (size * index))
   in
-  [ game.runtime             |> textstyle "RUNTIME: "     5
-  , laserrem                 |> textstyle "LASER REM: "   4
+  [ game.runtime             |> textstyle "RUNTIME: "     7
+  , enemyRem                 |> textstyle "ENEMY REM: "   6
+  , laserRem                 |> textstyle "LASER REM: "   5
+  , enemyVel                 |> textstyle "ENEMY VEL: "   4
   , List.length game.enemies |> textstyle "NUM ENEMIES: " 3
   , List.length game.lasers  |> textstyle "NUM LASERS: "  2
   , enemyPos                 |> textstyle "ENEMY: "       1
