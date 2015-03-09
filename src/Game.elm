@@ -439,11 +439,11 @@ view (w, h) game =
       wbg = F.filled black (F.rect (toFloat w) (toFloat h))
       outline = F.outlined (F.solid white) (F.rect gWidth gHeight)
       title = "space invaders(ish)"
-              |> renderString white 30 (0, gHeight/2 + 25)   
+              |> renderString white 30 (0, gHeight/2 + 30)   
       levelh = "this is wave"
                |> renderString (rgba 125 50 50 0.5) 30 (0, 130)
       level = (toString game.level)
-              |> renderString (rgba 125 50 50 0.3) 250 (0, 0)
+              |> renderString (rgba 125 50 50 0.5) 250 (0, 0)
       timer = "your bloody onslaught has lasted for this many seconds:"
               |> renderString (rgba 255 255 255 1.0) 15 (0, -gHHeight - 18)
       time  = (toString (floor game.runtime))
