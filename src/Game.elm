@@ -342,16 +342,23 @@ renderGame game =
       --fUserInterface  = userInterface game
       --fDebugInterface = debugInterface game
       fEarth          = Object.render initEarth
+      fResults  = "but you made it to level " ++
+                  (toString game.level) ++
+                  " in " ++
+                  (game.runtime |> floor |> toString) ++
+                  " second(s),\nso like, good job, i guess?"
+                  |> renderString green 25 (0, -150)
       pauseScreen = case game.state of
         Start   -> "PRESS SPACEBAR TO PLAY." |> renderString white 35 (0, 0)
         Playing -> E.empty |> F.toForm
         Paused  -> "PAUSED - SPACEBAR to RESUME"
                     |> renderString white 35 (0,0) 
-        GameOver -> "YOU HAVE FAILED PLANET EARTH.\nPRESS ENTER TO TRY AGAIN."
+        GameOver -> "YOU HAVE FAILED PLANET EARTH.\n" ++
+                    "PRESS ENTER TO TRY AGAIN.\n"
                     |> renderString white 35 (0, 0)
   in
   if | game.state == Start    -> F.group [pauseScreen] 
-     | game.state == GameOver -> F.group [pauseScreen]
+     | game.state == GameOver -> F.group [pauseScreen, fResults]
      | game.state == Paused   -> F.group [pauseScreen]
      | otherwise -> F.group [ fLasers
                             , fEarth
@@ -359,28 +366,6 @@ renderGame game =
                             , fEnemies
                             , pauseScreen
                             ]
-
---userInterface : Game -> Form
---userInterface game =
---  let size = 20
---      textstyle prefix index = 
---        (\x -> toString x
---          |> T.fromString
---          |> T.append (T.fromString prefix)
---          |> T.color green
---          |> T.height size
---          |> T.centered
---          |> F.toForm
---          |> F.moveY (size * index))
---  in
---  [ game.score     |> textstyle "SCORE: "  2
---  , game.lives     |> textstyle "LIVES: "  1
---  , game.player.hp |> textstyle "HEALTH: " 0
---  , game.level     |> textstyle "LEVEL: " 4
---  , "Space Invaders" |> renderString white 40 (0, gHHeight - 25)
---  ]
---    |> F.group
---    |> F.move (-gWidth / 2 - 100, 0)
 
 renderString : Color -> Float -> (Float, Float) -> String -> Form
 renderString color height (x, y) string =

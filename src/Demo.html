@@ -946,7 +946,7 @@ Elm.Game.make = function (_elm) {
                case "[]":
                return $Maybe.Nothing;}
             _U.badCase($moduleName,
-            "between lines 410 and 413");
+            "between lines 395 and 398");
          }();
          var enemyRem = function () {
             var _v3 = game.enemies;
@@ -956,7 +956,7 @@ Elm.Game.make = function (_elm) {
                case "[]":
                return $Maybe.Nothing;}
             _U.badCase($moduleName,
-            "between lines 407 and 410");
+            "between lines 392 and 395");
          }();
          var enemyVel = function () {
             var _v6 = game.enemies;
@@ -970,7 +970,7 @@ Elm.Game.make = function (_elm) {
                       ,_0: 0
                       ,_1: 0};}
             _U.badCase($moduleName,
-            "between lines 404 and 407");
+            "between lines 389 and 392");
          }();
          var laserPos = function () {
             var _v9 = game.lasers;
@@ -984,7 +984,7 @@ Elm.Game.make = function (_elm) {
                       ,_0: 0
                       ,_1: 0};}
             _U.badCase($moduleName,
-            "between lines 401 and 404");
+            "between lines 386 and 389");
          }();
          var enemyPos = function () {
             var _v12 = game.enemies;
@@ -998,7 +998,7 @@ Elm.Game.make = function (_elm) {
                       ,_0: 0
                       ,_1: 0};}
             _U.badCase($moduleName,
-            "between lines 398 and 401");
+            "between lines 383 and 386");
          }();
          var size = 20;
          var textstyle = F3(function (prefix,
@@ -1045,7 +1045,7 @@ Elm.Game.make = function (_elm) {
                                           ,_0: _v15._0
                                           ,_1: _v15._1})($Graphics$Collage.toForm($Text.centered($Text.monospace($Text.height(height)($Text.color(color)($Text.fromString(string)))))));}
          _U.badCase($moduleName,
-         "between lines 387 and 393");
+         "between lines 372 and 378");
       }();
    });
    var sDelta = A2($Signal._op["<~"],
@@ -1457,7 +1457,9 @@ Elm.Game.make = function (_elm) {
                  35,
                  {ctor: "_Tuple2"
                  ,_0: 0
-                 ,_1: 0})("YOU HAVE FAILED PLANET EARTH.\nPRESS ENTER TO TRY AGAIN.");
+                 ,_1: 0})(A2($Basics._op["++"],
+                 "YOU HAVE FAILED PLANET EARTH.\n",
+                 "PRESS ENTER TO TRY AGAIN.\n"));
                case "Paused":
                return A3(renderString,
                  $Color.white,
@@ -1475,8 +1477,22 @@ Elm.Game.make = function (_elm) {
                  ,_0: 0
                  ,_1: 0})("PRESS SPACEBAR TO PLAY.");}
             _U.badCase($moduleName,
-            "between lines 345 and 352");
+            "between lines 351 and 359");
          }();
+         var fResults = A3(renderString,
+         $Color.green,
+         25,
+         {ctor: "_Tuple2"
+         ,_0: 0
+         ,_1: -150})(A2($Basics._op["++"],
+         "but you made it to level ",
+         A2($Basics._op["++"],
+         $Basics.toString(game.level),
+         A2($Basics._op["++"],
+         " in ",
+         A2($Basics._op["++"],
+         $Basics.toString($Basics.floor(game.runtime)),
+         " second(s),\nso like, good job, i guess?")))));
          var fEarth = $Object.render(initEarth);
          var fEnemies = $Graphics$Collage.group(A2($List.map,
          $Object.render,
@@ -1487,7 +1503,8 @@ Elm.Game.make = function (_elm) {
          var fPlayer = $Object.render(game.player);
          return _U.eq(game.state,
          Start) ? $Graphics$Collage.group(_L.fromArray([pauseScreen])) : _U.eq(game.state,
-         GameOver) ? $Graphics$Collage.group(_L.fromArray([pauseScreen])) : _U.eq(game.state,
+         GameOver) ? $Graphics$Collage.group(_L.fromArray([pauseScreen
+                                                          ,fResults])) : _U.eq(game.state,
          Paused) ? $Graphics$Collage.group(_L.fromArray([pauseScreen])) : $Graphics$Collage.group(_L.fromArray([fLasers
                                                                                                                ,fEarth
                                                                                                                ,fPlayer
@@ -1560,7 +1577,7 @@ Elm.Game.make = function (_elm) {
                               ,time]));
               }();}
          _U.badCase($moduleName,
-         "between lines 439 and 464");
+         "between lines 424 and 449");
       }();
    });
    var Playing = {ctor: "Playing"};
@@ -6624,16 +6641,16 @@ Elm.Physics.make = function (_elm) {
                                          minYB) > 0)) ? true : false;
                                       }();}
                                  _U.badCase($moduleName,
-                                 "between lines 8 and 18");
+                                 "between lines 8 and 16");
                               }();}
                          _U.badCase($moduleName,
-                         "between lines 8 and 18");
+                         "between lines 8 and 16");
                       }();}
                  _U.badCase($moduleName,
-                 "between lines 8 and 18");
+                 "between lines 8 and 16");
               }();}
          _U.badCase($moduleName,
-         "between lines 8 and 18");
+         "between lines 8 and 16");
       }();
    });
    _elm.Physics.values = {_op: _op

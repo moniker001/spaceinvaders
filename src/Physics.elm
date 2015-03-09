@@ -9,10 +9,8 @@ isColliding (xA, yA) (wA, hA) (xB, yB) (wB, hB) =
       (minXB, minYB) = (xB - (wB / 2), yB - (hB / 2))
       (maxXA, maxYA) = (xA + (wA / 2), yA + (hA / 2))
       (maxXB, maxYB) = (xB + (wB / 2), yB + (hB / 2))
-  in if
-  | (minXA < minXB + wB) && 
-    (minXA + wA > minXB) && 
-    (minYA < minYB + hB) && 
-    (hA + minYA > minYB) ->
-      True
-  | otherwise -> False
+  in
+  if | (minXA < minXB + wB) && (minXA + wA > minXB) && 
+       (minYA < minYB + hB) && (hA + minYA > minYB)
+       -> True
+     | otherwise -> False
