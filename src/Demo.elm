@@ -35,7 +35,7 @@ import Vector
 
 {- TYPE DEFINITION -----------------------------------------------------------}
 
-type GameState = Playing | Paused | GameOver
+type GameState = Playing | Paused | GameOver | Start
 
 type alias Game =
   { runtime : Float
@@ -142,7 +142,7 @@ initGame : Game
 initGame =
   { lives   = 3
   , runtime = 0
-  , state   = Playing
+  , state   = Start
   , level   = 1
   , baseDif = 60
   , score   = 0
@@ -217,7 +217,9 @@ update ((delta, ks, { x, y }) as ev) game =
                    |> playerDeath
   in
   case game.state of
-    Paused -> if | (member 79 ks) -> { game | state <- Playing }
+    Start  -> if | (member 32 ks) -> { game | state <- Playing }
+                 | otherwise      -> game
+    Paused -> if | (member 32 ks) -> { game | state <- Playing }
                  | otherwise      -> game
 
     Playing ->
@@ -341,13 +343,16 @@ renderGame game =
       --fDebugInterface = debugInterface game
       fEarth          = Object.render initEarth
       pauseScreen = case game.state of
+        Start   -> "PRESS SPACEBAR TO PLAY." |> renderString white 35 (0, 0)
         Playing -> E.empty |> F.toForm
-        Paused  -> "PAUSED - O to RESUME"
-                    |> renderString white 50 (0,0) 
+        Paused  -> "PAUSED - SPACEBAR to RESUME"
+                    |> renderString white 35 (0,0) 
         GameOver -> "YOU HAVE FAILED PLANET EARTH.\nPRESS ENTER TO TRY AGAIN."
                     |> renderString white 35 (0, 0)
   in
-  if | game.state == GameOver -> F.group [pauseScreen]
+  if | game.state == Start    -> F.group [pauseScreen] 
+     | game.state == GameOver -> F.group [pauseScreen]
+     | game.state == Paused   -> F.group [pauseScreen]
      | otherwise -> F.group [ fLasers
                             , fEarth
                             , fPlayer
@@ -386,10 +391,6 @@ renderString color height (x, y) string =
          |> T.centered
          |> F.toForm
          |> F.move (x,y)
-
---userInterface : Game -> Form
---userInterface game =
---  let 
 
 debugInterface : Game -> Form
 debugInterface game =

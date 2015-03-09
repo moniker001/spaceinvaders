@@ -720,7 +720,7 @@ Elm.Enemy.make = function (_elm) {
                    break;}
               break;}
          _U.badCase($moduleName,
-         "between lines 94 and 96");
+         "between lines 93 and 95");
       }();
    });
    var updateReach = function (enemy) {
@@ -761,7 +761,7 @@ Elm.Enemy.make = function (_elm) {
                          _v10._0,
                          enemy.vel));}
                     _U.badCase($moduleName,
-                    "between lines 40 and 44");
+                    "between lines 39 and 43");
                  }();
                  var $ = A2($Vector.scale,
                  0.5,
@@ -790,7 +790,7 @@ Elm.Enemy.make = function (_elm) {
                  enemy);
               }();}
          _U.badCase($moduleName,
-         "between lines 38 and 48");
+         "between lines 37 and 47");
       }();
    });
    var Down = function (a) {
@@ -854,11 +854,11 @@ Elm.Enemy.make = function (_elm) {
                                                              ,_1: nextDBound})]],
                          enemy) : enemy;}
                     _U.badCase($moduleName,
-                    "between lines 61 and 74");
+                    "between lines 60 and 73");
                  }();
               }();}
          _U.badCase($moduleName,
-         "between lines 52 and 74");
+         "between lines 51 and 73");
       }();
    });
    var update = F2(function (_v26,
@@ -868,7 +868,7 @@ Elm.Enemy.make = function (_elm) {
          {case "_Tuple3":
             return updateReach(updateVel(_v26)(updatePos(_v26)(enemy)));}
          _U.badCase($moduleName,
-         "between lines 32 and 34");
+         "between lines 31 and 33");
       }();
    });
    var Blue = {ctor: "Blue"};
@@ -946,7 +946,7 @@ Elm.Game.make = function (_elm) {
                case "[]":
                return $Maybe.Nothing;}
             _U.badCase($moduleName,
-            "between lines 409 and 412");
+            "between lines 410 and 413");
          }();
          var enemyRem = function () {
             var _v3 = game.enemies;
@@ -956,7 +956,7 @@ Elm.Game.make = function (_elm) {
                case "[]":
                return $Maybe.Nothing;}
             _U.badCase($moduleName,
-            "between lines 406 and 409");
+            "between lines 407 and 410");
          }();
          var enemyVel = function () {
             var _v6 = game.enemies;
@@ -970,7 +970,7 @@ Elm.Game.make = function (_elm) {
                       ,_0: 0
                       ,_1: 0};}
             _U.badCase($moduleName,
-            "between lines 403 and 406");
+            "between lines 404 and 407");
          }();
          var laserPos = function () {
             var _v9 = game.lasers;
@@ -984,7 +984,7 @@ Elm.Game.make = function (_elm) {
                       ,_0: 0
                       ,_1: 0};}
             _U.badCase($moduleName,
-            "between lines 400 and 403");
+            "between lines 401 and 404");
          }();
          var enemyPos = function () {
             var _v12 = game.enemies;
@@ -998,7 +998,7 @@ Elm.Game.make = function (_elm) {
                       ,_0: 0
                       ,_1: 0};}
             _U.badCase($moduleName,
-            "between lines 397 and 400");
+            "between lines 398 and 401");
          }();
          var size = 20;
          var textstyle = F3(function (prefix,
@@ -1045,7 +1045,7 @@ Elm.Game.make = function (_elm) {
                                           ,_0: _v15._0
                                           ,_1: _v15._1})($Graphics$Collage.toForm($Text.centered($Text.monospace($Text.height(height)($Text.color(color)($Text.fromString(string)))))));}
          _U.badCase($moduleName,
-         "between lines 382 and 388");
+         "between lines 387 and 393");
       }();
    });
    var sDelta = A2($Signal._op["<~"],
@@ -1146,7 +1146,7 @@ Elm.Game.make = function (_elm) {
                                ,game.runtime + _v19._0]],
               game);}
          _U.badCase($moduleName,
-         "on line 238, column 10 to 40");
+         "on line 240, column 10 to 40");
       }();
    });
    var initEarth = {_: {}
@@ -1219,7 +1219,7 @@ Elm.Game.make = function (_elm) {
                                ,game.player.pos]],
               basLaser);}
          _U.badCase($moduleName,
-         "between lines 253 and 257");
+         "between lines 255 and 259");
       }();
    };
    var initEnemy = {_: {}
@@ -1407,6 +1407,20 @@ Elm.Game.make = function (_elm) {
              ,score: e
              ,state: b};
    });
+   var Start = {ctor: "Start"};
+   var initGame = {_: {}
+                  ,baseDif: 60
+                  ,enemies: A3(newEnemies,
+                  250,
+                  60,
+                  1)
+                  ,lasers: _L.fromArray([])
+                  ,level: 1
+                  ,lives: 3
+                  ,player: initPlayer
+                  ,runtime: 0
+                  ,score: 0
+                  ,state: Start};
    var GameOver = {ctor: "GameOver"};
    var updateLives = function (game) {
       return function () {
@@ -1431,6 +1445,7 @@ Elm.Game.make = function (_elm) {
                                   ,GameOver]],
       game);
    };
+   var Paused = {ctor: "Paused"};
    var renderGame = function (game) {
       return function () {
          var pauseScreen = function () {
@@ -1446,14 +1461,21 @@ Elm.Game.make = function (_elm) {
                case "Paused":
                return A3(renderString,
                  $Color.white,
-                 50,
+                 35,
                  {ctor: "_Tuple2"
                  ,_0: 0
-                 ,_1: 0})("PAUSED - O to RESUME");
+                 ,_1: 0})("PAUSED - SPACEBAR to RESUME");
                case "Playing":
-               return $Graphics$Collage.toForm($Graphics$Element.empty);}
+               return $Graphics$Collage.toForm($Graphics$Element.empty);
+               case "Start":
+               return A3(renderString,
+                 $Color.white,
+                 35,
+                 {ctor: "_Tuple2"
+                 ,_0: 0
+                 ,_1: 0})("PRESS SPACEBAR TO PLAY.");}
             _U.badCase($moduleName,
-            "between lines 343 and 349");
+            "between lines 345 and 352");
          }();
          var fEarth = $Object.render(initEarth);
          var fEnemies = $Graphics$Collage.group(A2($List.map,
@@ -1464,11 +1486,13 @@ Elm.Game.make = function (_elm) {
          game.lasers));
          var fPlayer = $Object.render(game.player);
          return _U.eq(game.state,
-         GameOver) ? $Graphics$Collage.group(_L.fromArray([pauseScreen])) : $Graphics$Collage.group(_L.fromArray([fLasers
-                                                                                                                 ,fEarth
-                                                                                                                 ,fPlayer
-                                                                                                                 ,fEnemies
-                                                                                                                 ,pauseScreen]));
+         Start) ? $Graphics$Collage.group(_L.fromArray([pauseScreen])) : _U.eq(game.state,
+         GameOver) ? $Graphics$Collage.group(_L.fromArray([pauseScreen])) : _U.eq(game.state,
+         Paused) ? $Graphics$Collage.group(_L.fromArray([pauseScreen])) : $Graphics$Collage.group(_L.fromArray([fLasers
+                                                                                                               ,fEarth
+                                                                                                               ,fPlayer
+                                                                                                               ,fEnemies
+                                                                                                               ,pauseScreen]));
       }();
    };
    var view = F2(function (_v30,
@@ -1536,24 +1560,10 @@ Elm.Game.make = function (_elm) {
                               ,time]));
               }();}
          _U.badCase($moduleName,
-         "between lines 438 and 463");
+         "between lines 439 and 464");
       }();
    });
-   var Paused = {ctor: "Paused"};
    var Playing = {ctor: "Playing"};
-   var initGame = {_: {}
-                  ,baseDif: 60
-                  ,enemies: A3(newEnemies,
-                  250,
-                  60,
-                  1)
-                  ,lasers: _L.fromArray([])
-                  ,level: 1
-                  ,lives: 3
-                  ,player: initPlayer
-                  ,runtime: 0
-                  ,score: 0
-                  ,state: Playing};
    var update = F2(function (_v34,
    game) {
       return function () {
@@ -1570,7 +1580,7 @@ Elm.Game.make = function (_elm) {
                          _v34._1) ? initGame : game;
                        case "Paused":
                        return A2($List.member,
-                         79,
+                         32,
                          _v34._1) ? _U.replace([["state"
                                                 ,Playing]],
                          game) : game;
@@ -1591,13 +1601,19 @@ Elm.Game.make = function (_elm) {
                                               ,["player"
                                                ,$Player.resetCd(game$.player)]],
                             game$);
-                         }() : game$;}
+                         }() : game$;
+                       case "Start":
+                       return A2($List.member,
+                         32,
+                         _v34._1) ? _U.replace([["state"
+                                                ,Playing]],
+                         game) : game;}
                     _U.badCase($moduleName,
-                    "between lines 219 and 234");
+                    "between lines 219 and 236");
                  }();
               }();}
          _U.badCase($moduleName,
-         "between lines 209 and 234");
+         "between lines 209 and 236");
       }();
    });
    var sGame = A3($Signal.foldp,
@@ -1613,6 +1629,7 @@ Elm.Game.make = function (_elm) {
                       ,Playing: Playing
                       ,Paused: Paused
                       ,GameOver: GameOver
+                      ,Start: Start
                       ,Game: Game
                       ,initPlayer: initPlayer
                       ,initEnemy: initEnemy

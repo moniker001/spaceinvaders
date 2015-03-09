@@ -27,7 +27,6 @@ type Direction = Left | Right | Down (Direction, Float)
 {- UPDATE --------------------------------------------------------------------}
 
 update : Event -> Enemy -> Enemy
-
 update ((delta, ks, { x, y }) as ev) enemy =
   enemy |> updatePos ev
         |> updateVel ev
