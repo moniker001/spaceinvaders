@@ -21,7 +21,6 @@ type alias Enemy = Object
   , reach     : Bool
   }
 
-
 type EnemyType = Regular | Red | Green | Blue
 type Direction = Left | Right | Down (Direction, Float)
 

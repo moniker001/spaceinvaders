@@ -40,6 +40,8 @@ type GameState = Playing | Paused | GameOver
 type alias Game =
   { runtime : Float
   , state   : GameState
+  , level   : Int
+  , baseDif : Float
   , score   : Float
   , lives   : Float
   , player  : Player
@@ -55,7 +57,7 @@ initPlayer =
   , energy   = 10
   , lifetime = 0
   , objtype  = Object.Player
-  , dim      = vec 75 66
+  , dim      = vec 50 60
   , pos      = startPos
   , vel      = vec 150 150
   , acc      = vec 0 0
@@ -112,7 +114,7 @@ basLaser =
   , objtype  = Object.NLaser
   , dim      = vec 10 10
   , pos      = startPos
-  , vel      = vec 0 400
+  , vel      = vec 0 600
   , acc      = vec 0 0 
   , gfx      = F.rect 10 10 |> F.filled grey
   , rem      = False
@@ -141,10 +143,12 @@ initGame =
   { lives   = 3
   , runtime = 0
   , state   = Playing
+  , level   = 1
+  , baseDif = 60
   , score   = 0
   , player  = initPlayer
   , lasers  = []
-  , enemies = generateEnemies [1..10] 250 (Random.initialSeed 1)
+  , enemies = newEnemies 250 60 1
   }
 
 initEarth : Object {}
@@ -159,30 +163,44 @@ initEarth =
   , rem      = False
   }
 
-generateEnemies : (List Float) -> Float -> Seed -> List Enemy
-generateEnemies num ypos seed =
+newEnemies : Float -> Float -> Int -> List Enemy
+newEnemies ypos speed seed =
+  generateEnemies [1..10] ypos speed (Random.initialSeed seed) ++
+  generateEnemies [1..10] (ypos-50) speed (Random.initialSeed (seed + 1)) ++
+  generateEnemies [1..10] (ypos-100) speed (Random.initialSeed (seed + 2))
+
+generateEnemies : (List Float) -> Float -> Float -> Seed -> List Enemy
+generateEnemies num ypos speed seed =
   case num of
     []   -> []
     h::t -> let (enemy', seed') = generateRandomEnemy
                                   (vec (-400 + 75 * h) ypos)
+                                  speed
                                   seed
             in
-            enemy' :: (generateEnemies t ypos seed')
+            enemy' :: (generateEnemies t ypos speed seed')
 
-generateRandomEnemy : Vector -> Seed -> (Enemy, Seed)
-generateRandomEnemy pos seed =
+generateRandomEnemy : Vector -> Float -> Seed -> (Enemy, Seed)
+generateRandomEnemy pos speed seed =
   let (rnum, rseed) = Random.generate (Random.int 0 3) seed
   in
-  ((generateEnemy pos rnum), rseed)
+  ((generateEnemy pos speed rnum), rseed)
 
-generateEnemy : Vector -> Int -> Enemy
-generateEnemy pos enemytype =
+generateEnemy : Vector -> Float -> Int -> Enemy
+generateEnemy pos speed enemytype =
+  let vel = (vec speed speed)
+  in
   case enemytype of
-    0 -> { initEnemy | pos <- pos }
-    1 -> { redEnemy  | pos <- pos }
-    2 -> { bluEnemy  | pos <- pos }
-    3 -> { greEnemy  | pos <- pos }
-    _ -> { initEnemy | pos <- pos }
+    0 -> { initEnemy | pos <- pos
+                     , vel <- vel }
+    1 -> { redEnemy  | pos <- pos 
+                     , vel <- vel }
+    2 -> { bluEnemy  | pos <- pos 
+                     , vel <- vel }
+    3 -> { greEnemy  | pos <- pos 
+                     , vel <- vel }
+    _ -> { initEnemy | pos <- pos 
+                     , vel <- vel }
 
 {- UPDATE --------------------------------------------------------------------}
 
@@ -192,6 +210,7 @@ update ((delta, ks, { x, y }) as ev) game =
                    |> updateLasers ev
                    |> remEnemies
                    |> updateEnemies ev
+                   |> updateLevel
                    |> updateLives
                    |> remLasers
                    |> playerDeath
@@ -212,6 +231,17 @@ update ((delta, ks, { x, y }) as ev) game =
     GameOver ->
     if | (member 13 ks) -> initGame
        | otherwise -> game
+
+updateLevel : Game -> Game
+updateLevel game =
+  if | List.isEmpty (game.enemies) ->
+       { game | level <- game.level + 1
+              , enemies <- newEnemies
+                           250
+                           (game.baseDif + (toFloat game.level) * 15)
+                           game.level
+              }
+     | otherwise -> game
 
 selectWeapon : Game -> Laser
 selectWeapon game =
@@ -260,9 +290,9 @@ updateScore oldEnemies newEnemies =
   let numOld        = toFloat (List.length oldEnemies)
       numNew        = toFloat (List.length newEnemies)
       kills         = numOld - numNew
-      pointsperkill = 10
+      pointsperkill = 100
   in
-  if (kills >= 0) then kills * pointsperkill else 0
+  kills * pointsperkill
 
 updateLasers : Event -> Game -> Game
 updateLasers ev game =
@@ -288,7 +318,9 @@ sDelta : Signal Time
 sDelta = inSeconds <~ fps 120
 
 sEvent : Signal Event
-sEvent = ((\t l a -> (t, l, a)) <~ sDelta ~ K.keysDown ~ K.arrows)
+sEvent = Signal.sampleOn
+         sDelta
+         ((\t l a -> (t, l, a)) <~ sDelta ~ K.keysDown ~ K.arrows)
 
 sGame : Signal Game
 sGame = Signal.foldp update initGame sEvent
@@ -341,9 +373,10 @@ userInterface game =
           |> F.toForm
           |> F.moveY (size * index))
   in
-  [ game.score        |> textstyle "SCORE: "       2
-  , game.lives |> textstyle "LIVES: "       1
-  , game.player.hp    |> textstyle "HEALTH: "      0
+  [ game.score     |> textstyle "SCORE: "  2
+  , game.lives     |> textstyle "LIVES: "  1
+  , game.player.hp |> textstyle "HEALTH: " 0
+  , game.level     |> textstyle "LEVEL: " 4
   ]
     |> F.group
     |> F.move (-gWidth / 2 - 100, 0)
