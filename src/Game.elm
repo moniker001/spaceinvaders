@@ -9,6 +9,8 @@ import Keyboard (KeyCode)
 import Keyboard as K
 import List (member, (::), map)
 import List
+import Random (Seed)
+import Random
 import Signal (Signal, (<~), (~))
 import Signal
 import Text (plainText)
@@ -60,29 +62,49 @@ initPlayer =
   , gfx      = F.toForm (E.image 75 66 "assets/ship-regular.png")
   , rem      = False
   , wpn      = Player.Regular
-  , wpncd    = 0.25
+  , wpncd    = 1
   , cd       = 0
   }
 
 initEnemy : Enemy
 initEnemy =
-  { hp       = 10
-  , moving   = Enemy.Left
-  , reach    = False
-  , lifetime = 0
-  , objtype  = Object.Enemy
-  , dim      = vec 39 39
-  , pos      = vec -200 100
-  , vel      = vec 100 100
-  , acc      = vec 0 0 
-  , gfx      = F.toForm (E.image 39 39 "assets/enemy-regular.png")
-  , rem      = False
+  { hp        = 10
+  , moving    = Enemy.Left
+  , reach     = False
+  , enemytype = Enemy.Regular
+  , lifetime  = 0
+  , objtype   = Object.Enemy
+  , dim       = vec 39 39
+  , pos       = vec -200 100
+  , vel       = vec 150 150
+  , acc       = vec 0 0 
+  , gfx       = F.toForm (E.image 39 39 "assets/enemy-regular.png")
+  , rem       = False
   }
+
+redEnemy : Enemy
+redEnemy = { initEnemy
+           | gfx <- F.toForm (E.image 39 39 "assets/enemy-red.png")
+           , enemytype <- Enemy.Red
+           }
+
+bluEnemy : Enemy
+bluEnemy = { initEnemy
+           | gfx       <- F.toForm (E.image 39 39 "assets/enemy-blue.png")
+           , enemytype <- Enemy.Blue
+           }
+
+greEnemy : Enemy
+greEnemy = { initEnemy
+           | gfx       <- F.toForm (E.image 39 39 "assets/enemy-green.png")
+           , enemytype <- Enemy.Green
+           }
 
 basLaser : Laser
 basLaser =
   { dmg      = 2
   , dmgtype  = Laser.DmgRegular
+  , source   = Laser.SourcePlayer
   , lifetime = 0
   , objtype  = Object.Laser
   , dim      = vec 10 10
@@ -94,7 +116,6 @@ basLaser =
   }
 
 redLaser : Laser
-
 redLaser = { basLaser | gfx <- F.rect 10 10 |> F.filled red
                       , dmgtype <- Laser.DmgRed
                       }
@@ -117,9 +138,7 @@ initGame =
   , score   = 0
   , player  = initPlayer
   , lasers  = []
-  , enemies = (generateEnemies initEnemy 8 200) ++
-              (generateEnemies initEnemy 8 150) ++
-              (generateEnemies initEnemy 8 100)
+  , enemies = generateEnemies [1..10] 250 (Random.initialSeed 1)
   }
 
 initEarth : Object {}
@@ -134,10 +153,31 @@ initEarth =
   , rem      = False
   }
 
-generateEnemies : Enemy -> Float -> Float-> List Enemy
-generateEnemies enemy num y =
-  let list = [1..num] in
-  map (\x -> { enemy | pos <- vec (-400 + 75 * x) y }) list
+generateEnemies : (List Float) -> Float -> Seed -> List Enemy
+generateEnemies num ypos seed =
+  case num of
+    []   -> []
+    h::t -> let (enemy', seed') = generateRandomEnemy
+                                  (vec (-400 + 75 * h) ypos)
+                                  seed
+            in
+            enemy' :: (generateEnemies t ypos seed')
+
+generateRandomEnemy : Vector -> Seed -> (Enemy, Seed)
+generateRandomEnemy pos seed =
+  let (rnum, rseed) = Random.generate (Random.int 0 3) seed
+  in
+  ((generateEnemy pos rnum), rseed)
+
+generateEnemy : Vector -> Int -> Enemy
+generateEnemy pos enemytype =
+  case enemytype of
+    0 -> { initEnemy | pos <- pos }
+    1 -> { redEnemy  | pos <- pos }
+    2 -> { bluEnemy  | pos <- pos }
+    3 -> { greEnemy  | pos <- pos }
+    _ -> { initEnemy | pos <- pos }
+
 
 {- UPDATE --------------------------------------------------------------------}
 
@@ -147,6 +187,7 @@ update ((delta, ks, { x, y }) as ev) game =
                    |> updateLasers ev
                    |> remEnemies
                    |> updateEnemies ev
+                   |> updateLives
                    |> remLasers
                    |> playerDeath
   in
@@ -174,6 +215,15 @@ selectWeapon game =
     Player.Red     -> { redLaser | pos <- game.player.pos }
     Player.Green   -> { greLaser | pos <- game.player.pos }
     Player.Blue    -> { bluLaser | pos <- game.player.pos }
+
+updateLives : Game -> Game
+updateLives game =
+  let list = List.filter (\e -> e.reach) game.enemies
+      len = toFloat (List.length list)
+      lives' = game.lives - len
+  in
+  if | (lives' <= 0) -> { game | lives <- 0, state <- GameOver }
+     | otherwise -> { game | lives <- lives'}
 
 updatePlayer : Event -> Game -> Game
 updatePlayer ev game =

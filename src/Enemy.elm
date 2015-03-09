@@ -15,12 +15,14 @@ import Vector as V
 {- TYPE DEFINITION -----------------------------------------------------------}
 
 type alias Enemy = Object
-  { hp     : Float
-  , moving : Direction
-  , reach  : Bool
+  { hp        : Float
+  , moving    : Direction
+  , enemytype : EnemyType
+  , reach     : Bool
   }
 
 
+type EnemyType = Regular | Red | Green | Blue
 type Direction = Left | Right | Down (Direction, Float)
 
 {- UPDATE --------------------------------------------------------------------}
@@ -30,6 +32,7 @@ update : Event -> Enemy -> Enemy
 update ((delta, ks, { x, y }) as ev) enemy =
   enemy |> updatePos ev
         |> updateVel ev
+        |> updateReach
 
 updatePos : Event -> Enemy -> Enemy
 updatePos ((dt, ks, { x, y }) as ev) enemy =
@@ -70,6 +73,13 @@ updateVel ((dt, ks, { x, y }) as ev) enemy =
                                 , moving <- d
                                 }
                    else enemy
+
+updateReach : Enemy -> Enemy
+updateReach enemy =
+  let eps = 35
+      lowerBound = -gHHeight + eps
+  in
+  { enemy | reach <- (V.getY (enemy.pos)) <= lowerBound }
 
 handleCollision : CollisionType -> Enemy -> Enemy
 handleCollision ct enemy =

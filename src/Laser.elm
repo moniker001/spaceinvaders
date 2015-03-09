@@ -23,9 +23,13 @@ type DmgType = DmgRegular
              | DmgBlue
              | DmgGreen
 
+type LaserSource = SourcePlayer
+                 | SourceEnemy
+
 type alias Laser = Object
   { dmg     : Float
   , dmgtype : DmgType
+  , source  : LaserSource
   }
 
 {- UPDATE --------------------------------------------------------------------}
