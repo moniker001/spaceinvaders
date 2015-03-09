@@ -74,21 +74,21 @@ updatePos ((delta, ks, { x, y }) as ev) player =
 
 updateWpn : Event -> Player -> Player
 updateWpn ((delta, ks, { x, y }) as ev) player =
-  if | member 49 ks -> { player
+  if | member 81 ks -> { player
                        | wpn <- Regular
                        , gfx <- regShip
                        }
-     | member 50 ks -> { player
+     | member 87 ks -> { player
                        | wpn <- Red
                        , gfx <- redShip
                        }
-     | member 52 ks -> { player
-                       | wpn <- Blue
-                       , gfx <- bluShip
-                       }
-     | member 51 ks -> { player
+     | member 69 ks -> { player
                        | wpn <- Green
                        , gfx <- greShip
+                       }
+     | member 82 ks -> { player
+                       | wpn <- Blue
+                       , gfx <- bluShip
                        }
      | otherwise    -> player
 
