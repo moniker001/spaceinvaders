@@ -70,8 +70,17 @@ handleCollision ot laser =
     (Object.REnemy, Object.NLaser) -> { laser | rem <- True }
     (Object.GEnemy, Object.NLaser) -> { laser | rem <- True }
     (Object.BEnemy, Object.NLaser) -> { laser | rem <- True }
+    (Object.NEnemy, Object.RLaser) -> { laser | rem <- True }
     (Object.REnemy, Object.RLaser) -> { laser | rem <- True }
+    (Object.GEnemy, Object.RLaser) -> { laser | rem <- True }
+    (Object.BEnemy, Object.RLaser) -> { laser | rem <- True }
+    (Object.NEnemy, Object.GLaser) -> { laser | rem <- True }
+    (Object.REnemy, Object.GLaser) -> { laser | rem <- True }
     (Object.GEnemy, Object.GLaser) -> { laser | rem <- True }
+    (Object.BEnemy, Object.GLaser) -> { laser | rem <- True }
+    (Object.NEnemy, Object.BLaser) -> { laser | rem <- True }
+    (Object.REnemy, Object.BLaser) -> { laser | rem <- True }
+    (Object.GEnemy, Object.BLaser) -> { laser | rem <- True }
     (Object.BEnemy, Object.BLaser) -> { laser | rem <- True }
     _                              -> laser
 

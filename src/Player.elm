@@ -82,11 +82,11 @@ updateWpn ((delta, ks, { x, y }) as ev) player =
                        | wpn <- Red
                        , gfx <- redShip
                        }
-     | member 51 ks -> { player
+     | member 52 ks -> { player
                        | wpn <- Blue
                        , gfx <- bluShip
                        }
-     | member 52 ks -> { player
+     | member 51 ks -> { player
                        | wpn <- Green
                        , gfx <- greShip
                        }
