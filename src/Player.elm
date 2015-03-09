@@ -24,8 +24,7 @@ import Vector as V
 type WeaponType = Regular | Red | Blue | Green
 
 type alias Player = Object
-  { lives  : Float
-  , hp     : Float
+  { hp     : Float
   , energy : Float
   , wpn    : WeaponType
   , wpncd  : Float

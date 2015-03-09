@@ -39,6 +39,7 @@ type alias Game =
   { runtime : Float
   , state   : GameState
   , score   : Float
+  , lives   : Float
   , player  : Player
   , lasers  : List Laser
   , enemies : List Enemy
@@ -48,8 +49,7 @@ type alias Game =
 
 initPlayer : Player
 initPlayer =
-  { lives    = 3
-  , hp       = 10
+  { hp       = 10
   , energy   = 10
   , lifetime = 0
   , objtype  = Object.Player
@@ -68,11 +68,12 @@ initEnemy : Enemy
 initEnemy =
   { hp       = 10
   , moving   = Enemy.Left
+  , reach    = False
   , lifetime = 0
   , objtype  = Object.Enemy
   , dim      = vec 20 20
-  , pos      = vec -200 100
-  , vel      = vec 75 -3
+  , pos      = vec -200 200
+  , vel      = vec 75 -5
   , acc      = vec 0 0 
   , gfx      = F.rect 20 20 |> F.filled purple
   , rem      = False
@@ -112,7 +113,8 @@ greLaser = { basicLaser
 
 initGame : Game
 initGame =
-  { runtime = 0
+  { lives   = 3
+  , runtime = 0
   , state   = Playing
   , score   = 0
   , player  = initPlayer
@@ -133,10 +135,10 @@ update ((delta, ks, { x, y }) as ev) game =
                    |> updateLasers ev
                    |> removeEnemies
                    |> updateEnemies ev
+                   |> updateLives
                    |> removeLasers
                    |> playerDeath
-  in
-  case game.state of
+  in case game.state of
     Paused -> 
     if | (member 79 ks) -> { game | state <- Playing }
        | otherwise      -> game
@@ -221,6 +223,18 @@ updateScore oldEnemies newEnemies =
   in
   if (kills >= 0) then kills * points else 0
 
+updateLives : Game -> Game
+updateLives game =
+  let
+    list = List.filter (\e -> e.reach) game.enemies
+    len = toFloat (List.length list)
+    lives' = game.lives - len
+  in if
+    | lives' <= 0 -> 
+      { game | lives <- 0, state <- GameOver }
+    | otherwise ->
+      { game | lives <- lives'}
+
 playerDeath : Game -> Game
 playerDeath game =
   if (game.player.rem == False) 
@@ -285,7 +299,7 @@ userInterface game =
           |> F.moveY (size * index))
   in
   [ game.score        |> textstyle "SCORE: "       2
-  , game.player.lives |> textstyle "LIVES: "       1
+  , game.lives |> textstyle "LIVES: "       1
   , game.player.hp    |> textstyle "HEALTH: "      0
   ]
     |> F.group

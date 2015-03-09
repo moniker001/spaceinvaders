@@ -18,6 +18,7 @@ import Vector as V
 type alias Enemy = Object
   { hp     : Float
   , moving : Direction
+  , reach  : Bool
   }
 
 type Direction = Left | Right | Down
@@ -28,10 +29,12 @@ update : Event -> Enemy -> Enemy
 update event enemy =
   let pos' = updateEnemyPos event enemy
       (vel', moving') = updateEnemyVel event enemy
+      reach' = updateEnemyReach pos'
   in
   { enemy | pos    <- pos'
           , vel    <- vel'
           , moving <- moving'
+          , reach  <- reach'
           }
 
 updateEnemyPos : Event -> Enemy -> Vector
@@ -65,6 +68,14 @@ updateEnemyVel event enemy =
     Right -> if pastRBound
              then (V.cross (-1, 1) enemy.vel, Left)
              else (enemy.vel, Right)
+
+updateEnemyReach : Vector -> Bool
+updateEnemyReach (x, y) =
+  let
+    eps = 50
+    lowerBound = -gHHeight + 50
+  in
+  if (y <= lowerBound) then True else False
 
 handleCollision : CollisionType -> Enemy -> Enemy
 handleCollision ct enemy =
