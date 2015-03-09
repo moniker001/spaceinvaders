@@ -76,12 +76,23 @@ Things we learned:
 - Rendering
 - Collision detection
 
+Game Features:
+- Player movement/attack
+- Enemy movment
+- Player/laser can change colors!
+- Destroy enemies with lasers
+- Collision with enemies or letting too many enemies pass means death
+- Basic UI
+
 Problems we encountered:
 - Collision detection/update not always in sync
-- Signalling (separating normal tick vs keyboard input)
+- Signaling (separating normal tick vs keyboard input)
 
-
-
+Future implementations:
+- Multiple levels
+- Different enemy types
+- Different weapon types
+- Enemy can shoot lasers
 
                               ##          ##
                                 ##      ##
