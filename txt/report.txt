@@ -113,11 +113,20 @@ the game state was not updated solely based on time, but also on keyboard
 inputs, so new Events would be generated independently of the time. We
 fixed this bug by sampling the Events on time.
 
-Future implementations:
-- Multiple levels
-- Different enemy types
-- Different weapon types
-- Enemy can shoot lasers
+For future implementation, we could add additional features, such as 
+different types of weapons and enemies. We could also change the enemy
+movement pattern and have the enemies fire lasers as well. We could also
+add sound effects and background music with an audio library in addition
+to enhanced animations, such as a collision and death animation. We would
+probably also restructure and simplify our code and determine where 
+efficiency could be improved.
+
+Through working on "space invaders(ish)", we gained experience in using an
+MVC architecture pattern for game design as well as a better understanding
+of FRP and how to use signals from multiple sources to update a given
+state. We became more familiar with various Elm libraries as mentioned
+before not only for backend game state management and signal handling, but
+also for rendering each game state.
 
                               ##          ##
                                 ##      ##
