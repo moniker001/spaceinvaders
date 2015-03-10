@@ -69,12 +69,58 @@ in your favorite browser:
 
 *** A summary of our accomplishments and what we learned (1-2 pages) ***
 
+Things we tried to do:
+
++ Basic game features
+  - Player movement
+  - Automatic enemy movement
+  - Unique collision interactions
+  - Basic UI changeability
+  - Different weapon / enemy types
+  - Random level generation with increaseing difficulty
+
++ MVC architecture and very modulated structure
+
++ Basic physics (collision detection, axis-aligned bounding boxes)
+
++ Event handling via signals
+
++ Garbage collection
+
+
+Things that we had trouble with:
+
++ Modulated structure -
+  have to be able to access certain parts of the state,
+  while keeping things modulated?
+
++ Too many types
+
++ Collision & events & garbage collection & timing
+
+
+Game features that could be added:
+
++ Multiple levels
+
++ Enemy can shoot lasers
+
+
+
+
+
+
+
+
+
+
+
 Things we learned:
 - MVC pattern
 - Animation
 - Keyboard inputs
 - Rendering
-- Collision detection
+- (super) Basic game physics
 
 Game Features:
 - Player movement/attack
@@ -84,15 +130,12 @@ Game Features:
 - Collision with enemies or letting too many enemies pass means death
 - Basic UI
 
-Problems we encountered:
+Things we could improve on
+- Structuring (organization of modules, types)
 - Collision detection/update not always in sync
-- Signaling (separating normal tick vs keyboard input)
+- Signaling
 
 Future implementations:
-- Multiple levels
-- Different enemy types
-- Different weapon types
-- Enemy can shoot lasers
 
                               ##          ##
                                 ##      ##

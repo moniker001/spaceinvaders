@@ -57,7 +57,7 @@ initPlayer =
   , energy   = 10
   , lifetime = 0
   , objtype  = Object.Player
-  , dim      = vec 50 60
+  , dim      = vec 75 66
   , pos      = startPos
   , vel      = vec 150 150
   , acc      = vec 0 0
@@ -339,8 +339,6 @@ renderGame game =
   let fPlayer         = Object.render game.player
       fLasers         = F.group (map Object.render game.lasers)
       fEnemies        = F.group (map Object.render game.enemies)
-      --fUserInterface  = userInterface game
-      --fDebugInterface = debugInterface game
       fEarth          = Object.render initEarth
       fResults  = "but you made it to level " ++
                   (toString game.level) ++
