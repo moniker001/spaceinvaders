@@ -1,27 +1,27 @@
-Class : CS223 Functional Programming
-Group : Tejong Lim, David Huang
-CNets : limt, davidhuang
+CLASS : CS223 Functional Programming
+GROUP : Tejong Lim, David Huang
+CNETS : limt, davidhuang
 
 =========================================================================
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-*                            Space Invaders                             *
+*                          Space Invaders(ish)                          *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 =========================================================================
 
 Space Invaders, loosely based on the classic arcade game, is a web 
 application programmed completely in Elm. The objective of the game is to
-destroy all enemies before they reach your spaceship.
+destroy all enemies before they reach Earth.
 
 =========================================================================
 * Progress *
 =========================================================================
 
 1) Player input and game state ------------------------------ DONE
-2) Enemy movement/attack ------------------------------------ IN PROGRESS
-3) Collision detection -------------------------------------- IN PROGRESS
-4) User interface ------------------------------------------- MOSTLY DONE
-5) Multiple levels ------------------------------------------ TO DO
-6) Additional features -------------------------------------- TO DO
+2) Enemy movement ------------------------------------------- DONE
+3) Collision detection -------------------------------------- DONE
+4) User interface ------------------------------------------- DONE
+5) Multiple levels ------------------------------------------ DONE
+6) Additional features -------------------------------------- IN PROGRESS
 
 =========================================================================
 * Instructions *
@@ -31,111 +31,102 @@ destroy all enemies before they reach your spaceship.
 * Gameplay Controls *
 -------------------------------------------------------------------------
 
-               Move Left/Right --------- Arrow Keys/WASD
-               Fire/Shoot -------------- Space
-               Start game -------------- Enter
+   Move Left/Right ------------------------------------------ Arrow Keys
+   Fire ----------------------------------------------------- Space
+   Change Weapon -------------------------------------------- Q/W/E/R
+   Start game ----------------------------------------------- Space
 
 -------------------------------------------------------------------------
 * How to Start *
 -------------------------------------------------------------------------
 
-Our source code can be found in SpaceInvaders.elm and we have a 
-precompiled html version in SpaceInvaders.html. To play the game, do any 
+Our source code can be found in the src directory and we have a 
+precompiled html version in Demo.html. To play the game, do any 
 of the following:
 
-Open SpaceInvaders.html in your favorite browser.
+Open Demo.html in your favorite browser.
 
 * OR *
 
 In the command line, make sure you have Elm installed and change to the
-same directory as SpaceInvaders.elm and run the following comamand:
+same directory as Game.elm and run the following comamand:
 
   elm-reactor
 
 The game should be available to play at:
     
-  http://localhost:8000/SpaceInvaders.elm
+  http://localhost:8000/Game.elm
 
 * OR *
 
 Compile and generate an html file with the following command and then open
 in your favorite browser:
 
-  elm-make SpaceInvaders.elm --output=SpaceInvaders.html
+  elm-make Game.elm --output=Game.html
 
 =========================================================================
-* Summary
+* Summary *
 =========================================================================
 
 *** A summary of our accomplishments and what we learned (1-2 pages) ***
 
-Things we tried to do:
+Through our implementation of "space invaders(ish)", we followed a Model-
+View-Controller pattern and made good use of several existing Elm 
+libraries, such as the Graphics, Signal, and Keyboard libraries, leading
+to a playable game as our final product.
 
-+ Basic game features
-  - Player movement
-  - Automatic enemy movement
-  - Unique collision interactions
-  - Basic UI changeability
-  - Different weapon / enemy types
-  - Random level generation with increaseing difficulty
+In the game, the player controls a spaceship that can fire lasers, which
+will destroy approaching enemies upon collision. The color of enemies
+are randomly generated and the player must destroy each enemy with a 
+laser of the corresponding color. Destroying enemies updates the score
+and the total time of gameplay is also constantly update, both of which
+can be viewed in the user interface. When all enemies are destroyed, 
+the player advances to the next level, where the enemies are regenerated
+with increased velocity. The game ends when the player collides with an
+enemy or when an enemy reaches Earth at the bottom of the screen.
 
-+ MVC architecture and very modulated structure
+Problems we encountered revolved mostly around the code organization,
+event signaling, and collision detection.
 
-+ Basic physics (collision detection, axis-aligned bounding boxes)
+We modified our code organization frequently. We separated our code into
+several different modules, each to handle a different component of the
+game, such as Player, Enemy, Laser, and so on. We created an Object
+module, which Player, Enemy, and Laser inherit from, but we sometimes
+needed these different Objects to use information from each other. To
+solve this, we had to write methods for different game Objects carefully
+so that they would remain independent of each other. When information
+from different Objects was required, we passed in this information as a
+parameter in the top level Game module. Further, we had initially defined
+multiple types for different Enemies, Objects, and collisions, but we
+were able to simplify them into one group of types for Objects.
 
-+ Event handling via signals
+We also had trouble with collision detection and handling. Currently, we
+have a removal flag set for each Object when a collision with another 
+Object is detected, and the game state update function will filter out
+all Objects with this flag set. However, we encountered cases where upon
+collision, a laser would disappear but the enemy would not and vice versa.
+This issue is now resolved for most cases, but still occurs occasionally.
 
-+ Garbage collection
+Further, we also discovered during our implementation that when the player
+pressed a key, the position of all Objects would be updated as well, so
+the game state was not updated solely based on time, but also on keyboard
+inputs, so new Events would be generated independently of the time. We
+fixed this bug by sampling the Events on time.
 
+For future implementation, we could add additional features, such as 
+different types of weapons and enemies. We could also change the enemy
+movement pattern and have the enemies fire lasers as well. We could also
+add sound effects and background music with an audio library in addition
+to enhanced animations, such as a collision and death animation. We would
+probably also restructure and simplify our code and determine where 
+efficiency could be improved.
 
-Things that we had trouble with:
-
-+ Modulated structure -
-  have to be able to access certain parts of the state,
-  while keeping things modulated?
-
-+ Too many types
-
-+ Collision & events & garbage collection & timing
-
-
-Game features that could be added:
-
-+ Multiple levels
-
-+ Enemy can shoot lasers
-
-
-
-
-
-
-
-
-
-
-
-Things we learned:
-- MVC pattern
-- Animation
-- Keyboard inputs
-- Rendering
-- (super) Basic game physics
-
-Game Features:
-- Player movement/attack
-- Enemy movment
-- Player/laser can change colors!
-- Destroy enemies with lasers
-- Collision with enemies or letting too many enemies pass means death
-- Basic UI
-
-Things we could improve on
-- Structuring (organization of modules, types)
-- Collision detection/update not always in sync
-- Signaling
-
-Future implementations:
+Through working on "space invaders(ish)", we gained experience in using an
+MVC architecture pattern for game design as well as a better understanding
+of FRP and how to use signals from multiple sources to update a given
+state. We became more familiar with various Elm libraries as mentioned
+before not only for backend game state management and signal handling, but
+also for rendering each game state.
 
                               ##          ##
                                 ##      ##
