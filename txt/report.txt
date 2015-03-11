@@ -78,8 +78,8 @@ to a playable game as our final product.
 In the game, the player controls a spaceship that can fire lasers, which
 will destroy approaching enemies upon collision. The color of enemies
 are randomly generated and the player must destroy each enemy with a 
-laser of the corresponding color. Destroying enemies updates the score
-and the total time of gameplay is also constantly update, both of which
+laser of the corresponding color. Collisions among objects and player
+inputs and time update the game state. The total time of gameplay
 can be viewed in the user interface. When all enemies are destroyed, 
 the player advances to the next level, where the enemies are regenerated
 with increased velocity. The game ends when the player collides with an
