@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html><head><meta charset="UTF-8"><title>SpaceInvaders</title><style>html,head,body { padding:0; margin:0; }
+<html><head><meta charset="UTF-8"><title>Game</title><style>html,head,body { padding:0; margin:0; }
 body { font-family: calibri, helvetica, arial, sans-serif; }</style><script type="text/javascript">var Elm = Elm || { Native: {} };Elm.Basics = Elm.Basics || {};
 Elm.Basics.make = function (_elm) {
    "use strict";
@@ -23,7 +23,7 @@ Elm.Basics.make = function (_elm) {
               _v0._0,
               _v0._1);}
          _U.badCase($moduleName,
-         "on line 460, column 19 to 24");
+         "on line 472, column 19 to 24");
       }();
    });
    var curry = F3(function (f,
@@ -41,7 +41,7 @@ Elm.Basics.make = function (_elm) {
          switch (_v4.ctor)
          {case "_Tuple2": return _v4._1;}
          _U.badCase($moduleName,
-         "on line 444, column 13 to 14");
+         "on line 456, column 13 to 14");
       }();
    };
    var fst = function (_v8) {
@@ -49,7 +49,7 @@ Elm.Basics.make = function (_elm) {
          switch (_v8.ctor)
          {case "_Tuple2": return _v8._0;}
          _U.badCase($moduleName,
-         "on line 440, column 13 to 14");
+         "on line 452, column 13 to 14");
       }();
    };
    var always = F2(function (a,
@@ -133,12 +133,20 @@ Elm.Basics.make = function (_elm) {
       return t;
    };
    _elm.Basics.values = {_op: _op
-                        ,radians: radians
-                        ,degrees: degrees
-                        ,turns: turns
-                        ,fromPolar: fromPolar
-                        ,toPolar: toPolar
+                        ,max: max
+                        ,min: min
+                        ,compare: compare
+                        ,not: not
+                        ,xor: xor
+                        ,otherwise: otherwise
                         ,rem: rem
+                        ,negate: negate
+                        ,abs: abs
+                        ,sqrt: sqrt
+                        ,clamp: clamp
+                        ,logBase: logBase
+                        ,e: e
+                        ,pi: pi
                         ,cos: cos
                         ,sin: sin
                         ,tan: tan
@@ -146,37 +154,29 @@ Elm.Basics.make = function (_elm) {
                         ,asin: asin
                         ,atan: atan
                         ,atan2: atan2
-                        ,sqrt: sqrt
-                        ,negate: negate
-                        ,abs: abs
-                        ,logBase: logBase
-                        ,clamp: clamp
-                        ,pi: pi
-                        ,e: e
-                        ,compare: compare
-                        ,LT: LT
-                        ,EQ: EQ
-                        ,GT: GT
-                        ,min: min
-                        ,max: max
-                        ,xor: xor
-                        ,not: not
-                        ,otherwise: otherwise
                         ,round: round
-                        ,truncate: truncate
                         ,floor: floor
                         ,ceiling: ceiling
+                        ,truncate: truncate
                         ,toFloat: toFloat
+                        ,degrees: degrees
+                        ,radians: radians
+                        ,turns: turns
+                        ,toPolar: toPolar
+                        ,fromPolar: fromPolar
                         ,isNaN: isNaN
                         ,isInfinite: isInfinite
                         ,toString: toString
-                        ,identity: identity
-                        ,always: always
                         ,fst: fst
                         ,snd: snd
+                        ,identity: identity
+                        ,always: always
                         ,flip: flip
                         ,curry: curry
-                        ,uncurry: uncurry};
+                        ,uncurry: uncurry
+                        ,LT: LT
+                        ,EQ: EQ
+                        ,GT: GT};
    return _elm.Basics.values;
 };Elm.Color = Elm.Color || {};
 Elm.Color.make = function (_elm) {
@@ -636,6 +636,1081 @@ Elm.Color.make = function (_elm) {
                        ,charcoal: charcoal
                        ,darkCharcoal: darkCharcoal};
    return _elm.Color.values;
+};Elm.Enemy = Elm.Enemy || {};
+Elm.Enemy.make = function (_elm) {
+   "use strict";
+   _elm.Enemy = _elm.Enemy || {};
+   if (_elm.Enemy.values)
+   return _elm.Enemy.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Enemy",
+   $Basics = Elm.Basics.make(_elm),
+   $Event = Elm.Event.make(_elm),
+   $Global = Elm.Global.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Object = Elm.Object.make(_elm),
+   $Vector = Elm.Vector.make(_elm);
+   var handleCollision = F2(function (obj,
+   enemy) {
+      return function () {
+         var _v0 = {ctor: "_Tuple2"
+                   ,_0: obj
+                   ,_1: enemy.objtype};
+         switch (_v0.ctor)
+         {case "_Tuple2":
+            switch (_v0._0.ctor)
+              {case "BLaser":
+                 switch (_v0._1.ctor)
+                   {case "BEnemy":
+                      return _U.replace([["rem"
+                                         ,true]],
+                        enemy);}
+                   break;
+                 case "GLaser":
+                 switch (_v0._1.ctor)
+                   {case "GEnemy":
+                      return _U.replace([["rem"
+                                         ,true]],
+                        enemy);}
+                   break;
+                 case "NLaser":
+                 switch (_v0._1.ctor)
+                   {case "NEnemy":
+                      return _U.replace([["rem"
+                                         ,true]],
+                        enemy);}
+                   break;
+                 case "RLaser":
+                 switch (_v0._1.ctor)
+                   {case "REnemy":
+                      return _U.replace([["rem"
+                                         ,true]],
+                        enemy);}
+                   break;}
+              break;}
+         return enemy;
+      }();
+   });
+   var handleCollisions = F2(function (ots,
+   enemies) {
+      return function () {
+         var _v3 = {ctor: "_Tuple2"
+                   ,_0: ots
+                   ,_1: enemies};
+         switch (_v3.ctor)
+         {case "_Tuple2":
+            switch (_v3._0.ctor)
+              {case "::": switch (_v3._1.ctor)
+                   {case "::":
+                      return A2($List._op["::"],
+                        A2(handleCollision,
+                        _v3._0._0,
+                        _v3._1._0),
+                        A2(handleCollisions,
+                        _v3._0._1,
+                        _v3._1._1));}
+                   break;
+                 case "[]": switch (_v3._1.ctor)
+                   {case "[]":
+                      return _L.fromArray([]);}
+                   break;}
+              break;}
+         _U.badCase($moduleName,
+         "between lines 93 and 95");
+      }();
+   });
+   var updateReach = function (enemy) {
+      return function () {
+         var eps = 35;
+         var lowerBound = 0 - $Global.gHHeight + eps;
+         return _U.replace([["reach"
+                            ,_U.cmp($Vector.getY(enemy.pos),
+                            lowerBound) < 1]],
+         enemy);
+      }();
+   };
+   var updatePos = F2(function (_v10,
+   enemy) {
+      return function () {
+         switch (_v10.ctor)
+         {case "_Tuple3":
+            return function () {
+                 var effVel = function () {
+                    var _v15 = enemy.moving;
+                    switch (_v15.ctor)
+                    {case "Down":
+                       return A2($Vector.cross,
+                         A2($Vector.vec,0,-1),
+                         A2($Vector.scale,
+                         _v10._0,
+                         enemy.vel));
+                       case "Left":
+                       return A2($Vector.cross,
+                         A2($Vector.vec,1,0),
+                         A2($Vector.scale,
+                         _v10._0,
+                         enemy.vel));
+                       case "Right":
+                       return A2($Vector.cross,
+                         A2($Vector.vec,1,0),
+                         A2($Vector.scale,
+                         _v10._0,
+                         enemy.vel));}
+                    _U.badCase($moduleName,
+                    "between lines 39 and 43");
+                 }();
+                 var $ = A2($Vector.scale,
+                 0.5,
+                 A2($Vector.vec,
+                 $Global.gWidth,
+                 $Global.gHeight)),
+                 hgw = $._0,
+                 hgh = $._1;
+                 var $ = A2($Vector.scale,
+                 0.5,
+                 enemy.dim),
+                 hew = $._0,
+                 heh = $._1;
+                 var pos$ = A3($Vector.bound,
+                 A2($Vector.vec,
+                 0 - hgw + hew,
+                 0 - hgh + heh),
+                 A2($Vector.vec,
+                 hgw - hew,
+                 hgh - heh),
+                 A2($Vector.add,
+                 enemy.pos,
+                 effVel));
+                 return _U.replace([["pos"
+                                    ,pos$]],
+                 enemy);
+              }();}
+         _U.badCase($moduleName,
+         "between lines 37 and 47");
+      }();
+   });
+   var Down = function (a) {
+      return {ctor: "Down",_0: a};
+   };
+   var Right = {ctor: "Right"};
+   var Left = {ctor: "Left"};
+   var updateVel = F2(function (_v17,
+   enemy) {
+      return function () {
+         switch (_v17.ctor)
+         {case "_Tuple3":
+            return function () {
+                 var nextDBound = $Vector.getY(enemy.pos) - 50;
+                 var eps = 20;
+                 var $ = A2($Vector.scale,
+                 0.5,
+                 A2($Vector.vec,
+                 $Global.gWidth,
+                 $Global.gHeight)),
+                 hgw = $._0,
+                 hgh = $._1;
+                 var $ = A2($Vector.scale,
+                 0.5,
+                 enemy.dim),
+                 hew = $._0,
+                 heh = $._1;
+                 var ey = $Vector.getY(enemy.pos);
+                 var ex = $Vector.getX(enemy.pos);
+                 var pastLBound = _U.cmp(ex,
+                 hgw - hew - eps) > -1;
+                 var pastRBound = _U.cmp(ex,
+                 0 - hgw + hew + eps) < 1;
+                 return function () {
+                    var _v22 = enemy.moving;
+                    switch (_v22.ctor)
+                    {case "Down":
+                       switch (_v22._0.ctor)
+                         {case "_Tuple2":
+                            return _U.cmp(ey,
+                              _v22._0._1) < 1 ? _U.replace([["vel"
+                                                            ,A2($Vector.cross,
+                                                            A2($Vector.vec,
+                                                            -1,
+                                                            1),
+                                                            enemy.vel)]
+                                                           ,["moving"
+                                                            ,_v22._0._0]],
+                              enemy) : enemy;}
+                         break;
+                       case "Left":
+                       return pastLBound ? _U.replace([["moving"
+                                                       ,Down({ctor: "_Tuple2"
+                                                             ,_0: Right
+                                                             ,_1: nextDBound})]],
+                         enemy) : enemy;
+                       case "Right":
+                       return pastRBound ? _U.replace([["moving"
+                                                       ,Down({ctor: "_Tuple2"
+                                                             ,_0: Left
+                                                             ,_1: nextDBound})]],
+                         enemy) : enemy;}
+                    _U.badCase($moduleName,
+                    "between lines 60 and 73");
+                 }();
+              }();}
+         _U.badCase($moduleName,
+         "between lines 51 and 73");
+      }();
+   });
+   var update = F2(function (_v26,
+   enemy) {
+      return function () {
+         switch (_v26.ctor)
+         {case "_Tuple3":
+            return updateReach(updateVel(_v26)(updatePos(_v26)(enemy)));}
+         _U.badCase($moduleName,
+         "between lines 31 and 33");
+      }();
+   });
+   var Blue = {ctor: "Blue"};
+   var Green = {ctor: "Green"};
+   var Red = {ctor: "Red"};
+   var Regular = {ctor: "Regular"};
+   _elm.Enemy.values = {_op: _op
+                       ,Regular: Regular
+                       ,Red: Red
+                       ,Green: Green
+                       ,Blue: Blue
+                       ,Left: Left
+                       ,Right: Right
+                       ,Down: Down
+                       ,update: update
+                       ,updatePos: updatePos
+                       ,updateVel: updateVel
+                       ,updateReach: updateReach
+                       ,handleCollision: handleCollision
+                       ,handleCollisions: handleCollisions};
+   return _elm.Enemy.values;
+};Elm.Event = Elm.Event || {};
+Elm.Event.make = function (_elm) {
+   "use strict";
+   _elm.Event = _elm.Event || {};
+   if (_elm.Event.values)
+   return _elm.Event.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Event",
+   $Keyboard = Elm.Keyboard.make(_elm);
+   _elm.Event.values = {_op: _op};
+   return _elm.Event.values;
+};Elm.Game = Elm.Game || {};
+Elm.Game.make = function (_elm) {
+   "use strict";
+   _elm.Game = _elm.Game || {};
+   if (_elm.Game.values)
+   return _elm.Game.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Game",
+   $Basics = Elm.Basics.make(_elm),
+   $Color = Elm.Color.make(_elm),
+   $Enemy = Elm.Enemy.make(_elm),
+   $Event = Elm.Event.make(_elm),
+   $Global = Elm.Global.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Keyboard = Elm.Keyboard.make(_elm),
+   $Laser = Elm.Laser.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Object = Elm.Object.make(_elm),
+   $Player = Elm.Player.make(_elm),
+   $Random = Elm.Random.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Text = Elm.Text.make(_elm),
+   $Time = Elm.Time.make(_elm),
+   $Vector = Elm.Vector.make(_elm),
+   $Window = Elm.Window.make(_elm);
+   var debugInterface = function (game) {
+      return function () {
+         var laserRem = function () {
+            var _v0 = game.lasers;
+            switch (_v0.ctor)
+            {case "::":
+               return $Maybe.Just(_v0._0.rem);
+               case "[]":
+               return $Maybe.Nothing;}
+            _U.badCase($moduleName,
+            "between lines 393 and 396");
+         }();
+         var enemyRem = function () {
+            var _v3 = game.enemies;
+            switch (_v3.ctor)
+            {case "::":
+               return $Maybe.Just(_v3._0.rem);
+               case "[]":
+               return $Maybe.Nothing;}
+            _U.badCase($moduleName,
+            "between lines 390 and 393");
+         }();
+         var enemyVel = function () {
+            var _v6 = game.enemies;
+            switch (_v6.ctor)
+            {case "::":
+               return {ctor: "_Tuple2"
+                      ,_0: $Basics.fst(_v6._0.vel)
+                      ,_1: $Basics.snd(_v6._0.vel)};
+               case "[]":
+               return {ctor: "_Tuple2"
+                      ,_0: 0
+                      ,_1: 0};}
+            _U.badCase($moduleName,
+            "between lines 387 and 390");
+         }();
+         var laserPos = function () {
+            var _v9 = game.lasers;
+            switch (_v9.ctor)
+            {case "::":
+               return {ctor: "_Tuple2"
+                      ,_0: $Basics.floor($Basics.fst(_v9._0.pos))
+                      ,_1: $Basics.floor($Basics.snd(_v9._0.pos))};
+               case "[]":
+               return {ctor: "_Tuple2"
+                      ,_0: 0
+                      ,_1: 0};}
+            _U.badCase($moduleName,
+            "between lines 384 and 387");
+         }();
+         var enemyPos = function () {
+            var _v12 = game.enemies;
+            switch (_v12.ctor)
+            {case "::":
+               return {ctor: "_Tuple2"
+                      ,_0: $Basics.floor($Basics.fst(_v12._0.pos))
+                      ,_1: $Basics.floor($Basics.snd(_v12._0.pos))};
+               case "[]":
+               return {ctor: "_Tuple2"
+                      ,_0: 0
+                      ,_1: 0};}
+            _U.badCase($moduleName,
+            "between lines 381 and 384");
+         }();
+         var size = 20;
+         var textstyle = F3(function (prefix,
+         index,
+         x) {
+            return $Graphics$Collage.moveY(size * index)($Graphics$Collage.toForm($Text.centered($Text.height(size)($Text.color($Color.red)($Text.append($Text.fromString(prefix))($Text.fromString($Basics.toString(x))))))));
+         });
+         return $Graphics$Collage.move({ctor: "_Tuple2"
+                                       ,_0: $Global.gWidth / 2 + 100
+                                       ,_1: 0})($Graphics$Collage.group(_L.fromArray([A2(textstyle,
+                                                                                     "RUNTIME: ",
+                                                                                     7)(game.runtime)
+                                                                                     ,A2(textstyle,
+                                                                                     "ENEMY REM: ",
+                                                                                     6)(enemyRem)
+                                                                                     ,A2(textstyle,
+                                                                                     "LASER REM: ",
+                                                                                     5)(laserRem)
+                                                                                     ,A2(textstyle,
+                                                                                     "ENEMY VEL: ",
+                                                                                     4)(enemyVel)
+                                                                                     ,A2(textstyle,
+                                                                                     "NUM ENEMIES: ",
+                                                                                     3)($List.length(game.enemies))
+                                                                                     ,A2(textstyle,
+                                                                                     "NUM LASERS: ",
+                                                                                     2)($List.length(game.lasers))
+                                                                                     ,A2(textstyle,
+                                                                                     "ENEMY: ",
+                                                                                     1)(enemyPos)
+                                                                                     ,A2(textstyle,
+                                                                                     "LASER: ",
+                                                                                     0)(laserPos)])));
+      }();
+   };
+   var renderString = F4(function (color,
+   height,
+   _v15,
+   string) {
+      return function () {
+         switch (_v15.ctor)
+         {case "_Tuple2":
+            return $Graphics$Collage.move({ctor: "_Tuple2"
+                                          ,_0: _v15._0
+                                          ,_1: _v15._1})($Graphics$Collage.toForm($Text.centered($Text.monospace($Text.height(height)($Text.color(color)($Text.fromString(string)))))));}
+         _U.badCase($moduleName,
+         "between lines 370 and 376");
+      }();
+   });
+   var sDelta = A2($Signal._op["<~"],
+   $Time.inSeconds,
+   $Time.fps(120));
+   var sEvent = A2($Signal.sampleOn,
+   sDelta,
+   A2($Signal._op["~"],
+   A2($Signal._op["~"],
+   A2($Signal._op["<~"],
+   F3(function (t,l,a) {
+      return {ctor: "_Tuple3"
+             ,_0: t
+             ,_1: l
+             ,_2: a};
+   }),
+   sDelta),
+   $Keyboard.keysDown),
+   $Keyboard.arrows));
+   var remEnemies = function (game) {
+      return _U.replace([["enemies"
+                         ,$Object.garbageCollect(game.enemies)]],
+      game);
+   };
+   var remLasers = function (game) {
+      return _U.replace([["lasers"
+                         ,$Object.garbageCollect(game.lasers)]],
+      game);
+   };
+   var updateLasers = F2(function (ev,
+   game) {
+      return function () {
+         var enemyCollisions = A2($List.map,
+         function (l) {
+            return A2($Object.checkCollision,
+            l,
+            game.enemies);
+         },
+         game.lasers);
+         var lasers$ = $Laser.handleCollisions(enemyCollisions)($List.map(A2($Laser.update,
+         ev,
+         game.player.pos))(game.lasers));
+         return _U.replace([["lasers"
+                            ,lasers$]],
+         game);
+      }();
+   });
+   var updateScore = F2(function (oldEnemies,
+   newEnemies) {
+      return function () {
+         var pointsperkill = 100;
+         var numNew = $Basics.toFloat($List.length(newEnemies));
+         var numOld = $Basics.toFloat($List.length(oldEnemies));
+         var kills = numOld - numNew;
+         return kills * pointsperkill;
+      }();
+   });
+   var updateEnemies = F2(function (ev,
+   game) {
+      return function () {
+         var enemyCollisions = A2($List.map,
+         function (e) {
+            return A2($Object.checkCollision,
+            e,
+            game.lasers);
+         },
+         game.enemies);
+         var enemies$ = $Enemy.handleCollisions(enemyCollisions)($List.map($Enemy.update(ev))(game.enemies));
+         var score$ = A2(updateScore,
+         game.enemies,
+         enemies$);
+         return _U.replace([["enemies"
+                            ,enemies$]
+                           ,["score",game.score + score$]],
+         game);
+      }();
+   });
+   var updatePlayer = F2(function (ev,
+   game) {
+      return function () {
+         var playerCollisions = A2($Object.checkCollision,
+         game.player,
+         game.enemies);
+         var player$ = $Player.handleCollisions(playerCollisions)($Player.update(ev)(game.player));
+         return _U.replace([["player"
+                            ,A2($Player.update,
+                            ev,
+                            player$)]],
+         game);
+      }();
+   });
+   var updateRuntime = F2(function (_v19,
+   game) {
+      return function () {
+         switch (_v19.ctor)
+         {case "_Tuple3":
+            return _U.replace([["runtime"
+                               ,game.runtime + _v19._0]],
+              game);}
+         _U.badCase($moduleName,
+         "on line 240, column 10 to 40");
+      }();
+   });
+   var initEarth = {_: {}
+                   ,acc: A2($Vector.vec,0,0)
+                   ,dim: A2($Vector.vec,800,74)
+                   ,gfx: $Graphics$Collage.toForm(A3($Graphics$Element.image,
+                   800,
+                   74,
+                   "assets/earth.png"))
+                   ,lifetime: 0
+                   ,objtype: $Object.None
+                   ,pos: A2($Vector.vec,
+                   0,
+                   (0 - $Global.gHeight) / 2 + 37)
+                   ,rem: false
+                   ,vel: A2($Vector.vec,0,0)};
+   var basLaser = {_: {}
+                  ,acc: A2($Vector.vec,0,0)
+                  ,dim: A2($Vector.vec,12,12)
+                  ,dmg: 2
+                  ,dmgtype: $Laser.DmgRegular
+                  ,gfx: $Graphics$Collage.filled($Color.grey)(A2($Graphics$Collage.rect,
+                  12,
+                  12))
+                  ,lifetime: 0
+                  ,objtype: $Object.NLaser
+                  ,pos: $Global.startPos
+                  ,rem: false
+                  ,source: $Laser.SourcePlayer
+                  ,vel: A2($Vector.vec,0,1250)};
+   var redLaser = _U.replace([["gfx"
+                              ,$Graphics$Collage.filled($Color.red)(A2($Graphics$Collage.rect,
+                              12,
+                              12))]
+                             ,["dmgtype",$Laser.DmgRed]
+                             ,["objtype",$Object.RLaser]],
+   basLaser);
+   var bluLaser = _U.replace([["gfx"
+                              ,$Graphics$Collage.filled($Color.blue)(A2($Graphics$Collage.rect,
+                              12,
+                              12))]
+                             ,["dmgtype",$Laser.DmgBlue]
+                             ,["objtype",$Object.BLaser]],
+   basLaser);
+   var greLaser = _U.replace([["gfx"
+                              ,$Graphics$Collage.filled($Color.green)(A2($Graphics$Collage.rect,
+                              12,
+                              12))]
+                             ,["dmgtype",$Laser.DmgGreen]
+                             ,["objtype",$Object.GLaser]],
+   basLaser);
+   var selectWeapon = function (game) {
+      return function () {
+         var _v24 = game.player.wpn;
+         switch (_v24.ctor)
+         {case "Blue":
+            return _U.replace([["pos"
+                               ,game.player.pos]],
+              bluLaser);
+            case "Green":
+            return _U.replace([["pos"
+                               ,game.player.pos]],
+              greLaser);
+            case "Red":
+            return _U.replace([["pos"
+                               ,game.player.pos]],
+              redLaser);
+            case "Regular":
+            return _U.replace([["pos"
+                               ,game.player.pos]],
+              basLaser);}
+         _U.badCase($moduleName,
+         "between lines 255 and 259");
+      }();
+   };
+   var initEnemy = {_: {}
+                   ,acc: A2($Vector.vec,0,0)
+                   ,dim: A2($Vector.vec,39,39)
+                   ,enemytype: $Enemy.Regular
+                   ,gfx: $Graphics$Collage.toForm(A3($Graphics$Element.image,
+                   39,
+                   39,
+                   "assets/enemy-regular.png"))
+                   ,hp: 10
+                   ,lifetime: 0
+                   ,moving: $Enemy.Left
+                   ,objtype: $Object.NEnemy
+                   ,pos: A2($Vector.vec,-200,100)
+                   ,reach: false
+                   ,rem: false
+                   ,vel: A2($Vector.vec,150,150)};
+   var redEnemy = _U.replace([["gfx"
+                              ,$Graphics$Collage.toForm(A3($Graphics$Element.image,
+                              39,
+                              39,
+                              "assets/enemy-red.png"))]
+                             ,["enemytype",$Enemy.Red]
+                             ,["objtype",$Object.REnemy]],
+   initEnemy);
+   var bluEnemy = _U.replace([["gfx"
+                              ,$Graphics$Collage.toForm(A3($Graphics$Element.image,
+                              39,
+                              39,
+                              "assets/enemy-blue.png"))]
+                             ,["enemytype",$Enemy.Blue]
+                             ,["objtype",$Object.BEnemy]],
+   initEnemy);
+   var greEnemy = _U.replace([["gfx"
+                              ,$Graphics$Collage.toForm(A3($Graphics$Element.image,
+                              39,
+                              39,
+                              "assets/enemy-green.png"))]
+                             ,["enemytype",$Enemy.Green]
+                             ,["objtype",$Object.GEnemy]],
+   initEnemy);
+   var generateEnemy = F3(function (pos,
+   speed,
+   enemytype) {
+      return function () {
+         var vel = A2($Vector.vec,
+         speed,
+         speed);
+         return function () {
+            switch (enemytype)
+            {case 0:
+               return _U.replace([["pos",pos]
+                                 ,["vel",vel]],
+                 initEnemy);
+               case 1:
+               return _U.replace([["pos",pos]
+                                 ,["vel",vel]],
+                 redEnemy);
+               case 2:
+               return _U.replace([["pos",pos]
+                                 ,["vel",vel]],
+                 bluEnemy);
+               case 3:
+               return _U.replace([["pos",pos]
+                                 ,["vel",vel]],
+                 greEnemy);}
+            return _U.replace([["pos",pos]
+                              ,["vel",vel]],
+            initEnemy);
+         }();
+      }();
+   });
+   var generateRandomEnemy = F3(function (pos,
+   speed,
+   seed) {
+      return function () {
+         var $ = A2($Random.generate,
+         A2($Random.$int,0,3),
+         seed),
+         rnum = $._0,
+         rseed = $._1;
+         return {ctor: "_Tuple2"
+                ,_0: A3(generateEnemy,
+                pos,
+                speed,
+                rnum)
+                ,_1: rseed};
+      }();
+   });
+   var generateEnemies = F4(function (num,
+   ypos,
+   speed,
+   seed) {
+      return function () {
+         switch (num.ctor)
+         {case "::": return function () {
+                 var $ = A3(generateRandomEnemy,
+                 A2($Vector.vec,
+                 -400 + 75 * num._0,
+                 ypos),
+                 speed,
+                 seed),
+                 enemy$ = $._0,
+                 seed$ = $._1;
+                 return A2($List._op["::"],
+                 enemy$,
+                 A4(generateEnemies,
+                 num._1,
+                 ypos,
+                 speed,
+                 seed$));
+              }();
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 174 and 181");
+      }();
+   });
+   var newEnemies = F3(function (ypos,
+   speed,
+   seed) {
+      return A2($Basics._op["++"],
+      A4(generateEnemies,
+      _L.range(1,10),
+      ypos,
+      speed,
+      $Random.initialSeed(seed)),
+      A2($Basics._op["++"],
+      A4(generateEnemies,
+      _L.range(1,10),
+      ypos - 50,
+      speed,
+      $Random.initialSeed(seed + 1)),
+      A4(generateEnemies,
+      _L.range(1,10),
+      ypos - 100,
+      speed,
+      $Random.initialSeed(seed + 2))));
+   });
+   var updateLevel = function (game) {
+      return $List.isEmpty(game.enemies) ? _U.replace([["level"
+                                                       ,game.level + 1]
+                                                      ,["enemies"
+                                                       ,A3(newEnemies,
+                                                       250,
+                                                       game.baseDif + $Basics.toFloat(game.level) * 15,
+                                                       game.level)]],
+      game) : game;
+   };
+   var initPlayer = {_: {}
+                    ,acc: A2($Vector.vec,0,0)
+                    ,cd: 0
+                    ,dim: A2($Vector.vec,75,66)
+                    ,energy: 10
+                    ,gfx: $Graphics$Collage.toForm(A3($Graphics$Element.image,
+                    75,
+                    66,
+                    "assets/ship-regular.png"))
+                    ,hp: 10
+                    ,lifetime: 0
+                    ,objtype: $Object.Player
+                    ,pos: $Global.startPos
+                    ,rem: false
+                    ,vel: A2($Vector.vec,150,150)
+                    ,wpn: $Player.Regular
+                    ,wpncd: 0.75};
+   var Game = F9(function (a,
+   b,
+   c,
+   d,
+   e,
+   f,
+   g,
+   h,
+   i) {
+      return {_: {}
+             ,baseDif: d
+             ,enemies: i
+             ,lasers: h
+             ,level: c
+             ,lives: f
+             ,player: g
+             ,runtime: a
+             ,score: e
+             ,state: b};
+   });
+   var Start = {ctor: "Start"};
+   var initGame = {_: {}
+                  ,baseDif: 60
+                  ,enemies: A3(newEnemies,
+                  250,
+                  60,
+                  1)
+                  ,lasers: _L.fromArray([])
+                  ,level: 1
+                  ,lives: 3
+                  ,player: initPlayer
+                  ,runtime: 0
+                  ,score: 0
+                  ,state: Start};
+   var GameOver = {ctor: "GameOver"};
+   var updateLives = function (game) {
+      return function () {
+         var list = A2($List.filter,
+         function (e) {
+            return e.reach;
+         },
+         game.enemies);
+         var len = $Basics.toFloat($List.length(list));
+         var lives$ = game.lives - len;
+         return _U.cmp(lives$,
+         0) < 1 ? _U.replace([["lives",0]
+                             ,["state",GameOver]],
+         game) : _U.replace([["lives"
+                             ,lives$]],
+         game);
+      }();
+   };
+   var playerDeath = function (game) {
+      return _U.eq(game.player.rem,
+      false) ? game : _U.replace([["state"
+                                  ,GameOver]],
+      game);
+   };
+   var Paused = {ctor: "Paused"};
+   var renderGame = function (game) {
+      return function () {
+         var pauseScreen = function () {
+            var _v29 = game.state;
+            switch (_v29.ctor)
+            {case "GameOver":
+               return A3(renderString,
+                 $Color.white,
+                 35,
+                 {ctor: "_Tuple2"
+                 ,_0: 0
+                 ,_1: 0})(A2($Basics._op["++"],
+                 "YOU HAVE FAILED PLANET EARTH.\n",
+                 "PRESS ENTER TO TRY AGAIN.\n"));
+               case "Paused":
+               return A3(renderString,
+                 $Color.white,
+                 35,
+                 {ctor: "_Tuple2"
+                 ,_0: 0
+                 ,_1: 0})("PAUSED - SPACEBAR to RESUME");
+               case "Playing":
+               return $Graphics$Collage.toForm($Graphics$Element.empty);
+               case "Start":
+               return A3(renderString,
+                 $Color.white,
+                 35,
+                 {ctor: "_Tuple2"
+                 ,_0: 0
+                 ,_1: 0})("PRESS SPACEBAR TO PLAY.");}
+            _U.badCase($moduleName,
+            "between lines 349 and 357");
+         }();
+         var fResults = A3(renderString,
+         $Color.green,
+         25,
+         {ctor: "_Tuple2"
+         ,_0: 0
+         ,_1: -150})(A2($Basics._op["++"],
+         "but you made it to level ",
+         A2($Basics._op["++"],
+         $Basics.toString(game.level),
+         A2($Basics._op["++"],
+         " in ",
+         A2($Basics._op["++"],
+         $Basics.toString($Basics.floor(game.runtime)),
+         " second(s),\nso like, good job, i guess?")))));
+         var fEarth = $Object.render(initEarth);
+         var fEnemies = $Graphics$Collage.group(A2($List.map,
+         $Object.render,
+         game.enemies));
+         var fLasers = $Graphics$Collage.group(A2($List.map,
+         $Object.render,
+         game.lasers));
+         var fPlayer = $Object.render(game.player);
+         return _U.eq(game.state,
+         Start) ? $Graphics$Collage.group(_L.fromArray([pauseScreen])) : _U.eq(game.state,
+         GameOver) ? $Graphics$Collage.group(_L.fromArray([pauseScreen
+                                                          ,fResults])) : _U.eq(game.state,
+         Paused) ? $Graphics$Collage.group(_L.fromArray([pauseScreen])) : $Graphics$Collage.group(_L.fromArray([fLasers
+                                                                                                               ,fEarth
+                                                                                                               ,fPlayer
+                                                                                                               ,fEnemies
+                                                                                                               ,pauseScreen]));
+      }();
+   };
+   var view = F2(function (_v30,
+   game) {
+      return function () {
+         switch (_v30.ctor)
+         {case "_Tuple2":
+            return function () {
+                 var time = A3(renderString,
+                 A4($Color.rgba,255,0,0,1.0),
+                 30,
+                 {ctor: "_Tuple2"
+                 ,_0: 0
+                 ,_1: 0 - $Global.gHHeight - 43})($Basics.toString($Basics.floor(game.runtime)));
+                 var timer = A3(renderString,
+                 A4($Color.rgba,255,255,255,1.0),
+                 15,
+                 {ctor: "_Tuple2"
+                 ,_0: 0
+                 ,_1: 0 - $Global.gHHeight - 18})("your bloody onslaught has lasted for this many seconds:");
+                 var level = A3(renderString,
+                 A4($Color.rgba,125,50,50,0.5),
+                 250,
+                 {ctor: "_Tuple2"
+                 ,_0: 0
+                 ,_1: 0})($Basics.toString(game.level));
+                 var levelh = A3(renderString,
+                 A4($Color.rgba,125,50,50,0.5),
+                 30,
+                 {ctor: "_Tuple2"
+                 ,_0: 0
+                 ,_1: 130})("this is wave");
+                 var title = A3(renderString,
+                 $Color.white,
+                 30,
+                 {ctor: "_Tuple2"
+                 ,_0: 0
+                 ,_1: $Global.gHeight / 2 + 30})("space invaders(ish)");
+                 var outline = A2($Graphics$Collage.outlined,
+                 $Graphics$Collage.solid($Color.white),
+                 A2($Graphics$Collage.rect,
+                 $Global.gWidth,
+                 $Global.gHeight));
+                 var wbg = A2($Graphics$Collage.filled,
+                 $Color.black,
+                 A2($Graphics$Collage.rect,
+                 $Basics.toFloat(_v30._0),
+                 $Basics.toFloat(_v30._1)));
+                 var bg = A2($Graphics$Collage.filled,
+                 $Color.black,
+                 A2($Graphics$Collage.rect,
+                 $Global.gWidth,
+                 $Global.gHeight));
+                 return A3($Graphics$Collage.collage,
+                 _v30._0,
+                 _v30._1,
+                 _L.fromArray([wbg
+                              ,bg
+                              ,outline
+                              ,levelh
+                              ,level
+                              ,renderGame(game)
+                              ,title
+                              ,timer
+                              ,time]));
+              }();}
+         _U.badCase($moduleName,
+         "between lines 422 and 447");
+      }();
+   });
+   var Playing = {ctor: "Playing"};
+   var update = F2(function (_v34,
+   game) {
+      return function () {
+         switch (_v34.ctor)
+         {case "_Tuple3":
+            return function () {
+                 var game$ = playerDeath(remLasers(updateLives(updateLevel(updateEnemies(_v34)(remEnemies(updateLasers(_v34)(updatePlayer(_v34)(updateRuntime(_v34)(game)))))))));
+                 return function () {
+                    var _v39 = game.state;
+                    switch (_v39.ctor)
+                    {case "GameOver":
+                       return A2($List.member,
+                         13,
+                         _v34._1) ? initGame : game;
+                       case "Paused":
+                       return A2($List.member,
+                         32,
+                         _v34._1) ? _U.replace([["state"
+                                                ,Playing]],
+                         game) : game;
+                       case "Playing":
+                       return A2($List.member,
+                         80,
+                         _v34._1) ? _U.replace([["state"
+                                                ,Paused]],
+                         game$) : A2($List.member,
+                         32,
+                         _v34._1) && _U.eq(game$.player.cd,
+                         0) ? function () {
+                            var $new = selectWeapon(game);
+                            return _U.replace([["lasers"
+                                               ,A2($List._op["::"],
+                                               $new,
+                                               game$.lasers)]
+                                              ,["player"
+                                               ,$Player.resetCd(game$.player)]],
+                            game$);
+                         }() : game$;
+                       case "Start":
+                       return A2($List.member,
+                         32,
+                         _v34._1) ? _U.replace([["state"
+                                                ,Playing]],
+                         game) : game;}
+                    _U.badCase($moduleName,
+                    "between lines 219 and 236");
+                 }();
+              }();}
+         _U.badCase($moduleName,
+         "between lines 209 and 236");
+      }();
+   });
+   var sGame = A3($Signal.foldp,
+   update,
+   initGame,
+   sEvent);
+   var main = A2($Signal._op["~"],
+   A2($Signal._op["<~"],
+   view,
+   $Window.dimensions),
+   sGame);
+   _elm.Game.values = {_op: _op
+                      ,Playing: Playing
+                      ,Paused: Paused
+                      ,GameOver: GameOver
+                      ,Start: Start
+                      ,Game: Game
+                      ,initPlayer: initPlayer
+                      ,initEnemy: initEnemy
+                      ,redEnemy: redEnemy
+                      ,bluEnemy: bluEnemy
+                      ,greEnemy: greEnemy
+                      ,basLaser: basLaser
+                      ,redLaser: redLaser
+                      ,bluLaser: bluLaser
+                      ,greLaser: greLaser
+                      ,initGame: initGame
+                      ,initEarth: initEarth
+                      ,newEnemies: newEnemies
+                      ,generateEnemies: generateEnemies
+                      ,generateRandomEnemy: generateRandomEnemy
+                      ,generateEnemy: generateEnemy
+                      ,update: update
+                      ,updateRuntime: updateRuntime
+                      ,updateLevel: updateLevel
+                      ,selectWeapon: selectWeapon
+                      ,updateLives: updateLives
+                      ,updatePlayer: updatePlayer
+                      ,playerDeath: playerDeath
+                      ,updateEnemies: updateEnemies
+                      ,updateScore: updateScore
+                      ,updateLasers: updateLasers
+                      ,remLasers: remLasers
+                      ,remEnemies: remEnemies
+                      ,sDelta: sDelta
+                      ,sEvent: sEvent
+                      ,sGame: sGame
+                      ,renderGame: renderGame
+                      ,renderString: renderString
+                      ,debugInterface: debugInterface
+                      ,view: view
+                      ,main: main};
+   return _elm.Game.values;
+};Elm.Global = Elm.Global || {};
+Elm.Global.make = function (_elm) {
+   "use strict";
+   _elm.Global = _elm.Global || {};
+   if (_elm.Global.values)
+   return _elm.Global.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Global",
+   $Basics = Elm.Basics.make(_elm);
+   var startPos = {ctor: "_Tuple2"
+                  ,_0: 0
+                  ,_1: -250};
+   var gHeight = 600;
+   var gHHeight = gHeight / 2;
+   var gWidth = 800;
+   var gHWidth = gWidth / 2;
+   _elm.Global.values = {_op: _op
+                        ,gWidth: gWidth
+                        ,gHWidth: gHWidth
+                        ,gHeight: gHeight
+                        ,gHHeight: gHHeight
+                        ,startPos: startPos};
+   return _elm.Global.values;
 };Elm.Graphics = Elm.Graphics || {};
 Elm.Graphics.Collage = Elm.Graphics.Collage || {};
 Elm.Graphics.Collage.make = function (_elm) {
@@ -1532,37 +2607,6 @@ Elm.Graphics.Element.make = function (_elm) {
                                   ,inward: inward
                                   ,outward: outward};
    return _elm.Graphics.Element.values;
-};Elm.Graphics = Elm.Graphics || {};
-Elm.Graphics.Input = Elm.Graphics.Input || {};
-Elm.Graphics.Input.make = function (_elm) {
-   "use strict";
-   _elm.Graphics = _elm.Graphics || {};
-   _elm.Graphics.Input = _elm.Graphics.Input || {};
-   if (_elm.Graphics.Input.values)
-   return _elm.Graphics.Input.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   _P = _N.Ports.make(_elm),
-   $moduleName = "Graphics.Input",
-   $Graphics$Element = Elm.Graphics.Element.make(_elm),
-   $Native$Graphics$Input = Elm.Native.Graphics.Input.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
-   var clickable = $Native$Graphics$Input.clickable;
-   var hoverable = $Native$Graphics$Input.hoverable;
-   var dropDown = $Native$Graphics$Input.dropDown;
-   var checkbox = $Native$Graphics$Input.checkbox;
-   var customButton = $Native$Graphics$Input.customButton;
-   var button = $Native$Graphics$Input.button;
-   _elm.Graphics.Input.values = {_op: _op
-                                ,button: button
-                                ,customButton: customButton
-                                ,checkbox: checkbox
-                                ,dropDown: dropDown
-                                ,hoverable: hoverable
-                                ,clickable: clickable};
-   return _elm.Graphics.Input.values;
 };Elm.Keyboard = Elm.Keyboard || {};
 Elm.Keyboard.make = function (_elm) {
    "use strict";
@@ -1611,6 +2655,235 @@ Elm.Keyboard.make = function (_elm) {
                           ,keysDown: keysDown
                           ,lastPressed: lastPressed};
    return _elm.Keyboard.values;
+};Elm.Laser = Elm.Laser || {};
+Elm.Laser.make = function (_elm) {
+   "use strict";
+   _elm.Laser = _elm.Laser || {};
+   if (_elm.Laser.values)
+   return _elm.Laser.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Laser",
+   $Basics = Elm.Basics.make(_elm),
+   $Event = Elm.Event.make(_elm),
+   $Global = Elm.Global.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Object = Elm.Object.make(_elm),
+   $Vector = Elm.Vector.make(_elm);
+   var handleCollision = F2(function (ot,
+   laser) {
+      return function () {
+         var _v0 = {ctor: "_Tuple2"
+                   ,_0: ot
+                   ,_1: laser.objtype};
+         switch (_v0.ctor)
+         {case "_Tuple2":
+            switch (_v0._0.ctor)
+              {case "BEnemy":
+                 switch (_v0._1.ctor)
+                   {case "BLaser":
+                      return _U.replace([["rem"
+                                         ,true]],
+                        laser);
+                      case "GLaser":
+                      return _U.replace([["rem"
+                                         ,true]],
+                        laser);
+                      case "NLaser":
+                      return _U.replace([["rem"
+                                         ,true]],
+                        laser);
+                      case "RLaser":
+                      return _U.replace([["rem"
+                                         ,true]],
+                        laser);}
+                   break;
+                 case "GEnemy":
+                 switch (_v0._1.ctor)
+                   {case "BLaser":
+                      return _U.replace([["rem"
+                                         ,true]],
+                        laser);
+                      case "GLaser":
+                      return _U.replace([["rem"
+                                         ,true]],
+                        laser);
+                      case "NLaser":
+                      return _U.replace([["rem"
+                                         ,true]],
+                        laser);
+                      case "RLaser":
+                      return _U.replace([["rem"
+                                         ,true]],
+                        laser);}
+                   break;
+                 case "NEnemy":
+                 switch (_v0._1.ctor)
+                   {case "BLaser":
+                      return _U.replace([["rem"
+                                         ,true]],
+                        laser);
+                      case "GLaser":
+                      return _U.replace([["rem"
+                                         ,true]],
+                        laser);
+                      case "NLaser":
+                      return _U.replace([["rem"
+                                         ,true]],
+                        laser);
+                      case "RLaser":
+                      return _U.replace([["rem"
+                                         ,true]],
+                        laser);}
+                   break;
+                 case "REnemy":
+                 switch (_v0._1.ctor)
+                   {case "BLaser":
+                      return _U.replace([["rem"
+                                         ,true]],
+                        laser);
+                      case "GLaser":
+                      return _U.replace([["rem"
+                                         ,true]],
+                        laser);
+                      case "NLaser":
+                      return _U.replace([["rem"
+                                         ,true]],
+                        laser);
+                      case "RLaser":
+                      return _U.replace([["rem"
+                                         ,true]],
+                        laser);}
+                   break;}
+              break;}
+         return laser;
+      }();
+   });
+   var handleCollisions = F2(function (ots,
+   lasers) {
+      return function () {
+         var _v3 = {ctor: "_Tuple2"
+                   ,_0: ots
+                   ,_1: lasers};
+         switch (_v3.ctor)
+         {case "_Tuple2":
+            switch (_v3._0.ctor)
+              {case "::": switch (_v3._1.ctor)
+                   {case "::":
+                      return A2($List._op["::"],
+                        A2(handleCollision,
+                        _v3._0._0,
+                        _v3._1._0),
+                        A2(handleCollisions,
+                        _v3._0._1,
+                        _v3._1._1));}
+                   break;
+                 case "[]": switch (_v3._1.ctor)
+                   {case "[]":
+                      return _L.fromArray([]);}
+                   break;}
+              break;}
+         _U.badCase($moduleName,
+         "between lines 89 and 91");
+      }();
+   });
+   var updateRem = function (laser) {
+      return function () {
+         var eps = 20;
+         var rem$ = _U.cmp($Vector.getY(laser.pos),
+         $Global.gHeight / 2 - eps) > -1 ? true : laser.rem;
+         return _U.replace([["rem"
+                            ,rem$]],
+         laser);
+      }();
+   };
+   var updatePos = F3(function (_v10,
+   playerPos,
+   laser) {
+      return function () {
+         switch (_v10.ctor)
+         {case "_Tuple3":
+            return function () {
+                 var $ = A2($Vector.scale,
+                 0.5,
+                 A2($Vector.vec,
+                 $Global.gWidth,
+                 $Global.gHeight)),
+                 hgw = $._0,
+                 hgh = $._1;
+                 var $ = A2($Vector.scale,
+                 0.5,
+                 laser.dim),
+                 hlw = $._0,
+                 hlh = $._1;
+                 var pos$ = A3($Vector.bound,
+                 A2($Vector.vec,
+                 0 - hgw + hlw,
+                 0 - hgh + hlh),
+                 A2($Vector.vec,
+                 hgw - hlw,
+                 hgh - hlh),
+                 A2($Vector.add,
+                 laser.pos,
+                 A2($Vector.scale,
+                 _v10._0,
+                 laser.vel)));
+                 return _U.replace([["pos"
+                                    ,pos$]],
+                 laser);
+              }();}
+         _U.badCase($moduleName,
+         "between lines 49 and 55");
+      }();
+   });
+   var updateLifetime = F2(function (_v15,
+   laser) {
+      return function () {
+         switch (_v15.ctor)
+         {case "_Tuple3":
+            return _U.replace([["lifetime"
+                               ,laser.lifetime + _v15._0]],
+              laser);}
+         _U.badCase($moduleName,
+         "on line 45, column 11 to 44");
+      }();
+   });
+   var update = F3(function (_v20,
+   playerPos,
+   laser) {
+      return function () {
+         switch (_v20.ctor)
+         {case "_Tuple3":
+            return updateRem(A2(updatePos,
+              _v20,
+              playerPos)(updateLifetime(_v20)(laser)));}
+         _U.badCase($moduleName,
+         "between lines 39 and 41");
+      }();
+   });
+   var SourceEnemy = {ctor: "SourceEnemy"};
+   var SourcePlayer = {ctor: "SourcePlayer"};
+   var DmgGreen = {ctor: "DmgGreen"};
+   var DmgBlue = {ctor: "DmgBlue"};
+   var DmgRed = {ctor: "DmgRed"};
+   var DmgRegular = {ctor: "DmgRegular"};
+   _elm.Laser.values = {_op: _op
+                       ,DmgRegular: DmgRegular
+                       ,DmgRed: DmgRed
+                       ,DmgBlue: DmgBlue
+                       ,DmgGreen: DmgGreen
+                       ,SourcePlayer: SourcePlayer
+                       ,SourceEnemy: SourceEnemy
+                       ,update: update
+                       ,updateLifetime: updateLifetime
+                       ,updatePos: updatePos
+                       ,updateRem: updateRem
+                       ,handleCollision: handleCollision
+                       ,handleCollisions: handleCollisions};
+   return _elm.Laser.values;
 };Elm.List = Elm.List || {};
 Elm.List.make = function (_elm) {
    "use strict";
@@ -1915,32 +3188,6 @@ Elm.Maybe.make = function (_elm) {
                        ,Just: Just
                        ,Nothing: Nothing};
    return _elm.Maybe.values;
-};Elm.Mouse = Elm.Mouse || {};
-Elm.Mouse.make = function (_elm) {
-   "use strict";
-   _elm.Mouse = _elm.Mouse || {};
-   if (_elm.Mouse.values)
-   return _elm.Mouse.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   _P = _N.Ports.make(_elm),
-   $moduleName = "Mouse",
-   $Native$Mouse = Elm.Native.Mouse.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
-   var clicks = $Native$Mouse.clicks;
-   var isDown = $Native$Mouse.isDown;
-   var y = $Native$Mouse.y;
-   var x = $Native$Mouse.x;
-   var position = $Native$Mouse.position;
-   _elm.Mouse.values = {_op: _op
-                       ,position: position
-                       ,x: x
-                       ,y: y
-                       ,isDown: isDown
-                       ,clicks: clicks};
-   return _elm.Mouse.values;
 };
 Elm.Native.Basics = {};
 Elm.Native.Basics.make = function(elm) {
@@ -3025,421 +4272,6 @@ Elm.Native.Graphics.Element.make = function(localRuntime) {
     };
 
 };
-// setup
-Elm.Native = Elm.Native || {};
-Elm.Native.Graphics = Elm.Native.Graphics || {};
-Elm.Native.Graphics.Input = Elm.Native.Graphics.Input || {};
-
-// definition
-Elm.Native.Graphics.Input.make = function(localRuntime) {
-    'use strict';
-
-    // attempt to short-circuit
-    if ('values' in Elm.Native.Graphics.Input) {
-        return Elm.Native.Graphics.Input.values;
-    }
-
-    var Color = Elm.Native.Color.make(localRuntime);
-    var List = Elm.Native.List.make(localRuntime);
-    var Text = Elm.Native.Text.make(localRuntime);
-    var Utils = Elm.Native.Utils.make(localRuntime);
-
-    var Element = Elm.Graphics.Element.make(localRuntime);
-    var NativeElement = Elm.Native.Graphics.Element.make(localRuntime);
-
-
-    function renderDropDown(model) {
-        var drop = NativeElement.createNode('select');
-        drop.style.border = '0 solid';
-        drop.style.pointerEvents = 'auto';
-        drop.style.display = 'block';
-
-        drop.elm_values = List.toArray(model.values);
-        drop.elm_handler = model.handler;
-        var values = drop.elm_values;
-
-        for (var i = 0; i < values.length; ++i) {
-            var option = NativeElement.createNode('option');
-            var name = values[i]._0;
-            option.value = name;
-            option.innerHTML = name;
-            drop.appendChild(option);
-        }
-        drop.addEventListener('change', function() {
-            drop.elm_handler(drop.elm_values[drop.selectedIndex]._1)();
-        });
-
-        return drop;
-    }
-
-    function updateDropDown(node, oldModel, newModel) {
-        node.elm_values = List.toArray(newModel.values);
-        node.elm_handler = newModel.handler;
-
-        var values = node.elm_values;
-        var kids = node.childNodes;
-        var kidsLength = kids.length;
-
-        var i = 0;
-        for (; i < kidsLength && i < values.length; ++i) {
-            var option = kids[i];
-            var name = values[i]._0;
-            option.value = name;
-            option.innerHTML = name;
-        }
-        for (; i < kidsLength; ++i) {
-            node.removeChild(node.lastChild);
-        }
-        for (; i < values.length; ++i) {
-            var option = NativeElement.createNode('option');
-            var name = values[i]._0;
-            option.value = name;
-            option.innerHTML = name;
-            node.appendChild(option);
-        }
-        return node;
-    }
-
-    function dropDown(handler, values) {
-        return A3(Element.newElement, 100, 24, {
-            ctor: 'Custom',
-            type: 'DropDown',
-            render: renderDropDown,
-            update: updateDropDown,
-            model: {
-                values: values,
-                handler: handler
-            }
-        });
-    }
-
-    function renderButton(model) {
-        var node = NativeElement.createNode('button');
-        node.style.display = 'block';
-        node.style.pointerEvents = 'auto';
-        node.elm_message = model.message;
-        function click() {
-            node.elm_message();
-        }
-        node.addEventListener('click', click);
-        node.innerHTML = model.text;
-        return node;
-    }
-
-    function updateButton(node, oldModel, newModel) {
-        node.elm_message = newModel.message;
-        var txt = newModel.text;
-        if (oldModel.text !== txt) {
-            node.innerHTML = txt;
-        }
-        return node;
-    }
-
-    function button(message, text) {
-        return A3(Element.newElement, 100, 40, {
-            ctor: 'Custom',
-            type: 'Button',
-            render: renderButton,
-            update: updateButton,
-            model: {
-                message: message,
-                text:text
-            }
-        });
-    }
-
-    function renderCustomButton(model) {
-        var btn = NativeElement.createNode('div');
-        btn.style.pointerEvents = 'auto';
-        btn.elm_message = model.message;
-
-        btn.elm_up    = NativeElement.render(model.up);
-        btn.elm_hover = NativeElement.render(model.hover);
-        btn.elm_down  = NativeElement.render(model.down);
-
-        btn.elm_up.style.display = 'block';
-        btn.elm_hover.style.display = 'none';
-        btn.elm_down.style.display = 'none';
-  
-        btn.appendChild(btn.elm_up);
-        btn.appendChild(btn.elm_hover);
-        btn.appendChild(btn.elm_down);
-
-        function swap(visibleNode, hiddenNode1, hiddenNode2) {
-            visibleNode.style.display = 'block';
-            hiddenNode1.style.display = 'none';
-            hiddenNode2.style.display = 'none';
-        }
-
-        var overCount = 0;
-        function over(e) {
-            if (overCount++ > 0) return;
-            swap(btn.elm_hover, btn.elm_down, btn.elm_up);
-        }
-        function out(e) {
-            if (btn.contains(e.toElement || e.relatedTarget)) return;
-            overCount = 0;
-            swap(btn.elm_up, btn.elm_down, btn.elm_hover);
-        }
-        function up() {
-            swap(btn.elm_hover, btn.elm_down, btn.elm_up);
-            btn.elm_message();
-        }
-        function down() {
-            swap(btn.elm_down, btn.elm_hover, btn.elm_up);
-        }
-
-        btn.addEventListener('mouseover', over);
-        btn.addEventListener('mouseout' , out);
-        btn.addEventListener('mousedown', down);
-        btn.addEventListener('mouseup'  , up);
-
-        return btn;
-    }
-
-    function updateCustomButton(node, oldModel, newModel) {
-        node.elm_message = newModel.message;
-
-        var kids = node.childNodes;
-        var styleUp    = kids[0].style.display;
-        var styleHover = kids[1].style.display;
-        var styleDown  = kids[2].style.display;
-
-        NativeElement.updateAndReplace(kids[0], oldModel.up, newModel.up);
-        NativeElement.updateAndReplace(kids[1], oldModel.hover, newModel.hover);
-        NativeElement.updateAndReplace(kids[2], oldModel.down, newModel.down);
-
-        var kids = node.childNodes;
-        kids[0].style.display = styleUp;
-        kids[1].style.display = styleHover;
-        kids[2].style.display = styleDown;
-
-        return node;
-    }
-
-    function max3(a,b,c) {
-        var ab = a > b ? a : b;
-        return ab > c ? ab : c;
-    }
-
-    function customButton(message, up, hover, down) {
-        return A3(Element.newElement,
-                  max3(up.props.width, hover.props.width, down.props.width),
-                  max3(up.props.height, hover.props.height, down.props.height),
-                  { ctor: 'Custom',
-                    type: 'CustomButton',
-                    render: renderCustomButton,
-                    update: updateCustomButton,
-                    model: {
-                        message: message,
-                        up: up,
-                        hover: hover,
-                        down: down
-                    }
-                  });
-    }
-
-    function renderCheckbox(model) {
-        var node = NativeElement.createNode('input');
-        node.type = 'checkbox';
-        node.checked = model.checked;
-        node.style.display = 'block';
-        node.style.pointerEvents = 'auto';
-        node.elm_handler = model.handler;
-        function change() {
-            node.elm_handler(node.checked)();
-        }
-        node.addEventListener('change', change);
-        return node;
-    }
-
-    function updateCheckbox(node, oldModel, newModel) {
-        node.elm_handler = newModel.handler;
-        node.checked = newModel.checked;
-        return node;
-    }
-
-    function checkbox(handler, checked) {
-        return A3(Element.newElement, 13, 13, {
-            ctor: 'Custom',
-            type: 'CheckBox',
-            render: renderCheckbox,
-            update: updateCheckbox,
-            model: { handler:handler, checked:checked }
-        });
-    }
-
-    function setRange(node, start, end, dir) {
-        if (node.parentNode) {
-            node.setSelectionRange(start, end, dir);
-        } else {
-            setTimeout(function(){node.setSelectionRange(start, end, dir);}, 0);
-        }
-    }
-
-    function updateIfNeeded(css, attribute, latestAttribute) {
-        if (css[attribute] !== latestAttribute) {
-            css[attribute] = latestAttribute;
-        }
-    }
-    function cssDimensions(dimensions) {
-        return dimensions.top    + 'px ' +
-               dimensions.right  + 'px ' +
-               dimensions.bottom + 'px ' +
-               dimensions.left   + 'px';
-    }
-    function updateFieldStyle(css, style) {
-        updateIfNeeded(css, 'padding', cssDimensions(style.padding));
-
-        var outline = style.outline;
-        updateIfNeeded(css, 'border-width', cssDimensions(outline.width));
-        updateIfNeeded(css, 'border-color', Color.toCss(outline.color));
-        updateIfNeeded(css, 'border-radius', outline.radius + 'px');
-
-        var highlight = style.highlight;
-        if (highlight.width === 0) {
-            css.outline = 'none';
-        } else {
-            updateIfNeeded(css, 'outline-width', highlight.width + 'px');
-            updateIfNeeded(css, 'outline-color', Color.toCss(highlight.color));
-        }
-
-        var textStyle = style.style;
-        updateIfNeeded(css, 'color', Color.toCss(textStyle.color));
-        if (textStyle.typeface.ctor !== '[]') {
-            updateIfNeeded(css, 'font-family', Text.toTypefaces(textStyle.typeface));
-        }
-        if (textStyle.height.ctor !== "Nothing") {
-            updateIfNeeded(css, 'font-size', textStyle.height._0 + 'px');
-        }
-        updateIfNeeded(css, 'font-weight', textStyle.bold ? 'bold' : 'normal');
-        updateIfNeeded(css, 'font-style', textStyle.italic ? 'italic' : 'normal');
-        if (textStyle.line.ctor !== 'Nothing') {
-            updateIfNeeded(css, 'text-decoration', Text.toLine(textStyle.line._0));
-        }
-    }
-
-    function renderField(model) {
-        var field = NativeElement.createNode('input');
-        updateFieldStyle(field.style, model.style);
-        field.style.borderStyle = 'solid';
-        field.style.pointerEvents = 'auto';
-
-        field.type = model.type;
-        field.placeholder = model.placeHolder;
-        field.value = model.content.string;
-
-        field.elm_handler = model.handler;
-        field.elm_old_value = field.value;
-
-        function inputUpdate(event) {
-            var curr = field.elm_old_value;
-            var next = field.value;
-            if (curr === next) {
-                return;
-            }
-
-            var direction = field.selectionDirection === 'forward' ? 'Forward' : 'Backward';
-            var start = field.selectionStart;
-            var end = field.selectionEnd;
-            field.value = field.elm_old_value;
-
-            field.elm_handler({
-                _:{},
-                string: next,
-                selection: {
-                    _:{},
-                    start: start,
-                    end: end,
-                    direction: { ctor: direction }
-                }
-            })();
-        }
-
-        field.addEventListener('input', inputUpdate);
-        field.addEventListener('focus', function() {
-            field.elm_hasFocus = true;
-        });
-        field.addEventListener('blur', function() {
-            field.elm_hasFocus = false;
-        });
-
-        return field;
-    }
-
-    function updateField(field, oldModel, newModel) {
-        if (oldModel.style !== newModel.style) {
-            updateFieldStyle(field.style, newModel.style);
-        }
-        field.elm_handler = newModel.handler;
-
-        field.type = newModel.type;
-        field.placeholder = newModel.placeHolder;
-        var value = newModel.content.string;
-        field.value = value;
-        field.elm_old_value = value;
-        if (field.elm_hasFocus) {
-            var selection = newModel.content.selection;
-            var direction = selection.direction.ctor === 'Forward' ? 'forward' : 'backward';
-            setRange(field, selection.start, selection.end, direction);
-        }
-        return field;
-    }
-
-    function mkField(type) {
-        function field(style, handler, placeHolder, content) {
-            var padding = style.padding;
-            var outline = style.outline.width;
-            var adjustWidth = padding.left + padding.right + outline.left + outline.right;
-            var adjustHeight = padding.top + padding.bottom + outline.top + outline.bottom;
-            return A3(Element.newElement, 200, 30, {
-                ctor: 'Custom',
-                type: type + 'Field',
-                adjustWidth: adjustWidth,
-                adjustHeight: adjustHeight,
-                render: renderField,
-                update: updateField,
-                model: {
-                    handler:handler,
-                    placeHolder:placeHolder,
-                    content:content,
-                    style:style,
-                    type:type
-                }
-            });
-        }
-        return F4(field);
-    }
-
-    function hoverable(handler, elem) {
-        function onHover(bool) {
-            handler(bool)();
-        }
-        var props = Utils.replace([['hover',onHover]], elem.props);
-        return { props:props, element:elem.element };
-    }
-
-    function clickable(message, elem) {
-        function onClick() {
-            message();
-        }
-        var props = Utils.replace([['click',onClick]], elem.props);
-        return { props:props, element:elem.element };
-    }
-
-    return Elm.Native.Graphics.Input.values = {
-        button: F2(button),
-        customButton: F4(customButton),
-        checkbox: F2(checkbox),
-        dropDown: F2(dropDown),
-        field: mkField('text'),
-        email: mkField('email'),
-        password: mkField('password'),
-        hoverable: F2(hoverable),
-        clickable: F2(clickable)
-    };
-
-};
 Elm.Native.Keyboard = {};
 Elm.Native.Keyboard.make = function(elm) {
 
@@ -3898,66 +4730,6 @@ Elm.Native.List.make = function(elm) {
     };
     return elm.Native.List.values = Elm.Native.List.values;
 
-};
-Elm.Native = Elm.Native || {};
-Elm.Native.Mouse = {};
-Elm.Native.Mouse.make = function(localRuntime) {
-
-    localRuntime.Native = localRuntime.Native || {};
-    localRuntime.Native.Mouse = localRuntime.Native.Mouse || {};
-    if (localRuntime.Native.Mouse.values) {
-        return localRuntime.Native.Mouse.values;
-    }
-
-    var Signal = Elm.Signal.make(localRuntime);
-    var Utils = Elm.Native.Utils.make(localRuntime);
-
-    var position = Signal.constant(Utils.Tuple2(0,0));
-    position.defaultNumberOfKids = 2;
-
-    // do not move x and y into Elm. By setting their default number
-    // of kids, it is possible to detatch the mouse listeners if
-    // they are not needed.
-    function fst(pair) {
-        return pair._0;
-    }
-    function snd(pair) {
-        return pair._1;
-    }
-
-    var x = A2( Signal.map, fst, position );
-    x.defaultNumberOfKids = 0;
-
-    var y = A2( Signal.map, snd, position );
-    y.defaultNumberOfKids = 0;
-
-    var isDown = Signal.constant(false);
-    var clicks = Signal.constant(Utils.Tuple0);
-
-    var node = localRuntime.isFullscreen()
-        ? document
-        : localRuntime.node;
-
-    localRuntime.addListener([clicks.id], node, 'click', function click() {
-        localRuntime.notify(clicks.id, Utils.Tuple0);
-    });
-    localRuntime.addListener([isDown.id], node, 'mousedown', function down() {
-        localRuntime.notify(isDown.id, true);
-    });
-    localRuntime.addListener([isDown.id], node, 'mouseup', function up() {
-        localRuntime.notify(isDown.id, false);
-    });
-    localRuntime.addListener([position.id], node, 'mousemove', function move(e) {
-        localRuntime.notify(position.id, Utils.getXY(e));
-    });
-
-    return localRuntime.Native.Mouse.values = {
-        position: position,
-        x: x,
-        y: y,
-        isDown: isDown,
-        clicks: clicks
-    };
 };
 Elm.Native.Ports = {};
 Elm.Native.Ports.make = function(localRuntime) {
@@ -5712,7 +6484,657 @@ Elm.Native.Window.make = function(localRuntime) {
     };
 
 };
-Elm.Result = Elm.Result || {};
+Elm.Object = Elm.Object || {};
+Elm.Object.make = function (_elm) {
+   "use strict";
+   _elm.Object = _elm.Object || {};
+   if (_elm.Object.values)
+   return _elm.Object.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Object",
+   $Basics = Elm.Basics.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Physics = Elm.Physics.make(_elm),
+   $Vector = Elm.Vector.make(_elm);
+   var garbageCollect = function (objects) {
+      return A2($List.filter,
+      function (o) {
+         return _U.eq(o.rem,false);
+      },
+      objects);
+   };
+   var render = function (object) {
+      return A2($Graphics$Collage.move,
+      object.pos,
+      object.gfx);
+   };
+   var Object = F9(function (a,
+   b,
+   c,
+   d,
+   e,
+   f,
+   g,
+   h,
+   i) {
+      return _U.insert("rem",
+      h,
+      _U.insert("gfx",
+      g,
+      _U.insert("acc",
+      f,
+      _U.insert("vel",
+      e,
+      _U.insert("pos",
+      d,
+      _U.insert("dim",
+      c,
+      _U.insert("objtype",
+      b,
+      _U.insert("lifetime",
+      a,
+      i))))))));
+   });
+   var None = {ctor: "None"};
+   var checkCollision = F2(function (src,
+   objects) {
+      return function () {
+         switch (objects.ctor)
+         {case "::":
+            return A4($Physics.isColliding,
+              src.pos,
+              src.dim,
+              objects._0.pos,
+              objects._0.dim) ? objects._0.objtype : A2(checkCollision,
+              src,
+              objects._1);
+            case "[]": return None;}
+         _U.badCase($moduleName,
+         "between lines 40 and 43");
+      }();
+   });
+   var GEnemy = {ctor: "GEnemy"};
+   var BEnemy = {ctor: "BEnemy"};
+   var REnemy = {ctor: "REnemy"};
+   var NEnemy = {ctor: "NEnemy"};
+   var GLaser = {ctor: "GLaser"};
+   var BLaser = {ctor: "BLaser"};
+   var RLaser = {ctor: "RLaser"};
+   var NLaser = {ctor: "NLaser"};
+   var Player = {ctor: "Player"};
+   _elm.Object.values = {_op: _op
+                        ,Player: Player
+                        ,NLaser: NLaser
+                        ,RLaser: RLaser
+                        ,BLaser: BLaser
+                        ,GLaser: GLaser
+                        ,NEnemy: NEnemy
+                        ,REnemy: REnemy
+                        ,BEnemy: BEnemy
+                        ,GEnemy: GEnemy
+                        ,None: None
+                        ,Object: Object
+                        ,render: render
+                        ,checkCollision: checkCollision
+                        ,garbageCollect: garbageCollect};
+   return _elm.Object.values;
+};Elm.Physics = Elm.Physics || {};
+Elm.Physics.make = function (_elm) {
+   "use strict";
+   _elm.Physics = _elm.Physics || {};
+   if (_elm.Physics.values)
+   return _elm.Physics.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Physics",
+   $Basics = Elm.Basics.make(_elm),
+   $Vector = Elm.Vector.make(_elm);
+   var isColliding = F4(function (_v0,
+   _v1,
+   _v2,
+   _v3) {
+      return function () {
+         switch (_v3.ctor)
+         {case "_Tuple2":
+            return function () {
+                 switch (_v2.ctor)
+                 {case "_Tuple2":
+                    return function () {
+                         switch (_v1.ctor)
+                         {case "_Tuple2":
+                            return function () {
+                                 switch (_v0.ctor)
+                                 {case "_Tuple2":
+                                    return function () {
+                                         var $ = {ctor: "_Tuple2"
+                                                 ,_0: _v2._0 + _v3._0 / 2
+                                                 ,_1: _v2._1 + _v3._1 / 2},
+                                         maxXB = $._0,
+                                         maxYB = $._1;
+                                         var $ = {ctor: "_Tuple2"
+                                                 ,_0: _v0._0 + _v1._0 / 2
+                                                 ,_1: _v0._1 + _v1._1 / 2},
+                                         maxXA = $._0,
+                                         maxYA = $._1;
+                                         var $ = {ctor: "_Tuple2"
+                                                 ,_0: _v2._0 - _v3._0 / 2
+                                                 ,_1: _v2._1 - _v3._1 / 2},
+                                         minXB = $._0,
+                                         minYB = $._1;
+                                         var $ = {ctor: "_Tuple2"
+                                                 ,_0: _v0._0 - _v1._0 / 2
+                                                 ,_1: _v0._1 - _v1._1 / 2},
+                                         minXA = $._0,
+                                         minYA = $._1;
+                                         return _U.cmp(minXA,
+                                         minXB + _v3._0) < 0 && (_U.cmp(minXA + _v1._0,
+                                         minXB) > 0 && (_U.cmp(minYA,
+                                         minYB + _v3._1) < 0 && _U.cmp(_v1._1 + minYA,
+                                         minYB) > 0)) ? true : false;
+                                      }();}
+                                 _U.badCase($moduleName,
+                                 "between lines 8 and 16");
+                              }();}
+                         _U.badCase($moduleName,
+                         "between lines 8 and 16");
+                      }();}
+                 _U.badCase($moduleName,
+                 "between lines 8 and 16");
+              }();}
+         _U.badCase($moduleName,
+         "between lines 8 and 16");
+      }();
+   });
+   _elm.Physics.values = {_op: _op
+                         ,isColliding: isColliding};
+   return _elm.Physics.values;
+};Elm.Player = Elm.Player || {};
+Elm.Player.make = function (_elm) {
+   "use strict";
+   _elm.Player = _elm.Player || {};
+   if (_elm.Player.values)
+   return _elm.Player.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Player",
+   $Basics = Elm.Basics.make(_elm),
+   $Event = Elm.Event.make(_elm),
+   $Global = Elm.Global.make(_elm),
+   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Object = Elm.Object.make(_elm),
+   $Vector = Elm.Vector.make(_elm);
+   var handleCollisions = F2(function (ot,
+   player) {
+      return function () {
+         switch (ot.ctor)
+         {case "BEnemy":
+            return _U.replace([["rem"
+                               ,true]],
+              player);
+            case "GEnemy":
+            return _U.replace([["rem"
+                               ,true]],
+              player);
+            case "NEnemy":
+            return _U.replace([["rem"
+                               ,true]],
+              player);
+            case "REnemy":
+            return _U.replace([["rem"
+                               ,true]],
+              player);}
+         return player;
+      }();
+   });
+   var updatePos = F2(function (_v1,
+   player) {
+      return function () {
+         switch (_v1.ctor)
+         {case "_Tuple3":
+            return function () {
+                 var effVel = _U.eq(_v1._2.x,
+                 0) || _U.eq(_v1._2.y,
+                 0) ? $Vector.scale(_v1._0)($Vector.cross(A2($Vector.veci,
+                 _v1._2.x,
+                 _v1._2.y))(player.vel)) : $Vector.scale(_v1._0 / $Basics.sqrt(2))($Vector.cross(A2($Vector.veci,
+                 _v1._2.x,
+                 _v1._2.y))(player.vel));
+                 var $ = A2($Vector.scale,
+                 0.5,
+                 A2($Vector.vec,
+                 $Global.gWidth,
+                 $Global.gHeight)),
+                 hgw = $._0,
+                 hgh = $._1;
+                 var $ = A2($Vector.scale,
+                 0.5,
+                 player.dim),
+                 hpw = $._0,
+                 hph = $._1;
+                 var pos$ = A3($Vector.bound,
+                 A2($Vector.vec,
+                 0 - hgw + hpw,
+                 0 - hgh + hph),
+                 A2($Vector.vec,
+                 hgw - hpw,
+                 hgh - hph),
+                 A2($Vector.add,
+                 player.pos,
+                 effVel));
+                 return _U.replace([["pos"
+                                    ,pos$]],
+                 player);
+              }();}
+         _U.badCase($moduleName,
+         "between lines 63 and 73");
+      }();
+   });
+   var resetCd = function (player) {
+      return _U.replace([["cd"
+                         ,player.wpncd]],
+      player);
+   };
+   var updateCd = F2(function (_v6,
+   player) {
+      return function () {
+         switch (_v6.ctor)
+         {case "_Tuple3":
+            return _U.replace([["cd"
+                               ,_U.cmp(player.cd - _v6._0,
+                               0) > -1 ? player.cd - _v6._0 : 0]],
+              player);}
+         _U.badCase($moduleName,
+         "between lines 54 and 56");
+      }();
+   });
+   var updateLifetime = F2(function (_v11,
+   player) {
+      return function () {
+         switch (_v11.ctor)
+         {case "_Tuple3":
+            return _U.replace([["lifetime"
+                               ,player.lifetime + _v11._0]],
+              player);}
+         _U.badCase($moduleName,
+         "on line 50, column 12 to 49");
+      }();
+   });
+   var greShip = $Graphics$Collage.toForm(A3($Graphics$Element.image,
+   75,
+   66,
+   "assets/ship-green.png"));
+   var bluShip = $Graphics$Collage.toForm(A3($Graphics$Element.image,
+   75,
+   66,
+   "assets/ship-blue.png"));
+   var redShip = $Graphics$Collage.toForm(A3($Graphics$Element.image,
+   75,
+   66,
+   "assets/ship-red.png"));
+   var regShip = $Graphics$Collage.toForm(A3($Graphics$Element.image,
+   75,
+   66,
+   "assets/ship-regular.png"));
+   var Green = {ctor: "Green"};
+   var Blue = {ctor: "Blue"};
+   var Red = {ctor: "Red"};
+   var Regular = {ctor: "Regular"};
+   var updateWpn = F2(function (_v16,
+   player) {
+      return function () {
+         switch (_v16.ctor)
+         {case "_Tuple3":
+            return A2($List.member,
+              81,
+              _v16._1) ? _U.replace([["wpn"
+                                     ,Regular]
+                                    ,["gfx",regShip]],
+              player) : A2($List.member,
+              87,
+              _v16._1) ? _U.replace([["wpn"
+                                     ,Red]
+                                    ,["gfx",redShip]],
+              player) : A2($List.member,
+              69,
+              _v16._1) ? _U.replace([["wpn"
+                                     ,Green]
+                                    ,["gfx",greShip]],
+              player) : A2($List.member,
+              82,
+              _v16._1) ? _U.replace([["wpn"
+                                     ,Blue]
+                                    ,["gfx",bluShip]],
+              player) : player;}
+         _U.badCase($moduleName,
+         "between lines 77 and 93");
+      }();
+   });
+   var update = F2(function (_v21,
+   player) {
+      return function () {
+         switch (_v21.ctor)
+         {case "_Tuple3":
+            return updateWpn(_v21)(updatePos(_v21)(updateCd(_v21)(updateLifetime(_v21)(player))));}
+         _U.badCase($moduleName,
+         "between lines 43 and 46");
+      }();
+   });
+   _elm.Player.values = {_op: _op
+                        ,Regular: Regular
+                        ,Red: Red
+                        ,Blue: Blue
+                        ,Green: Green
+                        ,regShip: regShip
+                        ,redShip: redShip
+                        ,bluShip: bluShip
+                        ,greShip: greShip
+                        ,update: update
+                        ,updateLifetime: updateLifetime
+                        ,updateCd: updateCd
+                        ,resetCd: resetCd
+                        ,updatePos: updatePos
+                        ,updateWpn: updateWpn
+                        ,handleCollisions: handleCollisions};
+   return _elm.Player.values;
+};Elm.Random = Elm.Random || {};
+Elm.Random.make = function (_elm) {
+   "use strict";
+   _elm.Random = _elm.Random || {};
+   if (_elm.Random.values)
+   return _elm.Random.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Random",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm);
+   var magicNum8 = 2147483562;
+   var range = function (_v0) {
+      return function () {
+         return {ctor: "_Tuple2"
+                ,_0: 0
+                ,_1: magicNum8};
+      }();
+   };
+   var magicNum7 = 2137383399;
+   var magicNum6 = 2147483563;
+   var magicNum5 = 3791;
+   var magicNum4 = 40692;
+   var magicNum3 = 52774;
+   var magicNum2 = 12211;
+   var magicNum1 = 53668;
+   var magicNum0 = 40014;
+   var generate = F2(function (_v2,
+   seed) {
+      return function () {
+         switch (_v2.ctor)
+         {case "Generator":
+            return _v2._0(seed);}
+         _U.badCase($moduleName,
+         "on line 247, column 5 to 19");
+      }();
+   });
+   var Seed = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,next: b
+             ,range: d
+             ,split: c
+             ,state: a};
+   });
+   var State = F2(function (a,b) {
+      return {ctor: "State"
+             ,_0: a
+             ,_1: b};
+   });
+   var initState = function (s$) {
+      return function () {
+         var s = A2($Basics.max,
+         s$,
+         0 - s$);
+         var q = s / (magicNum6 - 1) | 0;
+         var s2 = A2($Basics._op["%"],
+         q,
+         magicNum7 - 1);
+         var s1 = A2($Basics._op["%"],
+         s,
+         magicNum6 - 1);
+         return A2(State,s1 + 1,s2 + 1);
+      }();
+   };
+   var next = function (_v5) {
+      return function () {
+         switch (_v5.ctor)
+         {case "State":
+            return function () {
+                 var k$ = _v5._1 / magicNum3 | 0;
+                 var s2$ = magicNum4 * (_v5._1 - k$ * magicNum3) - k$ * magicNum5;
+                 var s2$$ = _U.cmp(s2$,
+                 0) < 0 ? s2$ + magicNum7 : s2$;
+                 var k = _v5._0 / magicNum1 | 0;
+                 var s1$ = magicNum0 * (_v5._0 - k * magicNum1) - k * magicNum2;
+                 var s1$$ = _U.cmp(s1$,
+                 0) < 0 ? s1$ + magicNum6 : s1$;
+                 var z = s1$$ - s2$$;
+                 var z$ = _U.cmp(z,
+                 1) < 0 ? z + magicNum8 : z;
+                 return {ctor: "_Tuple2"
+                        ,_0: z$
+                        ,_1: A2(State,s1$$,s2$$)};
+              }();}
+         _U.badCase($moduleName,
+         "between lines 291 and 300");
+      }();
+   };
+   var split = function (_v9) {
+      return function () {
+         switch (_v9.ctor)
+         {case "State":
+            return function () {
+                 var _raw = $Basics.snd(next(_v9)),
+                 $ = _raw.ctor === "State" ? _raw : _U.badCase($moduleName,
+                 "on line 307, column 25 to 38"),
+                 t1 = $._0,
+                 t2 = $._1;
+                 var new_s2 = _U.eq(_v9._1,
+                 1) ? magicNum7 - 1 : _v9._1 - 1;
+                 var new_s1 = _U.eq(_v9._0,
+                 magicNum6 - 1) ? 1 : _v9._0 + 1;
+                 return {ctor: "_Tuple2"
+                        ,_0: A2(State,new_s1,t2)
+                        ,_1: A2(State,t1,new_s2)};
+              }();}
+         _U.badCase($moduleName,
+         "between lines 305 and 309");
+      }();
+   };
+   var initialSeed = function (n) {
+      return A4(Seed,
+      initState(n),
+      next,
+      split,
+      range);
+   };
+   var Generator = function (a) {
+      return {ctor: "Generator"
+             ,_0: a};
+   };
+   var customGenerator = function (generate) {
+      return Generator(generate);
+   };
+   var listHelp = F4(function (list,
+   n,
+   generate,
+   seed) {
+      return _U.cmp(n,
+      1) < 0 ? {ctor: "_Tuple2"
+               ,_0: $List.reverse(list)
+               ,_1: seed} : function () {
+         var $ = generate(seed),
+         value = $._0,
+         seed$ = $._1;
+         return A4(listHelp,
+         A2($List._op["::"],value,list),
+         n - 1,
+         generate,
+         seed$);
+      }();
+   });
+   var list = F2(function (n,
+   _v13) {
+      return function () {
+         switch (_v13.ctor)
+         {case "Generator":
+            return Generator(function (seed) {
+                 return A4(listHelp,
+                 _L.fromArray([]),
+                 n,
+                 _v13._0,
+                 seed);
+              });}
+         _U.badCase($moduleName,
+         "between lines 183 and 184");
+      }();
+   });
+   var pair = F2(function (_v16,
+   _v17) {
+      return function () {
+         switch (_v17.ctor)
+         {case "Generator":
+            return function () {
+                 switch (_v16.ctor)
+                 {case "Generator":
+                    return Generator(function (seed) {
+                         return function () {
+                            var $ = _v16._0(seed),
+                            left = $._0,
+                            seed$ = $._1;
+                            var $ = _v17._0(seed$),
+                            right = $._0,
+                            seed$$ = $._1;
+                            return {ctor: "_Tuple2"
+                                   ,_0: {ctor: "_Tuple2"
+                                        ,_0: left
+                                        ,_1: right}
+                                   ,_1: seed$$};
+                         }();
+                      });}
+                 _U.badCase($moduleName,
+                 "between lines 160 and 164");
+              }();}
+         _U.badCase($moduleName,
+         "between lines 160 and 164");
+      }();
+   });
+   var minInt = -2147483648;
+   var maxInt = 2147483647;
+   var iLogBase = F2(function (b,
+   i) {
+      return _U.cmp(i,
+      b) < 0 ? 1 : 1 + A2(iLogBase,
+      b,
+      i / b | 0);
+   });
+   var $int = F2(function (a,b) {
+      return Generator(function (seed) {
+         return function () {
+            var base = 2147483561;
+            var f = F3(function (n,
+            acc,
+            state) {
+               return function () {
+                  switch (n)
+                  {case 0: return {ctor: "_Tuple2"
+                                  ,_0: acc
+                                  ,_1: state};}
+                  return function () {
+                     var $ = seed.next(state),
+                     x = $._0,
+                     state$ = $._1;
+                     return A3(f,
+                     n - 1,
+                     x + acc * base,
+                     state$);
+                  }();
+               }();
+            });
+            var $ = _U.cmp(a,
+            b) < 0 ? {ctor: "_Tuple2"
+                     ,_0: a
+                     ,_1: b} : {ctor: "_Tuple2"
+                               ,_0: b
+                               ,_1: a},
+            lo = $._0,
+            hi = $._1;
+            var k = hi - lo + 1;
+            var n = A2(iLogBase,base,k);
+            var $ = A3(f,n,1,seed.state),
+            v = $._0,
+            state$ = $._1;
+            return {ctor: "_Tuple2"
+                   ,_0: lo + A2($Basics._op["%"],
+                   v,
+                   k)
+                   ,_1: _U.replace([["state"
+                                    ,state$]],
+                   seed)};
+         }();
+      });
+   });
+   var $float = F2(function (a,b) {
+      return Generator(function (seed) {
+         return function () {
+            var $ = A2(generate,
+            A2($int,minInt,maxInt),
+            seed),
+            number = $._0,
+            seed$ = $._1;
+            var negativeOneToOne = $Basics.toFloat(number) / $Basics.toFloat(maxInt - minInt);
+            var $ = _U.cmp(a,
+            b) < 0 ? {ctor: "_Tuple2"
+                     ,_0: a
+                     ,_1: b} : {ctor: "_Tuple2"
+                               ,_0: b
+                               ,_1: a},
+            lo = $._0,
+            hi = $._1;
+            var scaled = (lo + hi) / 2 + (hi - lo) * negativeOneToOne;
+            return {ctor: "_Tuple2"
+                   ,_0: scaled
+                   ,_1: seed$};
+         }();
+      });
+   });
+   _elm.Random.values = {_op: _op
+                        ,$int: $int
+                        ,$float: $float
+                        ,list: list
+                        ,pair: pair
+                        ,minInt: minInt
+                        ,maxInt: maxInt
+                        ,generate: generate
+                        ,initialSeed: initialSeed
+                        ,customGenerator: customGenerator
+                        ,Seed: Seed};
+   return _elm.Random.values;
+};Elm.Result = Elm.Result || {};
 Elm.Result.make = function (_elm) {
    "use strict";
    _elm.Result = _elm.Result || {};
@@ -6055,459 +7477,6 @@ Elm.Signal.make = function (_elm) {
                         ,send: send
                         ,subscribe: subscribe};
    return _elm.Signal.values;
-};Elm.SpaceInvaders = Elm.SpaceInvaders || {};
-Elm.SpaceInvaders.make = function (_elm) {
-   "use strict";
-   _elm.SpaceInvaders = _elm.SpaceInvaders || {};
-   if (_elm.SpaceInvaders.values)
-   return _elm.SpaceInvaders.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   _P = _N.Ports.make(_elm),
-   $moduleName = "SpaceInvaders",
-   $Basics = Elm.Basics.make(_elm),
-   $Color = Elm.Color.make(_elm),
-   $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
-   $Graphics$Element = Elm.Graphics.Element.make(_elm),
-   $Keyboard = Elm.Keyboard.make(_elm),
-   $Signal = Elm.Signal.make(_elm),
-   $Text = Elm.Text.make(_elm),
-   $Time = Elm.Time.make(_elm),
-   $Window = Elm.Window.make(_elm);
-   var delta = A2($Signal.map,
-   function (t) {
-      return t / 20;
-   },
-   $Time.fps(30));
-   var userInterface = function (game) {
-      return function () {
-         var borderStyle = function () {
-            var ls = $Graphics$Collage.defaultLine;
-            return _U.replace([["color"
-                               ,$Color.darkGray]
-                              ,["width",5]],
-            ls);
-         }();
-         var size = 20;
-         var $ = game,
-         state = $.state,
-         player = $.player,
-         laser = $.laser,
-         score = $.score;
-         var $ = player,
-         x = $.x,
-         y = $.y,
-         vx = $.vx,
-         move = $.move;
-         var $ = laser,
-         x_laser = $.x_laser,
-         y_laser = $.y_laser,
-         status = $.status;
-         return $Graphics$Collage.move({ctor: "_Tuple2"
-                                       ,_0: 150
-                                       ,_1: 140})($Graphics$Collage.group(_L.fromArray([$Graphics$Collage.moveY(15)($Graphics$Collage.outlined(borderStyle)(A2($Graphics$Collage.rect,
-                                                                                       150,
-                                                                                       75)))
-                                                                                       ,$Graphics$Collage.moveY(size * 2)($Graphics$Collage.toForm($Text.centered($Text.height(size)($Text.color($Color.green)($Text.append($Text.fromString("Score : "))($Text.fromString($Basics.toString(score))))))))
-                                                                                       ,$Graphics$Collage.moveY(size * 1)($Graphics$Collage.toForm($Text.centered($Text.height(size)($Text.color($Color.green)($Text.append($Text.fromString("Move : "))($Text.fromString($Basics.toString(move))))))))
-                                                                                       ,$Graphics$Collage.moveY(size * 0)($Graphics$Collage.toForm($Text.centered($Text.height(size)($Text.color($Color.green)($Text.append($Text.fromString("Fire : "))($Text.fromString($Basics.toString(status))))))))])));
-      }();
-   };
-   var renderLaser = function (game) {
-      return function () {
-         var $ = game,
-         state = $.state,
-         player = $.player,
-         laser = $.laser,
-         score = $.score;
-         var $ = laser,
-         x_laser = $.x_laser,
-         y_laser = $.y_laser,
-         status = $.status,
-         fired = $.fired;
-         return function () {
-            switch (status.ctor)
-            {case "Ready":
-               return $Graphics$Collage.move({ctor: "_Tuple2"
-                                             ,_0: x_laser
-                                             ,_1: y_laser})($Graphics$Collage.filled($Color.black)(A2($Graphics$Collage.rect,
-                 1,
-                 15)));}
-            return $Graphics$Collage.move({ctor: "_Tuple2"
-                                          ,_0: x_laser
-                                          ,_1: y_laser})($Graphics$Collage.filled($Color.white)(A2($Graphics$Collage.rect,
-            1,
-            15)));
-         }();
-      }();
-   };
-   var renderPlayer = function (game) {
-      return $Graphics$Collage.move({ctor: "_Tuple2"
-                                    ,_0: game.player.x
-                                    ,_1: game.player.y})($Graphics$Collage.group(_L.fromArray([$Graphics$Collage.filled($Color.red)(A2($Graphics$Collage.rect,
-                                                                                              40,
-                                                                                              10))
-                                                                                              ,$Graphics$Collage.moveY(5)($Graphics$Collage.filled($Color.red)(A2($Graphics$Collage.oval,
-                                                                                              7,
-                                                                                              15)))])));
-   };
-   var renderHowTo = function (game) {
-      return function () {
-         var size = 30;
-         var $ = game,state = $.state;
-         return function () {
-            switch (state.ctor)
-            {case "Pause":
-               return $Graphics$Collage.group(_L.fromArray([$Graphics$Collage.moveY(size * 2)($Graphics$Collage.toForm($Text.centered($Text.height(size + 10)($Text.color($Color.white)($Text.fromString("How to Play"))))))
-                                                           ,$Graphics$Collage.moveY(size * 1)($Graphics$Collage.toForm($Text.centered($Text.height(size)($Text.color($Color.white)($Text.fromString("Move - Arrow Keys or WASD"))))))
-                                                           ,$Graphics$Collage.moveY(size * 0)($Graphics$Collage.toForm($Text.centered($Text.height(size)($Text.color($Color.white)($Text.fromString("Shoot - Space"))))))
-                                                           ,$Graphics$Collage.moveY(size * -1)($Graphics$Collage.toForm($Text.centered($Text.height(size)($Text.color($Color.white)($Text.fromString("Enter - Start Game"))))))]));
-               case "Play":
-               return $Graphics$Collage.group(_L.fromArray([]));}
-            _U.badCase($moduleName,
-            "between lines 232 and 264");
-         }();
-      }();
-   };
-   var update_vel_player = F2(function (x,
-   player) {
-      return function () {
-         var newVel = function (n) {
-            return _U.eq(x,
-            0) ? $Basics.toFloat(n) : $Basics.toFloat(n) * 2;
-         };
-         return _U.replace([["vx"
-                            ,newVel(x)]],
-         player);
-      }();
-   });
-   var Input = F5(function (a,
-   b,
-   c,
-   d,
-   e) {
-      return {_: {}
-             ,delta: e
-             ,pause: b
-             ,playerDir: c
-             ,shoot: d
-             ,start: a};
-   });
-   var playerInput = A6($Signal.map5,
-   Input,
-   $Keyboard.enter,
-   $Keyboard.isDown(80),
-   A2($Signal._op["<~"],
-   function (_) {
-      return _.x;
-   },
-   A2($Signal.merge,
-   $Keyboard.arrows,
-   $Keyboard.wasd)),
-   $Keyboard.space,
-   delta);
-   var input = A2($Signal.sampleOn,
-   delta,
-   playerInput);
-   var Game = F4(function (a,
-   b,
-   c,
-   d) {
-      return {_: {}
-             ,laser: c
-             ,player: b
-             ,score: d
-             ,state: a};
-   });
-   var Laser = F6(function (a,
-   b,
-   c,
-   d,
-   e,
-   f) {
-      return {_: {}
-             ,fired: f
-             ,status: e
-             ,vx: c
-             ,vy: d
-             ,x_laser: a
-             ,y_laser: b};
-   });
-   var Player = F5(function (a,
-   b,
-   c,
-   d,
-   e) {
-      return {_: {}
-             ,move: e
-             ,vx: c
-             ,vy: d
-             ,x: a
-             ,y: b};
-   });
-   var Pause = {ctor: "Pause"};
-   var Play = {ctor: "Play"};
-   var start_game = F2(function (start,
-   state) {
-      return function () {
-         switch (state.ctor)
-         {case "Pause":
-            return start ? Play : state;
-            case "Play": return state;}
-         _U.badCase($moduleName,
-         "between lines 117 and 121");
-      }();
-   });
-   var pause_game = F2(function (pause,
-   state) {
-      return function () {
-         switch (state.ctor)
-         {case "Pause":
-            return pause ? Play : state;
-            case "Play":
-            return pause ? Pause : state;}
-         _U.badCase($moduleName,
-         "between lines 125 and 131");
-      }();
-   });
-   var Collision = {ctor: "Collision"};
-   var Shooting = {ctor: "Shooting"};
-   var Ready = {ctor: "Ready"};
-   var update_pos_laser = F3(function (dt,
-   player,
-   laser) {
-      return function () {
-         var $ = player,
-         x = $.x,
-         y = $.y;
-         var $ = laser,
-         x_laser = $.x_laser,
-         y_laser = $.y_laser,
-         status = $.status,
-         fired = $.fired;
-         return function () {
-            switch (status.ctor)
-            {case "Collision":
-               return _U.replace([["y_laser"
-                                  ,-215]],
-                 laser);
-               case "Ready":
-               return _U.replace([["x_laser",x]
-                                 ,["y_laser",-215]],
-                 laser);
-               case "Shooting":
-               return _U.cmp(y_laser,
-                 250) > 0 ? _U.replace([["x_laser"
-                                        ,x]
-                                       ,["y_laser",-215]
-                                       ,["status",Ready]],
-                 laser) : _U.replace([["y_laser"
-                                      ,y_laser + dt * 5]],
-                 laser);}
-            _U.badCase($moduleName,
-            "between lines 141 and 156");
-         }();
-      }();
-   });
-   var update_status_laser = F2(function (shoot,
-   laser) {
-      return function () {
-         var $ = laser,
-         x_laser = $.x_laser,
-         y_laser = $.y_laser,
-         vx = $.vx,
-         vy = $.vy,
-         status = $.status,
-         fired = $.fired;
-         return function () {
-            switch (status.ctor)
-            {case "Collision":
-               return _U.replace([["status"
-                                  ,Ready]],
-                 laser);
-               case "Ready":
-               return shoot ? _U.replace([["status"
-                                          ,Shooting]],
-                 laser) : laser;
-               case "Shooting": return laser;}
-            _U.badCase($moduleName,
-            "between lines 161 and 166");
-         }();
-      }();
-   });
-   var Idle = {ctor: "Idle"};
-   var initGame = {_: {}
-                  ,laser: {_: {}
-                          ,fired: 0
-                          ,status: Ready
-                          ,vx: 0
-                          ,vy: 0
-                          ,x_laser: 0
-                          ,y_laser: -215}
-                  ,player: {_: {}
-                           ,move: Idle
-                           ,vx: 0
-                           ,vy: 0
-                           ,x: 0
-                           ,y: -220}
-                  ,score: 0
-                  ,state: Pause};
-   var MoveR = {ctor: "MoveR"};
-   var MoveL = {ctor: "MoveL"};
-   var update_move_player = F2(function (x,
-   player) {
-      return _U.replace([["move"
-                         ,_U.cmp(x,
-                         0) > 0 ? MoveR : _U.cmp(x,
-                         0) < 0 ? MoveL : player.move]],
-      player);
-   });
-   var areaH = 500;
-   var areaW = 500;
-   var update_pos_player = F2(function (dt,
-   player) {
-      return function () {
-         var $ = player,
-         x = $.x,
-         y = $.y,
-         vx = $.vx,
-         vy = $.vy,
-         move = $.move;
-         return _U.replace([["x"
-                            ,A3($Basics.clamp,
-                            (0 - areaW) / 2,
-                            areaW / 2,
-                            x + dt * vx)]],
-         player);
-      }();
-   });
-   var update_game = F2(function (input,
-   game) {
-      return function () {
-         var $ = game,
-         state = $.state,
-         player = $.player,
-         laser = $.laser,
-         score = $.score;
-         var $ = input,
-         start = $.start,
-         pause = $.pause,
-         playerDir = $.playerDir,
-         shoot = $.shoot,
-         delta = $.delta;
-         var newState = pause_game(pause)(start_game(start)(state));
-         var newPlayer = function () {
-            switch (state.ctor)
-            {case "Pause": return player;
-               case "Play":
-               return update_pos_player(delta)(update_move_player(playerDir)(update_vel_player(playerDir)(player)));}
-            _U.badCase($moduleName,
-            "between lines 94 and 101");
-         }();
-         var newLaser = function () {
-            switch (state.ctor)
-            {case "Pause": return laser;
-               case "Play":
-               return update_status_laser(shoot)(A2(update_pos_laser,
-                 delta,
-                 player)(laser));}
-            _U.badCase($moduleName,
-            "between lines 102 and 108");
-         }();
-         return _U.replace([["state"
-                            ,newState]
-                           ,["player",newPlayer]
-                           ,["laser",newLaser]],
-         game);
-      }();
-   });
-   var gameState = A3($Signal.foldp,
-   update_game,
-   initGame,
-   input);
-   var view = F2(function (_v8,
-   game) {
-      return function () {
-         switch (_v8.ctor)
-         {case "_Tuple2":
-            return function () {
-                 var h$ = $Basics.toFloat(_v8._1 - 1);
-                 var w$ = $Basics.toFloat(_v8._0 - 1);
-                 var $ = game,
-                 state = $.state,
-                 player = $.player,
-                 laser = $.laser,
-                 score = $.score;
-                 var $ = player,
-                 x = $.x,
-                 y = $.y,
-                 vx = $.vx,
-                 move = $.move;
-                 var $ = laser,
-                 x_laser = $.x_laser,
-                 y_laser = $.y_laser,
-                 status = $.status,
-                 fired = $.fired;
-                 return A3($Graphics$Element.container,
-                 _v8._0,
-                 _v8._1,
-                 $Graphics$Element.middle)(A3($Graphics$Collage.collage,
-                 areaW,
-                 areaH,
-                 _L.fromArray([$Graphics$Collage.filled($Color.black)(A2($Graphics$Collage.rect,
-                              w$,
-                              h$))
-                              ,renderLaser(game)
-                              ,renderPlayer(game)
-                              ,renderHowTo(game)
-                              ,$Graphics$Collage.moveY(220)($Graphics$Collage.toForm($Text.centered($Text.height(40)($Text.color($Color.white)($Text.fromString("Space Invaders"))))))
-                              ,userInterface(game)])));
-              }();}
-         _U.badCase($moduleName,
-         "between lines 202 and 224");
-      }();
-   });
-   var main = A3($Signal.map2,
-   view,
-   $Window.dimensions,
-   gameState);
-   _elm.SpaceInvaders.values = {_op: _op
-                               ,areaW: areaW
-                               ,areaH: areaH
-                               ,MoveL: MoveL
-                               ,MoveR: MoveR
-                               ,Idle: Idle
-                               ,Ready: Ready
-                               ,Shooting: Shooting
-                               ,Collision: Collision
-                               ,Play: Play
-                               ,Pause: Pause
-                               ,Player: Player
-                               ,Laser: Laser
-                               ,Game: Game
-                               ,initGame: initGame
-                               ,Input: Input
-                               ,update_game: update_game
-                               ,start_game: start_game
-                               ,pause_game: pause_game
-                               ,update_pos_laser: update_pos_laser
-                               ,update_status_laser: update_status_laser
-                               ,update_vel_player: update_vel_player
-                               ,update_move_player: update_move_player
-                               ,update_pos_player: update_pos_player
-                               ,view: view
-                               ,renderHowTo: renderHowTo
-                               ,renderPlayer: renderPlayer
-                               ,renderLaser: renderLaser
-                               ,userInterface: userInterface
-                               ,main: main
-                               ,gameState: gameState
-                               ,input: input
-                               ,playerInput: playerInput
-                               ,delta: delta};
-   return _elm.SpaceInvaders.values;
 };Elm.Text = Elm.Text || {};
 Elm.Text.make = function (_elm) {
    "use strict";
@@ -6753,6 +7722,217 @@ Elm.Transform2D.make = function (_elm) {
                              ,scaleX: scaleX
                              ,scaleY: scaleY};
    return _elm.Transform2D.values;
+};Elm.Vector = Elm.Vector || {};
+Elm.Vector.make = function (_elm) {
+   "use strict";
+   _elm.Vector = _elm.Vector || {};
+   if (_elm.Vector.values)
+   return _elm.Vector.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Vector",
+   $Basics = Elm.Basics.make(_elm);
+   var scale = F2(function (f,
+   _v0) {
+      return function () {
+         switch (_v0.ctor)
+         {case "_Tuple2":
+            return {ctor: "_Tuple2"
+                   ,_0: f * _v0._0
+                   ,_1: f * _v0._1};}
+         _U.badCase($moduleName,
+         "on line 42, column 19 to 31");
+      }();
+   });
+   var bound = F3(function (_v4,
+   _v5,
+   _v6) {
+      return function () {
+         switch (_v6.ctor)
+         {case "_Tuple2":
+            return function () {
+                 switch (_v5.ctor)
+                 {case "_Tuple2":
+                    return function () {
+                         switch (_v4.ctor)
+                         {case "_Tuple2":
+                            return {ctor: "_Tuple2"
+                                   ,_0: A3($Basics.clamp,
+                                   _v4._0,
+                                   _v5._0,
+                                   _v6._0)
+                                   ,_1: A3($Basics.clamp,
+                                   _v4._1,
+                                   _v5._1,
+                                   _v6._1)};}
+                         _U.badCase($moduleName,
+                         "on line 39, column 35 to 63");
+                      }();}
+                 _U.badCase($moduleName,
+                 "on line 39, column 35 to 63");
+              }();}
+         _U.badCase($moduleName,
+         "on line 39, column 35 to 63");
+      }();
+   });
+   var dot = F2(function (_v16,
+   _v17) {
+      return function () {
+         switch (_v17.ctor)
+         {case "_Tuple2":
+            return function () {
+                 switch (_v16.ctor)
+                 {case "_Tuple2":
+                    return _v16._0 * _v17._0 + _v16._1 * _v17._1;}
+                 _U.badCase($moduleName,
+                 "on line 36, column 25 to 42");
+              }();}
+         _U.badCase($moduleName,
+         "on line 36, column 25 to 42");
+      }();
+   });
+   var cross = F2(function (_v24,
+   _v25) {
+      return function () {
+         switch (_v25.ctor)
+         {case "_Tuple2":
+            return function () {
+                 switch (_v24.ctor)
+                 {case "_Tuple2":
+                    return {ctor: "_Tuple2"
+                           ,_0: _v24._0 * _v25._0
+                           ,_1: _v24._1 * _v25._1};}
+                 _U.badCase($moduleName,
+                 "on line 33, column 28 to 44");
+              }();}
+         _U.badCase($moduleName,
+         "on line 33, column 28 to 44");
+      }();
+   });
+   var equal = F2(function (_v32,
+   _v33) {
+      return function () {
+         switch (_v33.ctor)
+         {case "_Tuple2":
+            return function () {
+                 switch (_v32.ctor)
+                 {case "_Tuple2":
+                    return _U.eq(_v32._0,
+                      _v33._0) && _U.eq(_v32._1,
+                      _v33._1);}
+                 _U.badCase($moduleName,
+                 "on line 30, column 28 to 50");
+              }();}
+         _U.badCase($moduleName,
+         "on line 30, column 28 to 50");
+      }();
+   });
+   var sub = F2(function (_v40,
+   _v41) {
+      return function () {
+         switch (_v41.ctor)
+         {case "_Tuple2":
+            return function () {
+                 switch (_v40.ctor)
+                 {case "_Tuple2":
+                    return {ctor: "_Tuple2"
+                           ,_0: _v40._0 - _v41._0
+                           ,_1: _v40._1 - _v41._1};}
+                 _U.badCase($moduleName,
+                 "on line 27, column 26 to 42");
+              }();}
+         _U.badCase($moduleName,
+         "on line 27, column 26 to 42");
+      }();
+   });
+   var add = F2(function (_v48,
+   _v49) {
+      return function () {
+         switch (_v49.ctor)
+         {case "_Tuple2":
+            return function () {
+                 switch (_v48.ctor)
+                 {case "_Tuple2":
+                    return {ctor: "_Tuple2"
+                           ,_0: _v48._0 + _v49._0
+                           ,_1: _v48._1 + _v49._1};}
+                 _U.badCase($moduleName,
+                 "on line 24, column 26 to 42");
+              }();}
+         _U.badCase($moduleName,
+         "on line 24, column 26 to 42");
+      }();
+   });
+   var setY = F2(function (f,
+   _v56) {
+      return function () {
+         switch (_v56.ctor)
+         {case "_Tuple2":
+            return {ctor: "_Tuple2"
+                   ,_0: _v56._0
+                   ,_1: f};}
+         _U.badCase($moduleName,
+         "on line 21, column 18 to 22");
+      }();
+   });
+   var setX = F2(function (f,
+   _v60) {
+      return function () {
+         switch (_v60.ctor)
+         {case "_Tuple2":
+            return {ctor: "_Tuple2"
+                   ,_0: f
+                   ,_1: _v60._1};}
+         _U.badCase($moduleName,
+         "on line 18, column 18 to 22");
+      }();
+   });
+   var getY = function (_v64) {
+      return function () {
+         switch (_v64.ctor)
+         {case "_Tuple2":
+            return _v64._1;}
+         _U.badCase($moduleName,
+         "on line 15, column 15 to 16");
+      }();
+   };
+   var getX = function (_v68) {
+      return function () {
+         switch (_v68.ctor)
+         {case "_Tuple2":
+            return _v68._0;}
+         _U.badCase($moduleName,
+         "on line 12, column 15 to 16");
+      }();
+   };
+   var veci = F2(function (x,y) {
+      return {ctor: "_Tuple2"
+             ,_0: $Basics.toFloat(x)
+             ,_1: $Basics.toFloat(y)};
+   });
+   var vec = F2(function (x,y) {
+      return {ctor: "_Tuple2"
+             ,_0: x
+             ,_1: y};
+   });
+   _elm.Vector.values = {_op: _op
+                        ,vec: vec
+                        ,veci: veci
+                        ,getX: getX
+                        ,getY: getY
+                        ,setX: setX
+                        ,setY: setY
+                        ,add: add
+                        ,sub: sub
+                        ,equal: equal
+                        ,cross: cross
+                        ,dot: dot
+                        ,bound: bound
+                        ,scale: scale};
+   return _elm.Vector.values;
 };Elm.Window = Elm.Window || {};
 Elm.Window.make = function (_elm) {
    "use strict";
@@ -6775,4 +7955,4 @@ Elm.Window.make = function (_elm) {
                         ,width: width
                         ,height: height};
    return _elm.Window.values;
-};</script></head><body><script type="text/javascript">Elm.fullscreen(Elm.SpaceInvaders)</script></body></html>
+};</script></head><body><script type="text/javascript">Elm.fullscreen(Elm.Game)</script></body></html>
